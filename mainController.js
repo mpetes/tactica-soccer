@@ -1,8 +1,8 @@
 'use strict';
 
-var soccerDrawApp = angular.module('soccerDrawApp', ['ngRoute', 'ngMaterial', 'ngResource'])
+var soccerDraw = angular.module('soccerDraw', ['ngRoute', 'ngMaterial', 'ngResource'])
 
-soccerDrawApp.config(['$routeProvider',
+/*soccerDraw.config(['$routeProvider',
     function ($routeProvider) {
         $routeProvider.
             when('/users', {
@@ -28,15 +28,14 @@ soccerDrawApp.config(['$routeProvider',
             otherwise({
                 redirectTo: '/users'
             });
-    }]);
+    }]);*/
 
-soccerDrawApp.controller('MainController', ['$scope', '$rootScope', '$location', '$resource', '$http',
+soccerDraw.controller('MainController', ['$scope', '$rootScope', '$location', '$resource', '$http',
     function ($scope, $rootScope, $location, $resource, $http) {
 
         /* Variables used throughout the photo app. */
         $scope.main = {};
-        $scope.main.loggedIn = false;
-        $scope.main.userID = response.userID;
+        $scope.main.loggedIn = true;
 
 
         /* When the route changes to anything other than login-register, 
@@ -45,7 +44,7 @@ soccerDrawApp.controller('MainController', ['$scope', '$rootScope', '$location',
         $rootScope.$on("$routeChangeStart", function(event, next, current) {
 
             /* Check to see if a user is currently logged in. If one is, don't redirect to login-register page. */
-            var sessionRes = $resource("/session");
+            /*var sessionRes = $resource("/session");
             sessionRes.get({}, function(response) {
                 if (response.loggedIn === true) {
                     $scope.main.loggedIn = true;
@@ -58,7 +57,7 @@ soccerDrawApp.controller('MainController', ['$scope', '$rootScope', '$location',
                 }
             }, function errorHandling(err) {
                 console.error('Couldnt determine logged-in status.');
-            });
+            });*/
         });
 
         /*
@@ -93,7 +92,7 @@ soccerDrawApp.controller('MainController', ['$scope', '$rootScope', '$location',
         };
 
         /* Used by a user to logout. */
-        $scope.logout = function() {
+        /*$scope.logout = function() {
             var logoutRes = $resource("/admin/logout");
             logoutRes.get({}, function(response) {
                 $scope.main.loggedIn = false;
@@ -106,7 +105,7 @@ soccerDrawApp.controller('MainController', ['$scope', '$rootScope', '$location',
             }, function errorHandling(err) {
                 console.error("Logout failed.");
             });
-        }
+        }*/
     }]);
 
 
