@@ -9,8 +9,20 @@ soccerDraw.config(['$routeProvider',
                 templateUrl: 'components/login-register/login-register.html',
                 controller: 'LoginRegisterController'
             }).
+            when('/Create', {
+                templateUrl: 'components/create/create-template.html',
+                controller: 'CreateController'
+            }).
+            when('/Playbook', {
+                templateUrl: 'components/playbook/playbook-template.html',
+                controller: 'PlaybookController'
+            }).
+            when('/Playbook/:playId', {
+                templateUrl: 'components/playbook/saved-play-template.html',
+                controller: 'SavedPlayController'
+            }).
             otherwise({
-                redirectTo: '/users'
+                redirectTo: '/'
             });
     }]);
 

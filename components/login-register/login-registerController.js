@@ -1,6 +1,6 @@
 'use strict';
 
-cs142App.controller('LoginRegisterController', ['$scope', '$http', '$resource', '$location', '$rootScope',
+soccerDraw.controller('LoginRegisterController', ['$scope', '$http', '$resource', '$location', '$rootScope',
   function ($scope, $http, $resource, $location, $rootScope) {
 
     /* The fields used to register a new user. */
