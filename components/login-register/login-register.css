@@ -1,0 +1,38 @@
+/* Styles the login forms in login-register.html. */
+.login {
+	text-align: center;
+	font-family: Tahoma;
+	margin-top: 5px;
+	font-size: 14px;
+}
+
+/* Styles the specific text entry boxes in login-register.html. */
+.input-form {
+	margin-bottom: 5px;
+	margin-top: 5px;
+}
+
+/* Styles the div for the message querying returning users. */
+.top-returning-user {
+	margin-top: 10px;
+}
+
+/* Styles the div for the messages querying new users. */
+.top-new-user {
+	margin-top: 50px;
+}
+
+/* Styles the error response for logging in or register. */
+.login-response {
+	background-color: red;
+	font-family: Tahoma;
+	font-size: 25px;
+	font-weight: bold;
+	padding-bottom: 15px;
+	padding-top: 5px;
+}
+
+/* Styles the submit button. */
+.submit {
+	margin-bottom: 10px;
+}

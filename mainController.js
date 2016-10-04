@@ -2,25 +2,9 @@
 
 var soccerDraw = angular.module('soccerDraw', ['ngRoute', 'ngMaterial', 'ngResource'])
 
-/*soccerDraw.config(['$routeProvider',
+soccerDraw.config(['$routeProvider',
     function ($routeProvider) {
         $routeProvider.
-            when('/users', {
-                templateUrl: 'components/user-list/welcome-Template.html',
-                controller: 'UserListController'
-            }).
-            when('/users/:userId', {
-                templateUrl: 'components/user-detail/user-detailTemplate.html',
-                controller: 'UserDetailController'
-            }).
-            when('/photos/:userId', {
-                templateUrl: 'components/user-photos/user-photosTemplate.html',
-                controller: 'UserPhotosController'
-            }).
-            when('/recent-activity', {
-                templateUrl: 'components/recent-activity/recent-activityTemplate.html',
-                controller: 'RecentActivityController'
-            }).
             when('/login-register', {
                 templateUrl: 'components/login-register/login-register.html',
                 controller: 'LoginRegisterController'
@@ -28,10 +12,10 @@ var soccerDraw = angular.module('soccerDraw', ['ngRoute', 'ngMaterial', 'ngResou
             otherwise({
                 redirectTo: '/users'
             });
-    }]);*/
+    }]);
 
-soccerDraw.controller('MainController', ['$scope', '$rootScope', '$location', '$resource', '$http',
-    function ($scope, $rootScope, $location, $resource, $http) {
+soccerDraw.controller('MainController', ['$scope', '$rootScope', '$location', '$resource', 
+    function ($scope, $rootScope, $location, $resource) {
 
         /* Variables used throughout the photo app. */
         $scope.main = {};
