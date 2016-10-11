@@ -1,6 +1,6 @@
 'use strict';
 
-var soccerDraw = angular.module('soccerDraw', ['ngRoute', 'ngMaterial', 'ngResource'])
+var soccerDraw = angular.module('soccerDraw', ['ngRoute', 'ngMaterial', 'ngResource', 'angular-p5']);
 
 soccerDraw.config(['$routeProvider',
     function ($routeProvider) {
@@ -22,16 +22,20 @@ soccerDraw.config(['$routeProvider',
                 controller: 'SavedPlayController'
             }).
             otherwise({
-                redirectTo: '/'
+                redirectTo: '/Create'
             });
     }]);
 
-soccerDraw.controller('MainController', ['$scope', '$rootScope', '$location', '$resource', 
-    function ($scope, $rootScope, $location, $resource) {
+soccerDraw.controller('MainController', ['$scope', '$rootScope', '$location', '$resource', '$mdSidenav', 
+    function ($scope, $rootScope, $location, $resource, $mdSidenav) {
 
         /* Variables used throughout the photo app. */
         $scope.main = {};
         $scope.main.loggedIn = true;
+
+        $scope.openLeftMenu = function () {
+            $mdSidenav('left').toggle();
+        }
 
 
         /* When the route changes to anything other than login-register, 
