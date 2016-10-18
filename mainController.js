@@ -67,7 +67,7 @@ soccerDraw.controller('MainController', ['$scope', '$rootScope', '$location', '$
         *                  the GET request is done. The argument model is the object
         *                  containing the model. model is undefined in the error case.
         */
-        $scope.FetchModel = function(url, doneCallback) {
+        $scope.fetchModel = function(url, doneCallback) {
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function() {
                  //Don’t do anything if not final state
