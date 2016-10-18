@@ -5,7 +5,7 @@
 
 	<md-input-container>
 		<div><i>Login Name</i></div>
-		<div class="input-form"><input type="text" aria-label="loginName" name="loginName" ng-model="main.name" required md-minlength="1"/></div>
+		<div class="input-form"><input type="text" aria-label="loginName" name="loginName" ng-model="main.username" required md-minlength="1"/></div>
 		<div ng-messages="loginForm.loginName.$error" ng-show="loginForm.loginName.$invalid && loginForm.loginName.$touched">
 			<div ng-message="required">This is required!</div>
 		</div>
@@ -20,66 +20,4 @@
 	</md-input-container>
 
 	<div><button type="submit" ng-click="attemptLogin()">Submit</button></div>
-</form>
-
-
-<form name="registerForm" class="login">
-	<div class="top-new-user"><b>New user? Register below</b><div>
-
-	<md-input-container>
-		<div><i>Login Name</i></div>
-		<div class="input-form"><input aria-label="newLoginName" type="text" name="newLoginName" ng-model="newUser.login_name" required md-minlength="1"/></div>
-		<div ng-messages="registerForm.newLoginName.$error" ng-show="registerForm.newLoginName.$invalid && registerForm.newLoginName.$touched">
-			<div ng-message="required">This is required!</div>
-		</div>
-	</md-input-container>
-
-	<md-input-container>
-		<div><i>Password</i></div>
-		<div class="input-form"><input aria-label="newPassword1" type="text" name="newPassword1" ng-model="newUser.password1" required md-minlength="1"/></div>
-		<div ng-messages="registerForm.newPassword1.$error" ng-show="registerForm.newPassword1.$invalid && registerForm.newPassword1.$touched">
-			<div ng-message="required">This is required!</div>
-		</div>
-	</md-input-container>
-
-	<md-input-container>
-		<div><i>Password (please re-enter)</i></div>
-		<div class="input-form"><input aria-label="newPassword2" type="text" name="newPassword2" ng-model="newUser.password2" required md-minlength="1"/></div>
-		<div ng-messages="registerForm.newPassword2.$error" ng-show="registerForm.newPassword2.$invalid && registerForm.newPassword2.$touched">
-			<div ng-message="required">This is required!</div>
-		</div>
-	</md-input-container>
-
-	<md-input-container>
-		<div><i>First Name</i></div>
-		<div class="input-form"><input aria-label="newFirstName" type="text" name="newFirstName" ng-model="newUser.first_name" required md-minlength="1"/></div>
-		<div ng-messages="registerForm.newFirstName.$error" ng-show="registerForm.newFirstName.$invalid && registerForm.newFirstName.$touched">
-			<div ng-message="required">This is required!</div>
-		</div>
-	</md-input-container>
-
-	<md-input-container>
-		<div><i>Last Name</i></div>
-		<div class="input-form"><input aria-label="newLastName" type="text" name="newLastName" ng-model="newUser.last_name" required md-minlength="1"/></div>
-		<div ng-messages="registerForm.newLastName.$error" ng-show="registerForm.newLastName.$invalid && registerForm.newLastName.$touched">
-			<div ng-message="required">This is required!</div>
-		</div>
-	</md-input-container>
-
-	<md-input-container>
-		<div><i>Occupation</i></div>
-		<div class="input-form"><input aria-label="newOccupation" type="text" name="newOccupation" ng-model="newUser.occupation"/></div>
-	</md-input-container>
-
-	<md-input-container>
-		<div><i>Description</i></div>
-		<div class="input-form"><input aria-label="newDescription" type="text" name="newDescription" ng-model="newUser.description"/></div>
-	</md-input-container>
-
-	<md-input-container>
-		<div><i>Location</i></div>
-		<div class="input-form"><input aria-label="newLocation" type="text" name="newLocation" ng-model="newUser.location"/></div>
-	</md-input-container>
-
-	<div><button type="submit" ng-click="register()">Register Me</button></div>
 </form>
