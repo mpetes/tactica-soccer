@@ -1,5 +1,3 @@
-
-
 soccerDraw.factory('play-creation', ['p5', function(p5) {
 	return function (sketch) {
 
