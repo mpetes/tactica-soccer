@@ -1,23 +1,15 @@
-<div ng-if="messageToShow" class="login-response">{{messageReport}}</div>
+<div class="background-image">
+	<div class="mask">
+		<form name="loginForm" class="login">
+			<div ng-if="messageToShow" class="login-response">{{messageReport}}</div>
 
-<form name="loginForm" class="login">
-	<div class="top-returning-user"><b>Returning user? Login below</b><div>
+			<div class="heading"><i>Login Name</i></div>
+			<div><input class="input-form" type="text" aria-label="loginName" name="loginName" ng-model="main.username" md-minlength="1"/></div>
 
-	<md-input-container>
-		<div><i>Login Name</i></div>
-		<div class="input-form"><input type="text" aria-label="loginName" name="loginName" ng-model="main.username" required md-minlength="1"/></div>
-		<div ng-messages="loginForm.loginName.$error" ng-show="loginForm.loginName.$invalid && loginForm.loginName.$touched">
-			<div ng-message="required">This is required!</div>
-		</div>
-	</md-input-container>
-
-	<md-input-container>
-		<div><i>Password</i></div>
-		<div class="input-form"><input aria-label="loginPassword" type="text" name="loginPassword" ng-model="main.password" required md-minlength="1"/></div>
-		<div ng-messages="loginForm.loginPassword.$error" ng-show="loginForm.loginPassword.$invalid && loginForm.loginPassword.$touched">
-			<div ng-message="required">This is required!</div>
-		</div>
-	</md-input-container>
-
-	<div><button type="submit" ng-click="attemptLogin()">Submit</button></div>
-</form>
+			<div class="heading"><i>Password</i></div>
+			<div><input class="input-form" aria-label="loginPassword" type="password" name="loginPassword" ng-model="main.password" md-minlength="1"/></div>
+					
+			<div><md-button id="login-button" ng-click="attemptLogin()">Submit</md-button></div>
+		</form>
+	</div>
+</div>

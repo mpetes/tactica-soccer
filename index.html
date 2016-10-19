@@ -24,14 +24,16 @@
 
         <link href="index.css" rel="stylesheet" />
         <link href="components/page-list/page-list.css" rel="stylesheet" />
+        <link href="components/login-register/login-register.css" rel="stylesheet" />
         <link href="components/create/create.css" rel="stylesheet" />
         <link href="components/playbook/playbook.css" rel="stylesheet" />
         <link href="components/playbook/saved-play.css" rel="stylesheet" />
         <link href="node_modules/angular-material/angular-material.css" rel="stylesheet" />
 	</head>
 	<body>
-		<md-toolbar layout="row" style="background-color: #0375B4">
+		<md-toolbar ng-if="main.loggedIn" layout="row" style="background-color: #0375B4">
             <md-button class="menu-button" ng-click="openLeftMenu()">Menu</md-button>
+            <md-button class="logout-button" ng-click="logout()">Logout</md-button>
 		</md-toolbar>
         <md-content flex>
             <div layout="row" class="home-page">

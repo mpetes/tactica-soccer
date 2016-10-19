@@ -1,15 +1,36 @@
+.background-image { 
+  background: url(../../images/Arsenal.jpg) no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  height:100vh;
+}
+
+.mask {
+  position: relative;
+  height: 100%;
+  background-color: rgba(0,10,20,.6);
+}
+
 /* Styles the login forms in login-register.html. */
 .login {
-	text-align: center;
+	text-align: left;
 	font-family: Tahoma;
-	margin-top: 5px;
 	font-size: 14px;
+	display: inline-block;
+	vertical-align: top;
+	position: relative;
+  	color: #FFFFFF;
+  	left: 20px;
+  	top: 10px;
 }
 
 /* Styles the specific text entry boxes in login-register.html. */
 .input-form {
-	margin-bottom: 5px;
-	margin-top: 5px;
+	background-color: #FFFFFF;
+	margin-bottom: 20px;
+	width: 200px;
 }
 
 /* Styles the div for the message querying returning users. */
@@ -17,22 +38,27 @@
 	margin-top: 10px;
 }
 
-/* Styles the div for the messages querying new users. */
-.top-new-user {
-	margin-top: 50px;
-}
-
 /* Styles the error response for logging in or register. */
 .login-response {
-	background-color: red;
 	font-family: Tahoma;
-	font-size: 25px;
+	font-size: 15px;
 	font-weight: bold;
 	padding-bottom: 15px;
 	padding-top: 5px;
+	color: red;
 }
 
-/* Styles the submit button. */
-.submit {
-	margin-bottom: 10px;
+.heading {
+	font-size: 17px;
+	padding-bottom: 2px;
+}
+
+/* Styles the login button. */
+#login-button {
+	width: 100px;
+	margin-left: 42px;
+	padding-left: 10px;
+	padding-right: 10px;
+	display: inline-block;
+	background-color: green;
 }

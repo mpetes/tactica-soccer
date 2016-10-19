@@ -1,5 +1,5 @@
 'use strict';
-//postgresql-elliptical-24968
+
 var soccerDraw = angular.module('soccerDraw', ['ngRoute', 'ngMaterial', 'ngResource', 'angular-p5']);
 
 soccerDraw.config(['$routeProvider',
@@ -31,7 +31,7 @@ soccerDraw.controller('MainController', ['$scope', '$rootScope', '$location', '$
 
         /* Variables used throughout the photo app. */
         $scope.main = {};
-        $scope.main.loggedIn = true;
+        $scope.main.loggedIn = false;
         $scope.main.username = "";
         $scope.main.name = "";
         $scope.main.email = "";
@@ -73,6 +73,7 @@ soccerDraw.controller('MainController', ['$scope', '$rootScope', '$location', '$
                 $scope.main.name = "";
                 $scope.main.username = "";
                 $scope.main.email = "";
+                $scope.main.password = "";
                 $rootScope.$broadcast("Logout");
                 $location.path("/login-register"); 
             }, function errorHandling(err) {

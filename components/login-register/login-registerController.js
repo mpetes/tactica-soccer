@@ -8,7 +8,7 @@ soccerDraw.controller('LoginRegisterController', ['$scope', '$http', '$resource'
   	$scope.attemptLogin = function() {
       /* Ensure the password and login name fields are not blank. */
       if ($scope.main.username === "" || $scope.main.password === "") {
-        $scope.messageToShow = "Error: Please fill out both your username and password to log in.";
+        $scope.messageReport = "Error: Please fill out both your username and password to log in.";
         $scope.messageToShow = true;
         return;
       }
@@ -20,10 +20,8 @@ soccerDraw.controller('LoginRegisterController', ['$scope', '$http', '$resource'
    			$scope.main.name = response.name;
         $scope.main.email = response.email;
    			$rootScope.$broadcast("Login");
- 			  $location.path("/Create/"); 
+ 			  $location.path("#/Create/"); 
   		}, function errorHandling(err) {
-        console.log(err);
-        /* Display error message. */
         $scope.messageReport = "Error: Username or password incorrect.";
   			$scope.messageToShow = true;
   		});
