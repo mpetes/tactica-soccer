@@ -35,8 +35,8 @@ soccerDraw.controller('LoginRegisterController', ['$scope', '$http', '$resource'
       if (badRegisterFields()) return;
 
       var registerRes = $resource("/register");
-      registerRes.save({username: $scope.newUser.username, password: $scope.newUser.password1, email: $scope.newUser.email, name: $scope.newUser.name}, function (response) {
-        triggerSuccess("Success! New user registered. Please login.", false);
+      registerRes.save({password: $scope.newUser.password1, email: $scope.newUser.email, name: $scope.newUser.name}, function (response) {
+        sendFeedback("New user registered. Please login.", false);
         $scope.main.loggedIn = false;
         $scope.newUser.email = "";
         $scope.newUser.password1 = "";
@@ -68,13 +68,13 @@ soccerDraw.controller('LoginRegisterController', ['$scope', '$http', '$resource'
     }
 
     function sendFeedback(message, error) {
+      $scope.messageToShow = true;
       if (error) {
         $scope.messageReport = "Error: " + message;
-        document.getElementById('response-message').style.color = "red";
+        $('.login-response').css('color: red');
       } else {
         $scope.messageReport = "Success: " + message;
-        document.getElementById('response-message').style.color = "green";
+        $('.login-response').css('color: green');
       }
-      $scope.messageToShow = true;
     }
   }]);

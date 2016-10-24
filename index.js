@@ -72,10 +72,10 @@ app.get('/logout', function (request, response) {
 
 app.post('/register', function (request, response) {
   pg.connect(process.env.DATABASE_URL, function(err, client, done) {
-    var password = request.body.password1;
+    var password = request.body.password;
     var name = request.body.name;
     var email = request.body.email;
-    client.query("INSERT into Users(email, password, name) VALUES(" + email + ", " + password + ", " + name + ")", function(err, result) {
+    client.query("INSERT into Users(email, password, name) VALUES('" + email + "', '" + password + "', '" + name + "')", function(err, result) {
         done();
         if (err) { 
             response.status(500).send(JSON.stringify(err)); 

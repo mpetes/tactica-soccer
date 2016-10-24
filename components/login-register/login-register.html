@@ -1,9 +1,8 @@
 <div class="background-image">
 	<div class="mask">
+		<div ng-if="messageToShow" class="login-response">{{messageReport}}</div>
 		<form name="loginForm" class="login">
 			<div class="title"><b>Returning User?</b></div>
-
-			<div ng-if="messageToShow" id="response-message" class="login-response">{{messageReport}}</div>
 
 			<div class="heading"><i>Email</i></div>
 			<div><input class="input-form" type="text" aria-label="loginName" name="loginName" ng-model="main.email" md-minlength="1"/></div>
