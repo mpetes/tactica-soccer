@@ -19,16 +19,15 @@ app.listen(app.get('port'), function() {
 
 app.post('/login', function (request, response) {
   pg.connect(process.env.DATABASE_URL, function(err, client, done) {
-  	var username = request.body.username;
+  	var email = request.body.email;
   	var password = request.body.password;
-    client.query("SELECT * FROM Users WHERE username='" + username + "' and password='" + password + "'", function(err, result) {
+    client.query("SELECT * FROM Users WHERE email='" + email + "' and password='" + password + "'", function(err, result) {
 	    done();
 	    if (err) { 
 	      	response.status(500).send(JSON.stringify(err)); 
 	    } else { 
 	      	if (result.rows.length === 1) {
 	      		request.session.loggedIn = true;
-	      		request.session.username = username;
 	      		request.session.name = result.rows[0].name;
 	      		request.session.email = result.rows[0].email;
 	      		response.send(result.rows[0]); 
@@ -69,6 +68,22 @@ app.get('/logout', function (request, response) {
     });
 
     response.send("Success");
+});
+
+app.post('/register', function (request, response) {
+  pg.connect(process.env.DATABASE_URL, function(err, client, done) {
+    var password = request.body.password1;
+    var name = request.body.name;
+    var email = request.body.email;
+    client.query("INSERT into Users(email, password, name) VALUES(" + email + ", " + password + ", " + name + ")", function(err, result) {
+        done();
+        if (err) { 
+            response.status(500).send(JSON.stringify(err)); 
+        } else { 
+            response.send("Success");
+        }
+    });
+  });
 });
 
 

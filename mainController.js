@@ -32,7 +32,6 @@ soccerDraw.controller('MainController', ['$scope', '$rootScope', '$location', '$
         /* Variables used throughout the photo app. */
         $scope.main = {};
         $scope.main.loggedIn = false;
-        $scope.main.username = "";
         $scope.main.name = "";
         $scope.main.email = "";
         $scope.main.password = "";
@@ -51,7 +50,6 @@ soccerDraw.controller('MainController', ['$scope', '$rootScope', '$location', '$
             sessionRes.get({}, function(response) {
                 if (response.loggedIn === true) {
                     $scope.main.loggedIn = true;
-                    $scope.main.username = response.username;
                     $scope.main.name = response.name;
                     $scope.main.email = response.email;
                 } else {
@@ -71,7 +69,6 @@ soccerDraw.controller('MainController', ['$scope', '$rootScope', '$location', '$
             logoutRes.get({}, function(response) {
                 $scope.main.loggedIn = false;
                 $scope.main.name = "";
-                $scope.main.username = "";
                 $scope.main.email = "";
                 $scope.main.password = "";
                 $rootScope.$broadcast("Logout");

@@ -1,15 +1,33 @@
 <div class="background-image">
 	<div class="mask">
 		<form name="loginForm" class="login">
-			<div ng-if="messageToShow" class="login-response">{{messageReport}}</div>
+			<div class="title"><b>Returning User?</b></div>
 
-			<div class="heading"><i>Login Name</i></div>
-			<div><input class="input-form" type="text" aria-label="loginName" name="loginName" ng-model="main.username" md-minlength="1"/></div>
+			<div ng-if="messageToShow" id="response-message" class="login-response">{{messageReport}}</div>
+
+			<div class="heading"><i>Email</i></div>
+			<div><input class="input-form" type="text" aria-label="loginName" name="loginName" ng-model="main.email" md-minlength="1"/></div>
 
 			<div class="heading"><i>Password</i></div>
 			<div><input class="input-form" aria-label="loginPassword" type="password" name="loginPassword" ng-model="main.password" md-minlength="1"/></div>
 					
-			<div><md-button id="login-button" ng-click="attemptLogin()">Submit</md-button></div>
+			<div style="text-align:center"><md-button id="login-button" ng-click="attemptLogin()">Login</md-button></div>
 		</form>
+		<form name="registerForm" class="register">
+			<div class="title"><b>New User?</b></div>
+
+			<div class="heading"><i>Email</i></div>
+			<div><input class="input-form" type="text" aria-label="registerEmail" name="registerEmail" ng-model="newUser.email" md-minlength="3"/></div>
+
+			<div class="heading"><i>Name</i></div>
+			<div><input class="input-form" type="text" aria-label="registerName" name="registerName" ng-model="newUser.name" md-minlength="2"/></div>
+
+			<div class="heading"><i>Password</i></div>
+			<div><input class="input-form" type="password" aria-label="registerPassword1" name="registerPassword1" ng-model="newUser.password1" md-minlength="6"/></div>
+
+			<div class="heading"><i>Please re-enter password</i></div>
+			<div><input class="input-form" type="password" aria-label="registerPassword2" name="registerPassword2" ng-model="newUser.password2" md-minlength="6"/></div>
+
+			<div style="text-align:center"><md-button id="login-button" ng-click="attemptRegister()">Register</md-button></div>
 	</div>
 </div>

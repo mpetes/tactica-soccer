@@ -22,15 +22,37 @@
 	vertical-align: top;
 	position: relative;
   	color: #FFFFFF;
-  	left: 20px;
+  	left: 1%;
   	top: 10px;
+  	width: 20%;
+  	padding-right: 58%;
+}
+
+/* Styles the registration forms in login-register.html. */
+.register {
+	text-align: left;
+	font-family: Tahoma;
+	font-size: 14px;
+	display: inline-block;
+	vertical-align: top;
+	position: relative;
+	color: #FFFFFF;
+	top: 10px;
+	width: 20%;
+	padding-right: 1%;
 }
 
 /* Styles the specific text entry boxes in login-register.html. */
 .input-form {
 	background-color: #FFFFFF;
 	margin-bottom: 20px;
-	width: 200px;
+	width: 100%;
+}
+
+.title {
+	font-size: 20px;
+	font-family: Tahoma;
+	padding-bottom: 20px;
 }
 
 /* Styles the div for the message querying returning users. */
@@ -53,12 +75,11 @@
 	padding-bottom: 2px;
 }
 
-/* Styles the login button. */
 #login-button {
 	width: 100px;
-	margin-left: 42px;
 	padding-left: 10px;
 	padding-right: 10px;
 	display: inline-block;
 	background-color: green;
+	text-align: center;
 }
