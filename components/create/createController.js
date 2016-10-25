@@ -4,6 +4,9 @@ soccerDraw.factory('play-creation', ['p5', function(p5) {
 		/* Globals used. */
 		var players = [];
 		var recording = false;
+		var playing = false;
+		var currFrame = -1;
+		var framesToShow = 300;
 		var numPlayers = 0;
 		var mousePressStartX = -100;
 		var mousePressStartY = -100;
@@ -51,6 +54,30 @@ soccerDraw.factory('play-creation', ['p5', function(p5) {
 			playbackTypeSelect.width = 250;
 			playbackTypeSelect.position($(window).width() - 20 - playButton.width - playbackTypeSelect.width, 10);
 
+			playbackTimeSelect = sketch.createSelect();
+			playbackTimeSelect.option('1');
+			playbackTimeSelect.option('1.5');
+			playbackTimeSelect.option('2');
+			playbackTimeSelect.option('2.5');
+			playbackTimeSelect.option('3');
+			playbackTimeSelect.option('3.5');
+			playbackTimeSelect.option('4');
+			playbackTimeSelect.option('4.5');
+			playbackTimeSelect.option('5');
+			playbackTimeSelect.option('5.5');
+			playbackTimeSelect.option('6');
+			playbackTimeSelect.option('6.5');
+			playbackTimeSelect.option('7');
+			playbackTimeSelect.option('7.5');
+			playbackTimeSelect.option('8');
+			playbackTimeSelect.option('8.5');
+			playbackTimeSelect.option('9');
+			playbackTimeSelect.option('9.5');
+			playbackTimeSelect.option('10');
+			playbackTimeSelect.changed(setPlaybackTime);
+			playbackTimeSelect.width = 50;
+			playbackTimeSelect.position($(window).width() - 30 - playButton.width - playbackTypeSelect.width - playbackTimeSelect.width, 10);
+
 			function clearAllPlayers() {
 				delete players;
 				players = [];
@@ -86,16 +113,48 @@ soccerDraw.factory('play-creation', ['p5', function(p5) {
 				}
 			}
 
-			function play() {
+			function setPlaybackTime() {
+				framesToShow = parseFloat(playbackTimeSelect.value()) * 60;
+			}
 
+			function play() {
+				recording = false;
+				recordCheckbox.value = false;
+				playing = true;
+				currFrame = 0;
 			}
 		}
 
 		/* Called on every frame. Handles drawing on screen. */
 		sketch.draw = function () {
 			drawInitialField();
-			handleDragAndDrop();
-			handleRecording();
+			if (playing) {
+				handlePlayAnimation();
+			} else {
+				handleDragAndDrop();
+				handleRecording();
+			}
+		}
+
+		function handlePlayAnimation() {
+			for (var i = 0; i < players.length; i++) {
+				var player = players[i];
+				var history = player.getHistory();
+				var currPosition;
+				if (history.length === 0) {
+					currPosition = player.getPosition();
+				} else {
+					var index = Math.round((currFrame/framesToShow) * history.length);
+					if (index >= history.length) index = history.length - 1;
+					currPosition = history[index];
+				}
+				player.move(currPosition.x, currPosition.y);
+			}
+			currFrame++;
+			if (currFrame > framesToShow) {
+				playing = false;
+				currFrame = -1;
+			}
 		}
 
 		function handleRecording() {

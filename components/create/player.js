@@ -14,14 +14,18 @@ function Player(sketch, userTeam, id) {
 		this.moving = movement;
 	}
 
+	/* Returns whether player is being dragged across the screen. */
+	this.isMoving = function() {
+		return this.moving;
+	}
+
 	/* Returns the id for this player. */
 	this.getId = function() {
 		return this.id;
 	}
 
-	/* Returns whether player is being dragged across the screen. */
-	this.isMoving = function() {
-		return this.moving;
+	this.getPosition = function() {
+		return {x: this.x, y: this.y};
 	}
 
 	/* Moves player to new location defined by newX and newY. */
