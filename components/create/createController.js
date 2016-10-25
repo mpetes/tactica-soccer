@@ -2,22 +2,33 @@ soccerDraw.factory('play-creation', ['p5', function(p5) {
 	return function (sketch) {
 
 		/* Globals used. */
-		players = [];
-		mousePressStartX = -100;
-		mousePressStartY = -100;
-		mouseCurrentlyPressed = false;
+		var players = [];
+		var recording = false;
+		var numPlayers = 0;
+		var mousePressStartX = -100;
+		var mousePressStartY = -100;
+		var mouseCurrentlyPressed = false;
+		var playbackType = 'None';
 
 		/* Defines a player on the screen. */
-		function Player(yourTeam) {
+		function Player(userTeam) {
 			this.x = 200;
 			this.y = 200;
 			this.radius = 13;
 			this.moving = false;
-			this.yourTeam = yourTeam;
+			this.userTeam = userTeam;
+			this.id = numPlayers;
+			this.history = [];
+			numPlayers++;
 
 			/* Set whether player is being dragged across the screen. */
 			this.setMovement = function(movement) {
 				this.moving = movement;
+			}
+
+			/* Returns the id for this player. */
+			this.getId = function() {
+				return this.id;
 			}
 
 			/* Returns whether player is being dragged across the screen. */
@@ -29,12 +40,17 @@ soccerDraw.factory('play-creation', ['p5', function(p5) {
 			this.move = function(newX, newY) {
 				this.x = newX;
 				this.y = newY;
+				if (recording) this.history.push(new p5.Vector(this.x, this.y));
 				this.display();
+			}
+
+			this.isUserTeam = function() {
+				return this.userTeam;
 			}
 
 			/* Paints the ellipse that represents the player onto the screen. */
 			this.display = function() {
-				if (this.yourTeam) {
+				if (this.userTeam) {
 					sketch.stroke(232, 222, 42);
 					sketch.fill(232, 222, 42);
 				} else {
@@ -48,21 +64,66 @@ soccerDraw.factory('play-creation', ['p5', function(p5) {
 			this.shouldMove = function() {
 				return (Math.abs(mousePressStartX - this.x) <= this.radius && Math.abs(mousePressStartY - this.y) <= this.radius)
 			}
+
+			/* Erases the history of movement. */
+			this.clearHistory = function() {
+				this.history = [];
+			}
+
+			this.getHistory = function() {
+				return this.history;
+			}
+
+			this.setHistory = function(newHistory) {
+				this.history = newHistory;
+			}
 		}
 
 		/* Called once at loading of page. Sets up the canvas and necessary buttons. */
 		sketch.setup = function () {
-			sketch.createCanvas(1200, 500);
+			canvas = sketch.createCanvas(1200, 600);
+			canvas.position(($(window).width() - 1200) / 2, 50);
 			sketch.frameRate(60);
 
 			addYourPlayerButton = sketch.createButton('Add Your Player');
-			addYourPlayerButton.position(10, 520);
+			addYourPlayerButton.position(10, 10);
 			addYourPlayerButton.mousePressed(addYourPlayer);
 
 			addOpposingPlayerButton = sketch.createButton('Add Opposing Player');
-			addOpposingPlayerButton.position(20 + addYourPlayerButton.width, 520);
+			addOpposingPlayerButton.position(20 + addYourPlayerButton.width, 10);
 			addOpposingPlayerButton.mousePressed(addOpposingPlayer);
 
+			clearAllPlayersButton = sketch.createButton('Clear Players');
+			clearAllPlayersButton.position(30 + addYourPlayerButton.width + addOpposingPlayerButton.width, 10);
+			clearAllPlayersButton.mousePressed(clearAllPlayers);
+
+			clearHistoryButton = sketch.createButton('Clear Player History');
+			clearHistoryButton.position(40 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width, 10);
+			clearHistoryButton.mousePressed(clearHistory);
+
+			recordCheckbox = sketch.createCheckbox('Record', false);
+			recordCheckbox.position(50 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width, 10);
+			recordCheckbox.changed(record);
+
+			playButton = sketch.createButton('Play');
+			playButton.position($(window).width() - 10 - playButton.width, 10);
+			playButton.mousePressed(play);
+
+			playbackTypeSelect = sketch.createSelect();
+			playbackTypeSelect.option('None');
+			playbackTypeSelect.option('Arrows');
+			playbackTypeSelect.option('Basic Animation');
+			playbackTypeSelect.option('Advanced Animation');
+			playbackTypeSelect.option('Basic Animation with Trails');
+			playbackTypeSelect.option('Advanced Animation with Trails');
+			playbackTypeSelect.changed(setPlaybackType);
+			playbackTypeSelect.width = 250;
+			playbackTypeSelect.position($(window).width() - 20 - playButton.width - playbackTypeSelect.width, 10);
+
+			function clearAllPlayers() {
+				delete players;
+				players = [];
+			}
 
 			function addYourPlayer() {
 				var player = new Player(true);
@@ -73,12 +134,61 @@ soccerDraw.factory('play-creation', ['p5', function(p5) {
 				var player = new Player(false);
 				players.push(player);
 			}
+
+			function record() {
+				if (this.checked()) {
+					recording = true;
+				} else {
+					recording = false;
+				}
+			}
+
+			function setPlaybackType() {
+				playbackType = playbackTypeSelect.value();
+			}
+
+			function clearHistory() {
+				for (var i = 0; i < players.length; i++) {
+					players[i].clearHistory();
+				}
+			}
+
+			function play() {
+
+			}
 		}
 
 		/* Called on every frame. Handles drawing on screen. */
 		sketch.draw = function () {
 			drawInitialField();
-			moved = false;
+			handleDragAndDrop();
+			handleRecording();
+		}
+
+		function handleRecording() {
+			for (var i = 0; i < players.length; i++) {
+				var history = players[i].getHistory();
+				for (var j = 0; j < history.length; j++) {
+					var vec = history[j];
+					if (j !== 0) {
+						if (players[i].isUserTeam()) {
+							sketch.stroke(232, 222, 42);
+							sketch.fill(232, 222, 42);
+						} else {
+							sketch.stroke(17,42,38);
+							sketch.fill(17,42,38);
+						}
+						sketch.strokeWeight(3);
+						sketch.line(history[j-1].x, history[j-1].y, history[j].x, history[j].y);
+					}
+					
+					//sketch.ellipse(vec.x, vec.y, 3, 3);
+				}
+			}
+		}
+
+		function handleDragAndDrop() {
+			var moved = false;
 			for (var x = 0; x < players.length; x++) {
 				var player = players[x];
 
@@ -104,7 +214,6 @@ soccerDraw.factory('play-creation', ['p5', function(p5) {
 			sketch.line(0, 0, 1200, 0);
 			sketch.line(0, 0, 0, 500);
 			sketch.line(1200, 0, 1200, 500);
-			sketch.line(0, 500, 1200, 500);
 
 			sketch.stroke(255, 255, 255);
 
@@ -141,6 +250,7 @@ soccerDraw.factory('play-creation', ['p5', function(p5) {
 			}
 			if (sketch.mouseIsPressed && player.isMoving() === false && player.shouldMove()) {
 				player.setMovement(true);
+				player.clearHistory();
 			} 
 			if (player.isMoving()) {
 				player.move(sketch.mouseX, sketch.mouseY);
@@ -148,7 +258,9 @@ soccerDraw.factory('play-creation', ['p5', function(p5) {
 			} 
 			if (sketch.mouseIsPressed === false) {
 				mouseCurrentlyPressed = false;
-				if (player.isMoving()) player.setMovement(false);
+				if (player.isMoving()) {
+					player.setMovement(false);
+				}
 			} 
 			return moved;
 		}
