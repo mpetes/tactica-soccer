@@ -1,23 +1,28 @@
 soccerDraw.factory('play-creation', ['p5', function(p5) {
 	return function (sketch) {
 
+		var FRAME_RATE = 60;
+
 		/* Globals used. */
 		var players = [];
+		var numPlayers = 0;
+
 		var recording = false;
 		var playing = false;
 		var currFrame = -1;
-		var framesToShow = 300;
-		var numPlayers = 0;
+		var framesToShow = 1 * FRAME_RATE;
+		var trail = true;
+		var advanced = false;
+
 		var mousePressStartX = -100;
 		var mousePressStartY = -100;
 		var mouseCurrentlyPressed = false;
-		var playbackType = 'None';
 
 		/* Called once at loading of page. Sets up the canvas and necessary buttons. */
 		sketch.setup = function () {
 			canvas = sketch.createCanvas(1200, 600);
 			canvas.position(($(window).width() - 1200) / 2, 50);
-			sketch.frameRate(60);
+			sketch.frameRate(FRAME_RATE);
 
 			addYourPlayerButton = sketch.createButton('Add Your Player');
 			addYourPlayerButton.position(10, 10);
@@ -37,22 +42,22 @@ soccerDraw.factory('play-creation', ['p5', function(p5) {
 
 			recordCheckbox = sketch.createCheckbox('Record', false);
 			recordCheckbox.position(50 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width, 10);
-			recordCheckbox.changed(record);
+			recordCheckbox.width = 70;
+			recordCheckbox.changed(setRecord);
+
+			trailCheckbox = sketch.createCheckbox('Trail', true);
+			trailCheckbox.position(60 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width + recordCheckbox.width, 10);
+			trailCheckbox.width = 50;
+			trailCheckbox.changed(setTrail);
+
+			advancedCheckbox = sketch.createCheckbox('Advanced', false);
+			advancedCheckbox.position(70 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width + recordCheckbox.width + trailCheckbox.width, 10);
+			advancedCheckbox.width = 70;
+			advancedCheckbox.changed(setAdvanced);
 
 			playButton = sketch.createButton('Play');
 			playButton.position($(window).width() - 10 - playButton.width, 10);
 			playButton.mousePressed(play);
-
-			playbackTypeSelect = sketch.createSelect();
-			playbackTypeSelect.option('None');
-			playbackTypeSelect.option('Arrows');
-			playbackTypeSelect.option('Basic Animation');
-			playbackTypeSelect.option('Advanced Animation');
-			playbackTypeSelect.option('Basic Animation with Trails');
-			playbackTypeSelect.option('Advanced Animation with Trails');
-			playbackTypeSelect.changed(setPlaybackType);
-			playbackTypeSelect.width = 250;
-			playbackTypeSelect.position($(window).width() - 20 - playButton.width - playbackTypeSelect.width, 10);
 
 			playbackTimeSelect = sketch.createSelect();
 			playbackTimeSelect.option('1');
@@ -75,8 +80,8 @@ soccerDraw.factory('play-creation', ['p5', function(p5) {
 			playbackTimeSelect.option('9.5');
 			playbackTimeSelect.option('10');
 			playbackTimeSelect.changed(setPlaybackTime);
-			playbackTimeSelect.width = 50;
-			playbackTimeSelect.position($(window).width() - 30 - playButton.width - playbackTypeSelect.width - playbackTimeSelect.width, 10);
+			playbackTimeSelect.width = 45;
+			playbackTimeSelect.position($(window).width() - 30 - playButton.width - playbackTimeSelect.width, 10);
 
 			function clearAllPlayers() {
 				delete players;
@@ -95,11 +100,27 @@ soccerDraw.factory('play-creation', ['p5', function(p5) {
 				players.push(player);
 			}
 
-			function record() {
+			function setRecord() {
 				if (this.checked()) {
 					recording = true;
 				} else {
 					recording = false;
+				}
+			}
+
+			function setTrail() {
+				if (this.checked()) {
+					trail = true;
+				} else {
+					trail = false;
+				}
+			}
+
+			function setAdvanced() {
+				if (this.checked()) {
+					advanced = true;
+				} else {
+					advanced = false;
 				}
 			}
 
@@ -114,12 +135,10 @@ soccerDraw.factory('play-creation', ['p5', function(p5) {
 			}
 
 			function setPlaybackTime() {
-				framesToShow = parseFloat(playbackTimeSelect.value()) * 60;
+				framesToShow = parseFloat(playbackTimeSelect.value()) * FRAME_RATE;
 			}
 
 			function play() {
-				recording = false;
-				recordCheckbox.value = false;
 				playing = true;
 				currFrame = 0;
 			}
@@ -129,26 +148,39 @@ soccerDraw.factory('play-creation', ['p5', function(p5) {
 		sketch.draw = function () {
 			drawInitialField();
 			if (playing) {
-				handlePlayAnimation();
+				animatePlay();
 			} else {
-				handleDragAndDrop();
-				handleRecording();
+				drawPlayers();
+				if (trail) drawTrails();
 			}
 		}
 
-		function handlePlayAnimation() {
+		function animatePlay() {
 			for (var i = 0; i < players.length; i++) {
 				var player = players[i];
 				var history = player.getHistory();
-				var currPosition;
+				var currPosition = {};
 				if (history.length === 0) {
 					currPosition = player.getPosition();
 				} else {
-					var index = Math.round((currFrame/framesToShow) * history.length);
-					if (index >= history.length) index = history.length - 1;
-					currPosition = history[index];
+					if (advanced) {
+						var index = Math.round((currFrame/framesToShow) * history.length);
+						if (index >= history.length) index = history.length - 1;
+						currPosition = history[index];
+						if (trail) drawTrail(history, index, true, player.isUserTeam());
+					} else {
+						var start = history[0];
+						var end = history[history.length - 1];
+						var deltaX = end.x - start.x;
+						var deltaY = end.y - start.y;
+						currPosition.x = start.x + Math.round((currFrame/framesToShow) * deltaX);
+						currPosition.y = start.y + Math.round((currFrame/framesToShow) * deltaY);
+						if (trail) {
+							drawLineBetween(start, currPosition, player.isUserTeam());
+						}
+					}
 				}
-				player.move(currPosition.x, currPosition.y);
+				player.move(currPosition.x, currPosition.y, false);
 			}
 			currFrame++;
 			if (currFrame > framesToShow) {
@@ -157,13 +189,11 @@ soccerDraw.factory('play-creation', ['p5', function(p5) {
 			}
 		}
 
-		function handleRecording() {
-			for (var i = 0; i < players.length; i++) {
-				var history = players[i].getHistory();
-				for (var j = 0; j < history.length; j++) {
-					var vec = history[j];
-					if (j !== 0) {
-						if (players[i].isUserTeam()) {
+		function drawTrail(history, lengthToShow, advanced, isUserTeam) {
+			if (advanced) {
+				for (var i = 0; i <= lengthToShow; i++) {
+					if (i !== 0 && i < history.length) {
+						if (isUserTeam) {
 							sketch.stroke(232, 222, 42);
 							sketch.fill(232, 222, 42);
 						} else {
@@ -171,13 +201,47 @@ soccerDraw.factory('play-creation', ['p5', function(p5) {
 							sketch.fill(17,42,38);
 						}
 						sketch.strokeWeight(3);
-						sketch.line(history[j-1].x, history[j-1].y, history[j].x, history[j].y);
+						sketch.line(history[i-1].x, history[i-1].y, history[i].x, history[i].y);
 					}
+				}
+			} else {
+				if (history.length >= 2) {
+					var start = history[0];
+					var end = history[lengthToShow];
+					if (isUserTeam) {
+						sketch.stroke(232, 222, 42);
+						sketch.fill(232, 222, 42);
+					} else {
+						sketch.stroke(17,42,38);
+						sketch.fill(17,42,38);
+					}
+					sketch.strokeWeight(3);
+					sketch.line(start.x, start.y, end.x, end.y);
 				}
 			}
 		}
 
-		function handleDragAndDrop() {
+		function drawTrails() {
+			for (var i = 0; i < players.length; i++) {
+				var history = players[i].getHistory();
+				drawTrail(history, history.length - 1, advanced, players[i].isUserTeam());
+			}
+		}
+
+		/* Differs from drawTrail in that it doesn't have a history but rather two points to draw a line between. */
+		function drawLineBetween(start, end, isUserTeam) {
+			if (isUserTeam) {
+				sketch.stroke(232, 222, 42);
+				sketch.fill(232, 222, 42);
+			} else {
+				sketch.stroke(17,42,38);
+				sketch.fill(17,42,38);
+			}
+			sketch.strokeWeight(3);
+			sketch.line(start.x, start.y, end.x, end.y);
+		}
+
+		function drawPlayers() {
 			var moved = false;
 			for (var x = 0; x < players.length; x++) {
 				var player = players[x];
@@ -262,5 +326,14 @@ soccerDraw.factory('play-creation', ['p5', function(p5) {
 soccerDraw.controller('CreateController', ['$scope', '$http', '$resource', '$location', '$rootScope', 'p5',
   function ($scope, $http, $resource, $location, $rootScope, p5) {
   	var sketch = document.getElementById('play-creation');
+  	$scope.newPlay = {};
+  	$scope.newPlay.id = "";
+
+  	/*var newPlayRes = $resource('/create-new-play');
+  	newPlayRes.save({email: $scope.main.email, players: [], ball: {}}, function(response) {
+  		console.log("New play created!");
+  	}, function errorHandling(err) {
+        console.error("Could not create new play.");
+    });*/
 }]);
 

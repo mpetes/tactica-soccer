@@ -75,7 +75,10 @@ app.post('/register', function (request, response) {
     var password = request.body.password;
     var name = request.body.name;
     var email = request.body.email;
-    client.query("INSERT into Users(email, password, name) VALUES('" + email + "', '" + password + "', '" + name + "')", function(err, result) {
+    var ownedPlays = [];
+    var canAccessPlays = [];
+    var plays = {owned: ownedPlays, access: canAccessPlays};
+    client.query("INSERT into Users(email, password, name, plays) VALUES('" + email + "', '" + password + "', '" + name + "', '" + JSON.stringify(plays) + "')", function(err, result) {
         done();
         if (err) { 
             response.status(500).send(JSON.stringify(err)); 
@@ -84,6 +87,67 @@ app.post('/register', function (request, response) {
         }
     });
   });
+});
+
+app.post('/create-new-play', function (request, response) {
+    pg.connect(process.env.DATABASE_URL, function(err, client, done) {
+        /* Reject attempted logouts with no one logged in. */
+        if (request.session.loggedIn !== true) {
+            response.status(400).send("Permission denied. No one logged in.");
+            return;
+        }
+        if (request.session.email !== email) {
+            response.status(400).send("Permission denied. Logged in user does not match storing email.");
+        }
+
+        var email = request.body.email;
+        var players = request.body.players;
+        var ball = request.body.ball;
+        client.query("SELECT MAX(id) from Plays", function(err1, playResult) {
+            if (err) {
+                done();
+                response.status(500).send(JSON.stringify(err1));
+                return; 
+            } else {
+                var newId;
+                console.log(playResult.rows);
+                if (playResult.rows[0].max === null) {
+                    newId = 0;
+                } else {
+                    newId = playResult.rows[0].id + 1;
+                }
+                client.query("SELECT * from Users where email='" + email + "'", function(err2, userResult) {
+                    if (err2 || userResult.rows.length === 0) { 
+                        done();
+                        response.status(500).send(JSON.stringify(err2)); 
+                        return;
+                    } else {
+                        var plays = JSON.parse(userResult.rows[0].plays);
+                        plays.owned.push(newId);
+                        client.query("UPDATE Users SET plays='" + JSON.stringify(plays) + "'", function(err3, updateResult) {
+                            if (err3) {
+                                done();
+                                response.status(500).send(JSON.stringify(err3)); 
+                                return;
+                            } else {
+                                var players = [];
+                                var ball = {};
+                                client.query("INSERT into Plays(id, players, ball) VALUES('" + newId.toString() +"', '" + JSON.stringify(players) + "', '" + JSON.stringify(ball) + "')", function(err4, insertResult) {
+                                    done();
+                                    if (err4) {
+                                        response.status(500).send(JSON.stringify(err4));
+                                        return; 
+                                    } else {
+                                        response.send("Success");
+                                    }
+                                })
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    });
 });
 
 
