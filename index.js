@@ -17,6 +17,7 @@ app.listen(app.get('port'), function() {
   console.log('Node app is running on port', app.get('port'));
 });
 
+/* Attemps to login a user given an email and password. */
 app.post('/login', function (request, response) {
   pg.connect(process.env.DATABASE_URL, function(err, client, done) {
   	var email = request.body.email;
@@ -39,10 +40,12 @@ app.post('/login', function (request, response) {
   });
 });
 
+/* Returns the information stored in the current session. */
 app.get('/session', function (request, response) {
     response.send(JSON.stringify(request.session));
 });
 
+/* Ends the current session. */
 app.get('/logout', function (request, response) {
 
     /* Reject attempted logouts with no one logged in. */
@@ -70,6 +73,7 @@ app.get('/logout', function (request, response) {
     response.send("Success");
 });
 
+/* Registers a new user. Request must include an email, name, and password. */
 app.post('/register', function (request, response) {
   pg.connect(process.env.DATABASE_URL, function(err, client, done) {
     var password = request.body.password;
@@ -89,6 +93,8 @@ app.post('/register', function (request, response) {
   });
 });
 
+/* Creates a new play by determining an id for a new play, placing ownership of the id to the given
+email, and storing the play data. */
 app.post('/create-new-play', function (request, response) {
     pg.connect(process.env.DATABASE_URL, function(err, client, done) {
         /* Reject attempted logouts with no one logged in. */

@@ -3,10 +3,11 @@ soccerDraw.factory('play-creation', ['p5', function(p5) {
 
 		var FRAME_RATE = 60;
 
-		/* Globals used. */
+		/* Globals used for representing players. */
 		var players = [];
 		var numPlayers = 0;
 
+		/* Globals used for movement, recording, and playback. */
 		var recording = false;
 		var playing = false;
 		var currFrame = -1;
@@ -14,6 +15,7 @@ soccerDraw.factory('play-creation', ['p5', function(p5) {
 		var trail = true;
 		var advanced = false;
 
+		/* Globals used for player tracking. */
 		var mousePressStartX = -100;
 		var mousePressStartY = -100;
 		var mouseCurrentlyPressed = false;
@@ -155,6 +157,8 @@ soccerDraw.factory('play-creation', ['p5', function(p5) {
 			}
 		}
 
+		/* If the client has started the play, this will update the canvas with the new location for
+		where each player should be at the current frame. */
 		function animatePlay() {
 			for (var i = 0; i < players.length; i++) {
 				var player = players[i];
@@ -189,6 +193,9 @@ soccerDraw.factory('play-creation', ['p5', function(p5) {
 			}
 		}
 
+		/* Draws a trail for given player history from the start to the point in the history
+		array at lengthToShow, using the advanced flag to determine how the trail should look
+		and the isUserTeam flag to determine the color of the trail. */
 		function drawTrail(history, lengthToShow, advanced, isUserTeam) {
 			if (advanced) {
 				for (var i = 0; i <= lengthToShow; i++) {
@@ -221,6 +228,7 @@ soccerDraw.factory('play-creation', ['p5', function(p5) {
 			}
 		}
 
+		/* Draws trails for all players on the screen. */
 		function drawTrails() {
 			for (var i = 0; i < players.length; i++) {
 				var history = players[i].getHistory();
@@ -241,6 +249,7 @@ soccerDraw.factory('play-creation', ['p5', function(p5) {
 			sketch.line(start.x, start.y, end.x, end.y);
 		}
 
+		/* Draws all players on the screen in a non-playing phase. */
 		function drawPlayers() {
 			var moved = false;
 			for (var x = 0; x < players.length; x++) {

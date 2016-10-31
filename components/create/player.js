@@ -24,6 +24,7 @@ function Player(sketch, userTeam, id) {
 		return this.id;
 	}
 
+	/* Returns current x and y coordinates of player. */
 	this.getPosition = function() {
 		return {x: this.x, y: this.y};
 	}
@@ -36,6 +37,7 @@ function Player(sketch, userTeam, id) {
 		this.display();
 	}
 
+	/* Returns whether this player is a member of the user's team. */
 	this.isUserTeam = function() {
 		return this.userTeam;
 	}
@@ -62,10 +64,12 @@ function Player(sketch, userTeam, id) {
 		this.history = [];
 	}
 
+	/* Returns an array of (x, y) coordinates samples at each frame. */
 	this.getHistory = function() {
 		return this.history;
 	}
 
+	/* Sets the player's (x, y) coordinate history to be the given array. */
 	this.setHistory = function(newHistory) {
 		this.history = newHistory;
 	}
