@@ -95,10 +95,62 @@ app.post('/register', function (request, response) {
   });
 });
 
+app.post('/update-play', function(request, response) {
+    pg.connect(process.env.DATABASE_URL, function(err, client, done) {
+        var id = request.body.id;
+        var email = request.body.userEmail;
+        var players = request.body.userPlayers;
+        var ball = request.body.userBall;
+
+         /* Reject attempted logouts with no one logged in. */
+        if (request.session.loggedIn !== true) {
+            response.status(400).send("Permission denied. No one logged in.");
+            return;
+        }
+        if (request.session.email !== email) {
+            console.log("Hello!");
+            response.status(400).send("Permission denied. Logged in user does not match storing email.");
+            return;
+        }
+
+        client.query("SELECT * from Users where email='" + email + "'", function(err1, userResult) {
+            if (err1 || userResult.rows[0] === undefined) {
+                done();
+                console.log("Error finding user.");
+                response.status(500).send(JSON.stringify(err1));
+                return;
+            }
+            var user = userResult.rows[0];
+            var ownedPlays = JSON.parse(user.plays).owned;
+            if (ownedPlays.indexOf(id) === -1) {
+                done();
+                console.log("User is not owner of this play.");
+                response.status(404).send(JSON.stringify(err1));
+                return;
+            }
+            client.query("UPDATE Plays SET players='" + players + "', ball='" + ball + "' WHERE id='" + id + "'", function (err2, playResult) {
+                done();
+                if (err2) {
+                    console.log("Error updating play.");
+                    response.status(500).send(JSON.stringify(err1));
+                    return;
+                } else {
+                    response.send("Success!");
+                }
+            });
+        }); 
+    });
+});
+
 /* Creates a new play by determining an id for a new play, placing ownership of the id to the given
 email, and storing the play data. */
 app.post('/create-new-play', function (request, response) {
     pg.connect(process.env.DATABASE_URL, function(err, client, done) {
+
+        var email = request.body.userEmail;
+        var players = request.body.userPlayers;
+        var ball = request.body.userBall;
+
         /* Reject attempted logouts with no one logged in. */
         if (request.session.loggedIn !== true) {
             response.status(400).send("Permission denied. No one logged in.");
@@ -106,37 +158,35 @@ app.post('/create-new-play', function (request, response) {
         }
         if (request.session.email !== email) {
             response.status(400).send("Permission denied. Logged in user does not match storing email.");
+            return;
         }
 
-        var email = request.body.email;
-        var players = request.body.players;
-        var ball = request.body.ball;
-
-        dbQuery("SELECT ");
         client.query("SELECT MAX(id) from Plays", function(err1, playResult) {
             if (err) {
                 done();
+                console.log("Error finding max.");
                 response.status(500).send(JSON.stringify(err1));
                 return; 
             } else {
                 var newId;
-                console.log(playResult.rows);
                 if (playResult.rows[0].max === null) {
                     newId = 0;
                 } else {
-                    newId = playResult.rows[0].id + 1;
+                    newId = parseInt(playResult.rows[0].max) + 1;
                 }
                 client.query("SELECT * from Users where email='" + email + "'", function(err2, userResult) {
                     if (err2 || userResult.rows.length === 0) { 
                         done();
+                        console.log("Error finding user with email.");
                         response.status(500).send(JSON.stringify(err2)); 
                         return;
                     } else {
                         var plays = JSON.parse(userResult.rows[0].plays);
                         plays.owned.push(newId);
-                        client.query("UPDATE Users SET plays='" + JSON.stringify(plays) + "' where email='" + email "'", function(err3, updateResult) {
+                        client.query("UPDATE Users SET plays='" + JSON.stringify(plays) + "' where email='" + email + "'", function(err3, updateResult) {
                             if (err3) {
                                 done();
+                                console.log("Error setting user.");
                                 response.status(500).send(JSON.stringify(err3)); 
                                 return;
                             } else {
@@ -145,12 +195,13 @@ app.post('/create-new-play', function (request, response) {
                                 client.query("INSERT into Plays(id, players, ball) VALUES('" + newId.toString() +"', '" + JSON.stringify(players) + "', '" + JSON.stringify(ball) + "')", function(err4, insertResult) {
                                     done();
                                     if (err4) {
+                                        console.log("Error inserting to plays.");
                                         response.status(500).send(JSON.stringify(err4));
                                         return; 
                                     } else {
-                                        response.send("Success");
+                                        response.send({id: newId});
                                     }
-                                })
+                                });
                             }
                         });
                     }
@@ -159,6 +210,31 @@ app.post('/create-new-play', function (request, response) {
         });
     });
 });
+
+/* Returns ids of user-owned plays. */
+app.get('/user-plays', function (request, response) {
+
+    /* Reject attempted logouts with no one logged in. */
+    if (request.session.loggedIn !== true) {
+        response.status(400).send("Permission denied. No one logged in.");
+        return;
+    }
+
+    var email = request.query.email;
+    pg.connect(process.env.DATABASE_URL, function(err, client, done) {
+        client.query("SELECT plays from Users where email='" + email + "'", function(err, result) {
+            done();
+            if (err) {
+                console.log("Error fetching plays.");
+                response.status(500).send(JSON.stringify(err));
+            } else {
+                console.log(result.rows);
+                response.send(result.rows[0]);
+            }
+        });
+    });
+});
+
 
 
 

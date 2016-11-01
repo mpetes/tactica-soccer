@@ -1,4 +1,4 @@
-soccerDraw.factory('play-creation', ['p5', function(p5) {
+soccerDraw.factory('play-creation', ['p5', '$resource', function(p5, $resource) {
 	return function (sketch) {
 
 		var FRAME_RATE = 60;
@@ -6,6 +6,8 @@ soccerDraw.factory('play-creation', ['p5', function(p5) {
 		/* Globals used for representing players. */
 		var players = [];
 		var numPlayers = 0;
+		var ball = {};
+		var playId = -1;
 
 		/* Globals used for movement, recording, and playback. */
 		var recording = false;
@@ -54,8 +56,12 @@ soccerDraw.factory('play-creation', ['p5', function(p5) {
 
 			advancedCheckbox = sketch.createCheckbox('Advanced', false);
 			advancedCheckbox.position(70 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width + recordCheckbox.width + trailCheckbox.width, 10);
-			advancedCheckbox.width = 70;
+			advancedCheckbox.width = 100;
 			advancedCheckbox.changed(setAdvanced);
+
+			saveButton = sketch.createButton('Save');
+			saveButton.position(80 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width + recordCheckbox.width + trailCheckbox.width + advancedCheckbox.width, 10);
+			saveButton.mousePressed(savePlay);
 
 			playButton = sketch.createButton('Play');
 			playButton.position($(window).width() - 10 - playButton.width, 10);
@@ -143,6 +149,32 @@ soccerDraw.factory('play-creation', ['p5', function(p5) {
 			function play() {
 				playing = true;
 				currFrame = 0;
+			}
+		}
+
+		function savePlay() {
+			var email = document.getElementById('user-email').innerHTML;
+			var playerData = [];
+			for (var i = 0; i < players.length; i++) {
+				var player = players[i];
+				var newPlayer = {id: player.id, x: player.x, y: player.y, userTeam: player.userTeam, history: player.history};
+				playerData.push(newPlayer);
+			}
+			if (playId === -1) {
+				var newPlayRes = $resource('/create-new-play');
+				newPlayRes.save({userEmail: email, userPlayers: playerData, userBall: ball}, function(response) {
+					playId = response.id;
+			  		console.log("New play created with id " + playId + ".");
+			  	}, function errorHandling(err) {
+			        console.error("Could not create new play.");
+			    });
+			} else {
+				var updatePlayRes = $resource('/update-play');
+				updatePlayRes.save({userEmail: email, id: playId, userPlayers: playerData, userBall: ball}, function(response) {
+			  		console.log("Play with id " + playId + " saved.");
+			  	}, function errorHandling(err) {
+			        console.error("Could not save play.");
+			    });
 			}
 		}
 
@@ -332,17 +364,8 @@ soccerDraw.factory('play-creation', ['p5', function(p5) {
 
 }]);
 
-soccerDraw.controller('CreateController', ['$scope', '$http', '$resource', '$location', '$rootScope', 'p5',
-  function ($scope, $http, $resource, $location, $rootScope, p5) {
-  	var sketch = document.getElementById('play-creation');
-  	$scope.newPlay = {};
-  	$scope.newPlay.id = "";
-
-  	var newPlayRes = $resource('/create-new-play');
-  	newPlayRes.save({email: $scope.main.email, players: [], ball: {}}, function(response) {
-  		console.log("New play created!");
-  	}, function errorHandling(err) {
-        console.error("Could not create new play.");
-    });
+soccerDraw.controller('CreateController', ['$scope', '$http', '$resource', '$location', '$rootScope',
+  function ($scope, $http, $resource, $location, $rootScope) {
+  	document.getElementById('user-email').innerHTML = $scope.main.email;
 }]);
 
