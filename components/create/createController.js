@@ -338,11 +338,11 @@ soccerDraw.controller('CreateController', ['$scope', '$http', '$resource', '$loc
   	$scope.newPlay = {};
   	$scope.newPlay.id = "";
 
-  	/*var newPlayRes = $resource('/create-new-play');
+  	var newPlayRes = $resource('/create-new-play');
   	newPlayRes.save({email: $scope.main.email, players: [], ball: {}}, function(response) {
   		console.log("New play created!");
   	}, function errorHandling(err) {
         console.error("Could not create new play.");
-    });*/
+    });
 }]);
 

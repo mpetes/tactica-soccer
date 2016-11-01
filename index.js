@@ -3,6 +3,8 @@ var app = express();
 var pg = require('pg');
 var session = require('express-session');
 var bodyParser = require('body-parser');
+var async = require('async');
+
 
 app.set('port', (process.env.PORT || 5000));
 
@@ -109,6 +111,8 @@ app.post('/create-new-play', function (request, response) {
         var email = request.body.email;
         var players = request.body.players;
         var ball = request.body.ball;
+
+        dbQuery("SELECT ");
         client.query("SELECT MAX(id) from Plays", function(err1, playResult) {
             if (err) {
                 done();
@@ -130,7 +134,7 @@ app.post('/create-new-play', function (request, response) {
                     } else {
                         var plays = JSON.parse(userResult.rows[0].plays);
                         plays.owned.push(newId);
-                        client.query("UPDATE Users SET plays='" + JSON.stringify(plays) + "'", function(err3, updateResult) {
+                        client.query("UPDATE Users SET plays='" + JSON.stringify(plays) + "' where email='" + email "'", function(err3, updateResult) {
                             if (err3) {
                                 done();
                                 response.status(500).send(JSON.stringify(err3)); 
