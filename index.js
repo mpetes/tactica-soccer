@@ -97,7 +97,7 @@ app.post('/register', function (request, response) {
 
 app.post('/update-play', function(request, response) {
     pg.connect(process.env.DATABASE_URL, function(err, client, done) {
-        var id = request.body.id;
+        var id = parseInt(request.body.id);
         var email = request.body.userEmail;
         var players = request.body.userPlayers;
         var ball = request.body.userBall;
@@ -128,7 +128,7 @@ app.post('/update-play', function(request, response) {
                 response.status(404).send(JSON.stringify(err1));
                 return;
             }
-            client.query("UPDATE Plays SET players='" + players + "', ball='" + ball + "' WHERE id='" + id + "'", function (err2, playResult) {
+            client.query("UPDATE Plays SET players='" + JSON.stringify(players) + "', ball='" + JSON.stringify(ball) + "' WHERE id='" + id + "'", function (err2, playResult) {
                 done();
                 if (err2) {
                     console.log("Error updating play.");

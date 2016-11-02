@@ -317,7 +317,7 @@ soccerDraw.factory('saved-play', ['p5', '$resource', function(p5, $resource) {
 				var player = players[x];
 
 				//Only one player should be allowed to be dragged at a time
-				//if (moved === false) moved = handleDragMovement(player, recording);
+				if (parseInt(userOwned) === 1 && moved === false) moved = handleDragMovement(player, recording);
 				player.display();
 			}
 		}
@@ -396,7 +396,6 @@ soccerDraw.controller('SavedPlayController', ['$scope', '$http', '$resource', '$
   	$scope.savedPlay = {};
   	$scope.savedPlay.id = $routeParams.playId;
   	$scope.savedPlay.owned = parseInt($routeParams.owned);
-  	console.log($scope.savedPlay.owned);
   	if ($scope.savedPlay.owned !== 1) {
   		$scope.savedPlay.owned = 0;
   	}
