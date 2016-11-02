@@ -18,7 +18,4 @@ soccerDraw.controller('PlaybookController', ['$scope', '$http', '$resource', '$l
 			console.log("Failed to fetch previous user plays.");
 		});
 	}
-
-
-
 }]);

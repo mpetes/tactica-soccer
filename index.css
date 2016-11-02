@@ -14,3 +14,7 @@
 	padding-left: 86%;
 	display: inline-block;
 }
+
+.md-sidenav-left {
+  position: fixed;
+}

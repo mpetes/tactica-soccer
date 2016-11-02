@@ -190,8 +190,6 @@ app.post('/create-new-play', function (request, response) {
                                 response.status(500).send(JSON.stringify(err3)); 
                                 return;
                             } else {
-                                var players = [];
-                                var ball = {};
                                 client.query("INSERT into Plays(id, players, ball) VALUES('" + newId.toString() +"', '" + JSON.stringify(players) + "', '" + JSON.stringify(ball) + "')", function(err4, insertResult) {
                                     done();
                                     if (err4) {
@@ -228,9 +226,46 @@ app.get('/user-plays', function (request, response) {
                 console.log("Error fetching plays.");
                 response.status(500).send(JSON.stringify(err));
             } else {
-                console.log(result.rows);
                 response.send(result.rows[0]);
             }
+        });
+    });
+});
+
+app.get('/load-play', function (request, response) {
+     /* Reject attempted logouts with no one logged in. */
+    if (request.session.loggedIn !== true) {
+        response.status(400).send("Permission denied. No one logged in.");
+        return;
+    }
+
+    var email = request.query.email;
+    var id = request.query.id;
+
+    pg.connect(process.env.DATABASE_URL, function(err, client, done) {
+        client.query("SELECT plays from Users where email='" + email + "'", function(err1, userResult) {
+            if (err1) {
+                done();
+                response.status(500).send(JSON.stringify(err1));
+                return;
+            }
+            var plays = JSON.parse(userResult.rows[0].plays);
+            console.log(plays);
+            console.log(id);
+            if (plays.owned.indexOf(parseInt(id)) === -1 && plays.access.indexOf(parseInt(id)) === -1) {
+                done();
+                console.log("Play not found in user's registry.");
+                response.status(404).send("Not allowed to see this play.");
+                return;
+            }
+            client.query("SELECT * from Plays where id='" + id + "'", function(err2, playResult) {
+                done();
+                if (err2 || playResult.rows[0] === undefined) {
+                    response.status(500).send(JSON.stringify(err2));
+                } else {
+                    response.send(playResult.rows[0]);
+                }
+            });
         });
     });
 });
