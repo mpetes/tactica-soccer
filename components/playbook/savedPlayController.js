@@ -2,8 +2,10 @@ soccerDraw.factory('saved-play', ['p5', '$resource', function(p5, $resource) {
 	return function (sketch) {
 
 		var playId = document.getElementById('saved-play-id').innerHTML;
+		if (playId === undefined || playId === "") playId = -1;
 		var userEmail = document.getElementById('user-email').innerHTML;
 		var userOwned = document.getElementById('user-owned').innerHTML;
+
 		var FRAME_RATE = 60;
 
 		/* Globals used for representing players. */
@@ -67,7 +69,7 @@ soccerDraw.factory('saved-play', ['p5', '$resource', function(p5, $resource) {
 				saveButton.mousePressed(savePlay);
 			}
 
-			if (userOwned === 1) {
+			if (parseInt(userOwned) === 1 || playId === -1) {
 				setupEditing();
 			}
 
@@ -393,7 +395,8 @@ soccerDraw.controller('SavedPlayController', ['$scope', '$http', '$resource', '$
   function ($scope, $http, $resource, $location, $rootScope, $routeParams) {
   	$scope.savedPlay = {};
   	$scope.savedPlay.id = $routeParams.playId;
-  	$scope.savedPlay.owned = $routeParams.owned;
+  	$scope.savedPlay.owned = parseInt($routeParams.owned);
+  	console.log($scope.savedPlay.owned);
   	if ($scope.savedPlay.owned !== 1) {
   		$scope.savedPlay.owned = 0;
   	}

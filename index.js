@@ -251,8 +251,6 @@ app.get('/load-play', function (request, response) {
                 return;
             }
             var plays = JSON.parse(userResult.rows[0].plays);
-            console.log(plays);
-            console.log(id);
             if ((plays.owned.indexOf(parseInt(id)) === -1 && plays.access.indexOf(parseInt(id)) === -1) || (owned && plays.owned.indexOf(parseInt(id)) === -1)) {
                 done();
                 console.log("Play not found in user's registry.");
