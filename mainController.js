@@ -17,7 +17,7 @@ soccerDraw.config(['$routeProvider',
                 templateUrl: 'components/playbook/playbook-template.html',
                 controller: 'PlaybookController'
             }).
-            when('/Playbook/:playId', {
+            when('/Playbook/:playId/:owned', {
                 templateUrl: 'components/playbook/saved-play-template.html',
                 controller: 'SavedPlayController'
             }).

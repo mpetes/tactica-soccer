@@ -3,6 +3,7 @@ soccerDraw.factory('saved-play', ['p5', '$resource', function(p5, $resource) {
 
 		var playId = document.getElementById('saved-play-id').innerHTML;
 		var userEmail = document.getElementById('user-email').innerHTML;
+		var userOwned = document.getElementById('user-owned').innerHTML;
 		var FRAME_RATE = 60;
 
 		/* Globals used for representing players. */
@@ -29,40 +30,46 @@ soccerDraw.factory('saved-play', ['p5', '$resource', function(p5, $resource) {
 			canvas.position(($(window).width() - 1200) / 2, 50);
 			sketch.frameRate(FRAME_RATE);
 
-			/*addYourPlayerButton = sketch.createButton('Add Your Player');
-			addYourPlayerButton.position(10, 10);
-			addYourPlayerButton.mousePressed(addYourPlayer);
+			function setupEditing() {
+				addYourPlayerButton = sketch.createButton('Add Your Player');
+				addYourPlayerButton.position(10, 10);
+				addYourPlayerButton.mousePressed(addYourPlayer);
 
-			addOpposingPlayerButton = sketch.createButton('Add Opposing Player');
-			addOpposingPlayerButton.position(20 + addYourPlayerButton.width, 10);
-			addOpposingPlayerButton.mousePressed(addOpposingPlayer);
+				addOpposingPlayerButton = sketch.createButton('Add Opposing Player');
+				addOpposingPlayerButton.position(20 + addYourPlayerButton.width, 10);
+				addOpposingPlayerButton.mousePressed(addOpposingPlayer);
 
-			clearAllPlayersButton = sketch.createButton('Clear Players');
-			clearAllPlayersButton.position(30 + addYourPlayerButton.width + addOpposingPlayerButton.width, 10);
-			clearAllPlayersButton.mousePressed(clearAllPlayers);
+				clearAllPlayersButton = sketch.createButton('Clear Players');
+				clearAllPlayersButton.position(30 + addYourPlayerButton.width + addOpposingPlayerButton.width, 10);
+				clearAllPlayersButton.mousePressed(clearAllPlayers);
 
-			clearHistoryButton = sketch.createButton('Clear Player History');
-			clearHistoryButton.position(40 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width, 10);
-			clearHistoryButton.mousePressed(clearHistory);
+				clearHistoryButton = sketch.createButton('Clear Player History');
+				clearHistoryButton.position(40 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width, 10);
+				clearHistoryButton.mousePressed(clearHistory);
 
-			recordCheckbox = sketch.createCheckbox('Record', false);
-			recordCheckbox.position(50 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width, 10);
-			recordCheckbox.width = 70;
-			recordCheckbox.changed(setRecord);
+				recordCheckbox = sketch.createCheckbox('Record', false);
+				recordCheckbox.position(50 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width, 10);
+				recordCheckbox.width = 70;
+				recordCheckbox.changed(setRecord);
 
-			trailCheckbox = sketch.createCheckbox('Trail', true);
-			trailCheckbox.position(60 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width + recordCheckbox.width, 10);
-			trailCheckbox.width = 50;
-			trailCheckbox.changed(setTrail);
+				trailCheckbox = sketch.createCheckbox('Trail', true);
+				trailCheckbox.position(60 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width + recordCheckbox.width, 10);
+				trailCheckbox.width = 50;
+				trailCheckbox.changed(setTrail);
 
-			advancedCheckbox = sketch.createCheckbox('Advanced', false);
-			advancedCheckbox.position(70 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width + recordCheckbox.width + trailCheckbox.width, 10);
-			advancedCheckbox.width = 100;
-			advancedCheckbox.changed(setAdvanced);
+				advancedCheckbox = sketch.createCheckbox('Advanced', false);
+				advancedCheckbox.position(70 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width + recordCheckbox.width + trailCheckbox.width, 10);
+				advancedCheckbox.width = 100;
+				advancedCheckbox.changed(setAdvanced);
 
-			saveButton = sketch.createButton('Save');
-			saveButton.position(80 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width + recordCheckbox.width + trailCheckbox.width + advancedCheckbox.width, 10);
-			saveButton.mousePressed(savePlay);*/
+				saveButton = sketch.createButton('Save');
+				saveButton.position(80 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width + recordCheckbox.width + trailCheckbox.width + advancedCheckbox.width, 10);
+				saveButton.mousePressed(savePlay);
+			}
+
+			if (userOwned === 1) {
+				setupEditing();
+			}
 
 			playButton = sketch.createButton('Play');
 			playButton.position($(window).width() - 10 - playButton.width, 10);
@@ -94,7 +101,7 @@ soccerDraw.factory('saved-play', ['p5', '$resource', function(p5, $resource) {
 
 			function loadPlay() {
 				var playRes = $resource("/load-play");
-				playRes.get({email: userEmail, id: playId}, function(response) {
+				playRes.get({email: userEmail, id: playId, owned: userOwned}, function(response) {
 					var play = response;
 					var oldPlayers = JSON.parse(play.players);
 					for (var i = 0; i < oldPlayers.length; i++) {
@@ -386,8 +393,13 @@ soccerDraw.controller('SavedPlayController', ['$scope', '$http', '$resource', '$
   function ($scope, $http, $resource, $location, $rootScope, $routeParams) {
   	$scope.savedPlay = {};
   	$scope.savedPlay.id = $routeParams.playId;
+  	$scope.savedPlay.owned = $routeParams.owned;
+  	if ($scope.savedPlay.owned !== 1) {
+  		$scope.savedPlay.owned = 0;
+  	}
   	document.getElementById('saved-play-id').innerHTML = $scope.savedPlay.id;
   	document.getElementById('user-email').innerHTML = $scope.main.email;
+  	document.getElementById('user-owned').innerHTML = $scope.savedPlay.owned;
 }]);
 
 

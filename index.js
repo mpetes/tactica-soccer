@@ -241,6 +241,7 @@ app.get('/load-play', function (request, response) {
 
     var email = request.query.email;
     var id = request.query.id;
+    var owned = request.query.owned;
 
     pg.connect(process.env.DATABASE_URL, function(err, client, done) {
         client.query("SELECT plays from Users where email='" + email + "'", function(err1, userResult) {
@@ -252,7 +253,7 @@ app.get('/load-play', function (request, response) {
             var plays = JSON.parse(userResult.rows[0].plays);
             console.log(plays);
             console.log(id);
-            if (plays.owned.indexOf(parseInt(id)) === -1 && plays.access.indexOf(parseInt(id)) === -1) {
+            if ((plays.owned.indexOf(parseInt(id)) === -1 && plays.access.indexOf(parseInt(id)) === -1) || (owned && plays.owned.indexOf(parseInt(id)) === -1)) {
                 done();
                 console.log("Play not found in user's registry.");
                 response.status(404).send("Not allowed to see this play.");

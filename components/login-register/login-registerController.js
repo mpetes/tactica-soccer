@@ -4,6 +4,9 @@ soccerDraw.controller('LoginRegisterController', ['$scope', '$http', '$resource'
   function ($scope, $http, $resource, $location, $rootScope) {
     $scope.messageReport = "";
     $scope.messageToShow = false;
+    var windowHeight = $(window).height();
+    document.getElementById('ng-view').style = "min-height: " + windowHeight + "px";
+
 
     $scope.newUser = {};
     $scope.newUser.password1 = "";
