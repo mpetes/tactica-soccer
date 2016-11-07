@@ -108,7 +108,6 @@ app.post('/update-play', function(request, response) {
             return;
         }
         if (request.session.email !== email) {
-            console.log("Hello!");
             response.status(400).send("Permission denied. Logged in user does not match storing email.");
             return;
         }
@@ -217,6 +216,10 @@ app.get('/user-plays', function (request, response) {
         response.status(400).send("Permission denied. No one logged in.");
         return;
     }
+    if (request.session.email !== email) {
+        response.status(400).send("Permission denied. Logged in user does not match storing email.");
+        return;
+    }
 
     var email = request.query.email;
     pg.connect(process.env.DATABASE_URL, function(err, client, done) {
@@ -236,6 +239,10 @@ app.get('/load-play', function (request, response) {
      /* Reject attempted logouts with no one logged in. */
     if (request.session.loggedIn !== true) {
         response.status(400).send("Permission denied. No one logged in.");
+        return;
+    }
+    if (request.session.email !== email) {
+        response.status(400).send("Permission denied. Logged in user does not match storing email.");
         return;
     }
 
@@ -264,6 +271,56 @@ app.get('/load-play', function (request, response) {
                 } else {
                     response.send(playResult.rows[0]);
                 }
+            });
+        });
+    });
+});
+
+/* Shares a play with another user. */
+app.post('/share-play', function (request, response) {
+    pg.connect(process.env.DATABASE_URL, function(err, client, done) {
+        if (request.session.loggedIn !== true) {
+            response.status(400).send("Permission denied. No one logged in.");
+            return;
+        }
+        if (request.session.email !== email) {
+            response.status(400).send("Permission denied. Logged in user does not match storing email.");
+            return;
+        }
+
+        var email = request.body.email;
+        var emailToShare = request.body.emailToShare;
+        var playId = request.body.playId;
+
+        client.query("SELECT plays from Users where email='" + email + "'", function(err1, userResult) {
+            if (err1) {
+                done();
+                response.status(500).send(JSON.stringify(err1));
+                return;
+            }
+            var plays = JSON.parse(userResult.rows[0].plays);
+            if (plays.owned.indexOf(parseInt(playId)) === -1) {
+                done();
+                console.log("You do not have permission to share this play.");
+                response.status(404).send("Not allowed to share this play.");
+                return;
+            }
+            client.query("SELECT plays from Users where email='" + emailToShare + "'", function(err2, shareResult) {
+                if (err2) {
+                    done();
+                    response.status(500).send("User with email " + emailToShare + " does not exist!");
+                    return;
+                }
+                var sharePlays = JSON.parse(shareResult.rows[0].plays);
+                if(sharePlays.indexOf(parseInt(playId)) === -1) sharePlays.owned.push(parseInt(playId));
+                client.query("UPDATE Users SET plays='" + JSON.stringify(sharePlays) + "' where email='" + emailToShare + "'", function(err3, updateResult) {        
+                    done();
+                    if (err3) {
+                        response.status(500).send(JSON.stringify(err3));
+                    } else {
+                        response.send("Success!");
+                    }
+                });
             });
         });
     });

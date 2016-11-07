@@ -1,4 +1,4 @@
-soccerDraw.factory('saved-play', ['p5', '$resource', function(p5, $resource) {
+soccerDraw.factory('saved-play', ['p5', '$resource', '$mdDialog', function(p5, $resource, $mdDialog) {
 	return function (sketch) {
 
 		var playId = document.getElementById('saved-play-id').innerHTML;
@@ -67,6 +67,10 @@ soccerDraw.factory('saved-play', ['p5', '$resource', function(p5, $resource) {
 				saveButton = sketch.createButton('Save');
 				saveButton.position(80 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width + recordCheckbox.width + trailCheckbox.width + advancedCheckbox.width, 10);
 				saveButton.mousePressed(savePlay);
+
+				/*shareButton = sketch.createButton('Share');
+				shareButton.position(90 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width + recordCheckbox.width + trailCheckbox.width + advancedCheckbox.width + saveButton.width, 10);
+				shareButton.mousePressed(sharePlay);*/
 			}
 
 			if (parseInt(userOwned) === 1 || playId === -1) {
@@ -180,6 +184,23 @@ soccerDraw.factory('saved-play', ['p5', '$resource', function(p5, $resource) {
 				currFrame = 0;
 			}
 		}
+
+		/*function sharePlay() {
+			var confirm = $mdDialog.alert()
+		      .title('What would you name your dog?')
+		      .textContent('Bowser is a common name.')
+		      .placeholder('Dog name')
+		      .ariaLabel('Dog name')
+		      .initialValue('Buddy')
+		      .targetEvent(ev)
+		      .ok('Okay!')
+		      .cancel('I\'m a cat person');
+			$mdDialog.show(confirm).then(function(result) {
+		      $scope.status = 'You decided to name your dog ' + result + '.';
+		    }, function() {
+		      $scope.status = 'You didn\'t name your dog.';
+		    });
+		}*/
 
 		function savePlay() {
 			var email = document.getElementById('user-email').innerHTML;
