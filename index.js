@@ -210,6 +210,7 @@ app.post('/create-new-play', function (request, response) {
 
 /* Returns ids of user-owned plays. */
 app.get('/user-plays', function (request, response) {
+    var email = request.query.email;
 
     /* Reject attempted logouts with no one logged in. */
     if (request.session.loggedIn !== true) {
@@ -220,8 +221,6 @@ app.get('/user-plays', function (request, response) {
         response.status(400).send("Permission denied. Logged in user does not match storing email.");
         return;
     }
-
-    var email = request.query.email;
     pg.connect(process.env.DATABASE_URL, function(err, client, done) {
         client.query("SELECT plays from Users where email='" + email + "'", function(err, result) {
             done();
@@ -236,6 +235,8 @@ app.get('/user-plays', function (request, response) {
 });
 
 app.get('/load-play', function (request, response) {
+    var email = request.query.email;
+
      /* Reject attempted logouts with no one logged in. */
     if (request.session.loggedIn !== true) {
         response.status(400).send("Permission denied. No one logged in.");
@@ -246,7 +247,6 @@ app.get('/load-play', function (request, response) {
         return;
     }
 
-    var email = request.query.email;
     var id = request.query.id;
     var owned = request.query.owned;
 
@@ -258,7 +258,7 @@ app.get('/load-play', function (request, response) {
                 return;
             }
             var plays = JSON.parse(userResult.rows[0].plays);
-            if ((plays.owned.indexOf(parseInt(id)) === -1 && plays.access.indexOf(parseInt(id)) === -1) || (owned && plays.owned.indexOf(parseInt(id)) === -1)) {
+            if ((plays.owned.indexOf(parseInt(id)) === -1 && plays.access.indexOf(parseInt(id)) === -1) || (parseInt(owned) && plays.owned.indexOf(parseInt(id)) === -1)) {
                 done();
                 console.log("Play not found in user's registry.");
                 response.status(404).send("Not allowed to see this play.");
@@ -279,6 +279,8 @@ app.get('/load-play', function (request, response) {
 /* Shares a play with another user. */
 app.post('/share-play', function (request, response) {
     pg.connect(process.env.DATABASE_URL, function(err, client, done) {
+        var email = request.body.userEmail;
+
         if (request.session.loggedIn !== true) {
             response.status(400).send("Permission denied. No one logged in.");
             return;
@@ -288,9 +290,8 @@ app.post('/share-play', function (request, response) {
             return;
         }
 
-        var email = request.body.email;
         var emailToShare = request.body.emailToShare;
-        var playId = request.body.playId;
+        var playId = request.body.play;
 
         client.query("SELECT plays from Users where email='" + email + "'", function(err1, userResult) {
             if (err1) {
@@ -312,7 +313,7 @@ app.post('/share-play', function (request, response) {
                     return;
                 }
                 var sharePlays = JSON.parse(shareResult.rows[0].plays);
-                if(sharePlays.indexOf(parseInt(playId)) === -1) sharePlays.owned.push(parseInt(playId));
+                if(sharePlays.owned.indexOf(parseInt(playId)) === -1 && sharePlays.access.indexOf(parseInt(playId))) sharePlays.access.push(parseInt(playId));
                 client.query("UPDATE Users SET plays='" + JSON.stringify(sharePlays) + "' where email='" + emailToShare + "'", function(err3, updateResult) {        
                     done();
                     if (err3) {

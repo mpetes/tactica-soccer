@@ -68,9 +68,9 @@ soccerDraw.factory('saved-play', ['p5', '$resource', '$mdDialog', function(p5, $
 				saveButton.position(80 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width + recordCheckbox.width + trailCheckbox.width + advancedCheckbox.width, 10);
 				saveButton.mousePressed(savePlay);
 
-				/*shareButton = sketch.createButton('Share');
+				shareButton = sketch.createButton('Share');
 				shareButton.position(90 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width + recordCheckbox.width + trailCheckbox.width + advancedCheckbox.width + saveButton.width, 10);
-				shareButton.mousePressed(sharePlay);*/
+				shareButton.mousePressed(sharePlay);
 			}
 
 			if (parseInt(userOwned) === 1 || playId === -1) {
@@ -185,22 +185,28 @@ soccerDraw.factory('saved-play', ['p5', '$resource', '$mdDialog', function(p5, $
 			}
 		}
 
-		/*function sharePlay() {
-			var confirm = $mdDialog.alert()
+		function sharePlay() {
+			var confirm = $mdDialog.prompt()
 		      .title('What would you name your dog?')
 		      .textContent('Bowser is a common name.')
 		      .placeholder('Dog name')
 		      .ariaLabel('Dog name')
 		      .initialValue('Buddy')
-		      .targetEvent(ev)
 		      .ok('Okay!')
 		      .cancel('I\'m a cat person');
+
 			$mdDialog.show(confirm).then(function(result) {
-		      $scope.status = 'You decided to name your dog ' + result + '.';
+		     	var sharePlayRes = $resource("/share-play");
+		     	var email = document.getElementById('user-email').innerHTML;
+		     	sharePlayRes.save({userEmail: email, emailToShare: result, play: playId}, function(response) {
+		     		console.log("play shared!");
+			    }, function errorHandling(err) {
+			     	alert(err);
+			    });
 		    }, function() {
-		      $scope.status = 'You didn\'t name your dog.';
+		    	console.log("Chose not to share.");
 		    });
-		}*/
+		}
 
 		function savePlay() {
 			var email = document.getElementById('user-email').innerHTML;
