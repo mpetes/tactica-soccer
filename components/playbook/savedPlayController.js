@@ -187,13 +187,13 @@ soccerDraw.factory('saved-play', ['p5', '$resource', '$mdDialog', function(p5, $
 
 		function sharePlay() {
 			var confirm = $mdDialog.prompt()
-		      .title('What would you name your dog?')
-		      .textContent('Bowser is a common name.')
-		      .placeholder('Dog name')
-		      .ariaLabel('Dog name')
-		      .initialValue('Buddy')
-		      .ok('Okay!')
-		      .cancel('I\'m a cat person');
+		      .title('Share Play')
+		      .textContent('Enter email to share with.')
+		      .placeholder('jmosmooth@stanford.edu')
+		      .ariaLabel('Email')
+		      .initialValue('')
+		      .ok('Share')
+		      .cancel('Cancel');
 
 			$mdDialog.show(confirm).then(function(result) {
 		     	var sharePlayRes = $resource("/share-play");
