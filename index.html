@@ -30,6 +30,8 @@
         <link href="components/playbook/playbook.css" rel="stylesheet" />
         <link href="components/playbook/saved-play.css" rel="stylesheet" />
         <link href="node_modules/angular-material/angular-material.css" rel="stylesheet" />
+
+        <link rel='shortcut icon' href='images/soccer-ball.png' type='image/x-icon'/ >
 	</head>
 	<body>
 		<md-toolbar ng-if="main.loggedIn" layout="row" style="background-color: #0375B4">
@@ -41,8 +43,8 @@
                 <md-sidenav md-component-id="left" class="md-sidenav-left md-whiteframe-z2" layout="column" style="height:100%">
                     <div ng-include="'components/page-list/page-listTemplate.html'" ng-controller="PageListController"></div>
                 </md-sidenav>
-        		<md-content flex id="content">
-        			<div ng-view id="ng-view" style="min-height:800px"></div>
+        		<md-content flex id="content" style="overflow: hidden">
+        			<div ng-view id="ng-view" style="min-height:1000px"></div>
         		</md-content>
             </div>
         </md-content>

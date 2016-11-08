@@ -24,47 +24,65 @@ soccerDraw.factory('play-creation', ['p5', '$resource', function(p5, $resource) 
 
 		/* Called once at loading of page. Sets up the canvas and necessary buttons. */
 		sketch.setup = function () {
-			canvas = sketch.createCanvas($(window).width(), $(window).height() - 50);
+			var canvas = sketch.createCanvas($(window).width(), $(window).height() - 50);
 			canvas.position(0, 50);
 			sketch.frameRate(FRAME_RATE);
 
 			addYourPlayerButton = sketch.createButton('Add Your Player');
-			addYourPlayerButton.position(10, 10);
+			addYourPlayerButton.addClass("canvas-button");
+			addYourPlayerButton.addClass("md-button");
+			addYourPlayerButton.size(140, 40);
+			addYourPlayerButton.position(10, 5);
 			addYourPlayerButton.mousePressed(addYourPlayer);
 
 			addOpposingPlayerButton = sketch.createButton('Add Opposing Player');
-			addOpposingPlayerButton.position(20 + addYourPlayerButton.width, 10);
+			addOpposingPlayerButton.addClass("canvas-button");
+			addOpposingPlayerButton.addClass("md-button");
+			addOpposingPlayerButton.size(140, 40);
+			addOpposingPlayerButton.position(20 + addYourPlayerButton.width, 5);
 			addOpposingPlayerButton.mousePressed(addOpposingPlayer);
 
 			clearAllPlayersButton = sketch.createButton('Clear Players');
-			clearAllPlayersButton.position(30 + addYourPlayerButton.width + addOpposingPlayerButton.width, 10);
+			clearAllPlayersButton.addClass("canvas-button");
+			clearAllPlayersButton.addClass("md-button");
+			clearAllPlayersButton.size(140, 40);
+			clearAllPlayersButton.position(30 + addYourPlayerButton.width + addOpposingPlayerButton.width, 5);
 			clearAllPlayersButton.mousePressed(clearAllPlayers);
 
 			clearHistoryButton = sketch.createButton('Clear Player History');
-			clearHistoryButton.position(40 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width, 10);
+			clearHistoryButton.addClass("canvas-button");
+			clearHistoryButton.addClass("md-button");
+			clearHistoryButton.size(140, 40);
+			clearHistoryButton.position(40 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width, 5);
 			clearHistoryButton.mousePressed(clearHistory);
 
 			recordCheckbox = sketch.createCheckbox('Record', false);
-			recordCheckbox.position(50 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width, 10);
-			recordCheckbox.width = 70;
+			recordCheckbox.position(50 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width, 5);
+			recordCheckbox.width = 75;
 			recordCheckbox.changed(setRecord);
 
 			trailCheckbox = sketch.createCheckbox('Trail', true);
-			trailCheckbox.position(60 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width + recordCheckbox.width, 10);
-			trailCheckbox.width = 50;
+			trailCheckbox.position(60 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width + recordCheckbox.width, 5);
+			trailCheckbox.width = 55;
 			trailCheckbox.changed(setTrail);
 
 			advancedCheckbox = sketch.createCheckbox('Advanced', false);
-			advancedCheckbox.position(70 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width + recordCheckbox.width + trailCheckbox.width, 10);
-			advancedCheckbox.width = 100;
+			advancedCheckbox.position(70 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width + recordCheckbox.width + trailCheckbox.width, 5);
+			advancedCheckbox.width = 90;
 			advancedCheckbox.changed(setAdvanced);
 
 			saveButton = sketch.createButton('Save');
-			saveButton.position(80 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width + recordCheckbox.width + trailCheckbox.width + advancedCheckbox.width, 10);
+			saveButton.addClass("canvas-button");
+			saveButton.addClass("md-button");
+			saveButton.size(140, 40);
+			saveButton.position(80 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width + recordCheckbox.width + trailCheckbox.width + advancedCheckbox.width, 5);
 			saveButton.mousePressed(savePlay);
 
 			playButton = sketch.createButton('Play');
-			playButton.position($(window).width() - 10 - playButton.width, 10);
+			playButton.addClass("canvas-button");
+			playButton.addClass("md-button");
+			playButton.size(140, 40);
+			playButton.position($(window).width() - 10 - playButton.width, 5);
 			playButton.mousePressed(play);
 
 			playbackTimeSelect = sketch.createSelect();
@@ -89,7 +107,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', function(p5, $resource) 
 			playbackTimeSelect.option('10');
 			playbackTimeSelect.changed(setPlaybackTime);
 			playbackTimeSelect.width = 45;
-			playbackTimeSelect.position($(window).width() - 30 - playButton.width - playbackTimeSelect.width, 10);
+			playbackTimeSelect.position($(window).width() - 30 - playButton.width - playbackTimeSelect.width, 5);
 
 			function clearAllPlayers() {
 				delete players;

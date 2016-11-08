@@ -36,51 +36,57 @@ soccerDraw.factory('saved-play', ['p5', '$resource', '$mdDialog', function(p5, $
 				addYourPlayerButton = sketch.createButton('Add Your Player');
 				addYourPlayerButton.addClass("canvas-button");
 				addYourPlayerButton.addClass("md-button");
+				addYourPlayerButton.size(140, 40);
 				addYourPlayerButton.position(10, 5);
 				addYourPlayerButton.mousePressed(addYourPlayer);
 
 				addOpposingPlayerButton = sketch.createButton('Add Opposing Player');
 				addOpposingPlayerButton.addClass("canvas-button");
 				addOpposingPlayerButton.addClass("md-button");
+				addOpposingPlayerButton.size(140, 40);
 				addOpposingPlayerButton.position(20 + addYourPlayerButton.width, 5);
 				addOpposingPlayerButton.mousePressed(addOpposingPlayer);
 
 				clearAllPlayersButton = sketch.createButton('Clear Players');
 				clearAllPlayersButton.addClass("canvas-button");
 				clearAllPlayersButton.addClass("md-button");
+				clearAllPlayersButton.size(140, 40);
 				clearAllPlayersButton.position(30 + addYourPlayerButton.width + addOpposingPlayerButton.width, 5);
 				clearAllPlayersButton.mousePressed(clearAllPlayers);
 
 				clearHistoryButton = sketch.createButton('Clear Player History');
 				clearHistoryButton.addClass("canvas-button");
 				clearHistoryButton.addClass("md-button");
+				clearHistoryButton.size(140, 40);
 				clearHistoryButton.position(40 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width, 5);
 				clearHistoryButton.mousePressed(clearHistory);
 
 				recordCheckbox = sketch.createCheckbox('Record', false);
 				recordCheckbox.position(50 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width, 5);
-				recordCheckbox.width = 70;
+				recordCheckbox.width = 75;
 				recordCheckbox.changed(setRecord);
 
 				trailCheckbox = sketch.createCheckbox('Trail', true);
 				trailCheckbox.position(60 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width + recordCheckbox.width, 5);
-				trailCheckbox.width = 50;
+				trailCheckbox.width = 55;
 				trailCheckbox.changed(setTrail);
 
 				advancedCheckbox = sketch.createCheckbox('Advanced', false);
 				advancedCheckbox.position(70 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width + recordCheckbox.width + trailCheckbox.width, 5);
-				advancedCheckbox.width = 100;
+				advancedCheckbox.width = 90;
 				advancedCheckbox.changed(setAdvanced);
 
 				saveButton = sketch.createButton('Save');
 				saveButton.addClass("canvas-button");
 				saveButton.addClass("md-button");
+				saveButton.size(140, 40);
 				saveButton.position(80 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width + recordCheckbox.width + trailCheckbox.width + advancedCheckbox.width, 5);
 				saveButton.mousePressed(savePlay);
 
 				shareButton = sketch.createButton('Share');
 				shareButton.addClass("canvas-button");
 				shareButton.addClass("md-button");
+				shareButton.size(140, 40);
 				shareButton.position(90 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width + recordCheckbox.width + trailCheckbox.width + advancedCheckbox.width + saveButton.width, 5);
 				shareButton.mousePressed(sharePlay);
 			}
@@ -92,6 +98,7 @@ soccerDraw.factory('saved-play', ['p5', '$resource', '$mdDialog', function(p5, $
 			playButton = sketch.createButton('Play');
 			playButton.addClass("canvas-button");
 			playButton.addClass("md-button");
+			playButton.size(140, 40);
 			playButton.position($(window).width() - 10 - playButton.width, 5);
 			playButton.mousePressed(play);
 
