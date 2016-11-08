@@ -24,8 +24,8 @@ soccerDraw.factory('play-creation', ['p5', '$resource', function(p5, $resource) 
 
 		/* Called once at loading of page. Sets up the canvas and necessary buttons. */
 		sketch.setup = function () {
-			canvas = sketch.createCanvas(1200, 600);
-			canvas.position(($(window).width() - 1200) / 2, 50);
+			canvas = sketch.createCanvas($(window).width(), $(window).height() - 50);
+			canvas.position(0, 50);
 			sketch.frameRate(FRAME_RATE);
 
 			addYourPlayerButton = sketch.createButton('Add Your Player');
@@ -302,32 +302,32 @@ soccerDraw.factory('play-creation', ['p5', '$resource', function(p5, $resource) 
 
 			//Corner flags
 			sketch.arc(0, 0, 30, 30, 0, 1.57);
-			sketch.arc(1200, 0, 30, 30, 1.57, 3.14);
+			sketch.arc($(window).width(), 0, 30, 30, 1.57, 3.14);
 
 			//sidelines
 			sketch.strokeWeight(4);
-			sketch.line(0, 0, 1200, 0);
-			sketch.line(0, 0, 0, 500);
-			sketch.line(1200, 0, 1200, 500);
+			sketch.line(0, 0, $(window).width(), 0);
+			sketch.line(0, 0, 0, $(window).height());
+			sketch.line($(window).width(), 0, $(window).width(), $(window).height());
 
 			sketch.stroke(255, 255, 255);
 
 			//goal
-			sketch.line(535.1, 0, 664.9, 0);
+			sketch.line($(window).width()/2 - 0.0534*$(window).width(), 0, $(window).width()/2 + 0.0534*$(window).width(), 0);
 
 			//Outer box
-			sketch.line(243.2, 0, 243.2, 291.9);
-			sketch.line(956.8, 0, 956.8, 291.9);
-			sketch.line(243.2, 291.9, 956.8, 291.9);
+			sketch.line($(window).width()/2 - 0.2943*$(window).width(), 0, $(window).width()/2 - 0.2943*$(window).width(), 0.2409*$(window).width());
+			sketch.line($(window).width()/2 + 0.2943*$(window).width(), 0, $(window).width()/2 + 0.2943*$(window).width(), 0.2409*$(window).width());
+			sketch.line($(window).width()/2 - 0.2943*$(window).width(), 0.2409*$(window).width(), $(window).width()/2 + 0.2943*$(window).width(), 0.2409*$(window).width());
 
 			//Inner box
-			sketch.line(762.2, 0, 762.2, 97.3);
-			sketch.line(437.8, 0, 437.8, 97.3);
-			sketch.line(437.8, 97.2, 762.2, 97.3);
+			sketch.line($(window).width()/2 + 0.1337*$(window).width(), 0, $(window).width()/2 + 0.1337*$(window).width(), 0.0803*$(window).width());
+			sketch.line($(window).width()/2 - 0.1337*$(window).width(), 0, $(window).width()/2 - 0.1337*$(window).width(), 0.0803*$(window).width());
+			sketch.line($(window).width()/2 - 0.1337*$(window).width(), 0.0803*$(window).width(), $(window).width()/2 + 0.1337*$(window).width(), 0.0803*$(window).width());
 
 			//Penalty spot and arc outside box
-			sketch.ellipse(600, 194.6, 5, 5);
-			sketch.arc(600, 194.6, 324.4, 324.4, 0.65, 2.48);
+			sketch.ellipse($(window).width()/2, 0.1606*$(window).width(), 5, 5);
+			sketch.arc($(window).width()/2, 0.1606*$(window).width(), 0.2671*$(window).width(), 0.2671*$(window).width(), 0.65, 2.48);
 		}
 
 		/* Used to set where the mouse was initially clicked for dragging operations. */
