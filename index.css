@@ -18,3 +18,10 @@
 .md-sidenav-left {
   position: fixed;
 }
+
+.md-button.canvas-button {
+	border: 2px solid black;
+	margin: 0;
+	font: 14px Cambria;
+	font-weight: bold;
+}
