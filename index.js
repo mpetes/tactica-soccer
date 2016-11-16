@@ -101,6 +101,7 @@ app.post('/update-play', function(request, response) {
         var email = request.body.userEmail;
         var players = request.body.userPlayers;
         var ball = request.body.userBall;
+        var name = request.body.playName;
 
          /* Reject attempted logouts with no one logged in. */
         if (request.session.loggedIn !== true) {
@@ -149,6 +150,7 @@ app.post('/create-new-play', function (request, response) {
         var email = request.body.userEmail;
         var players = request.body.userPlayers;
         var ball = request.body.userBall;
+        var name = request.body.playName;
 
         /* Reject attempted logouts with no one logged in. */
         if (request.session.loggedIn !== true) {
@@ -189,7 +191,7 @@ app.post('/create-new-play', function (request, response) {
                                 response.status(500).send(JSON.stringify(err3)); 
                                 return;
                             } else {
-                                client.query("INSERT into Plays(id, players, ball) VALUES('" + newId.toString() +"', '" + JSON.stringify(players) + "', '" + JSON.stringify(ball) + "')", function(err4, insertResult) {
+                                client.query("INSERT into Plays(id, players, ball, name) VALUES('" + newId.toString() +"', '" + JSON.stringify(players) + "', '" + JSON.stringify(ball) + "', '" + name + "')", function(err4, insertResult) {
                                     done();
                                     if (err4) {
                                         console.log("Error inserting to plays.");
@@ -272,6 +274,45 @@ app.get('/load-play', function (request, response) {
                     response.send(playResult.rows[0]);
                 }
             });
+        });
+    });
+});
+
+app.get('/play-names', function(request, response) {
+
+     /* Reject attempted logouts with no one logged in. */
+    if (request.session.loggedIn !== true) {
+        response.status(400).send("Permission denied. No one logged in.");
+        return;
+    }
+
+    var ids = request.query.ids;
+    pg.connect(process.env.DATABASE_URL, function(err, client, done) {
+        client.query("SELECT plays from Users where email='" + request.session.email + "'", function(err1, userResult) {
+            if (err1) {
+                done();
+                response.status(500).send(JSON.stringify(err1));
+                return;
+            }
+            var plays = JSON.parse(userResult.rows[0].plays);
+            var idsString = "(";
+            for (var id in ids) {
+                if (plays.owned.indexOf(parseInt(id)) === -1 && plays.access.indexOf(parseInt(id)) === -1) {
+                    done();
+                    response.status(500).send("You do not have permission to access this.");
+                    return;
+                }
+                idsString += id + ", ";
+            }
+            idsString = idsString.substring(0, idsString.length - 2) + ")";
+            client.query("SELECT * from Plays where id in " + idsString, function(err2, playsResult) {
+                done();
+                if (err2) {
+                    response.status(500).send(JSON.stringify(err2));
+                    return;
+                }
+                response.send(playsResult.rows);
+            })
         });
     });
 });

@@ -230,29 +230,42 @@ soccerDraw.factory('saved-play', ['p5', '$resource', '$mdDialog', function(p5, $
 		}
 
 		function savePlay() {
-			var email = document.getElementById('user-email').innerHTML;
-			var playerData = [];
-			for (var i = 0; i < players.length; i++) {
-				var player = players[i];
-				var newPlayer = {id: player.id, x: player.x, y: player.y, userTeam: player.userTeam, history: player.history};
-				playerData.push(newPlayer);
-			}
-			if (playId === -1) {
-				var newPlayRes = $resource('/create-new-play');
-				newPlayRes.save({userEmail: email, userPlayers: playerData, userBall: ball}, function(response) {
-					playId = response.id;
-			  		console.log("New play created with id " + playId + ".");
-			  	}, function errorHandling(err) {
-			        console.error("Could not create new play.");
-			    });
-			} else {
-				var updatePlayRes = $resource('/update-play');
-				updatePlayRes.save({userEmail: email, id: playId, userPlayers: playerData, userBall: ball}, function(response) {
-			  		console.log("Play with id " + playId + " saved.");
-			  	}, function errorHandling(err) {
-			        console.error("Could not save play.");
-			    });
-			}
+			var confirm = $mdDialog.prompt()
+		      .title('Save Play')
+		      .textContent('Enter name of play.')
+		      .placeholder('Type...')
+		      .ariaLabel('Name')
+		      .initialValue('')
+		      .ok('Confirm')
+		      .cancel('Cancel');
+
+			$mdDialog.show(confirm).then(function(result) {
+				var email = document.getElementById('user-email').innerHTML;
+				var playerData = [];
+				for (var i = 0; i < players.length; i++) {
+					var player = players[i];
+					var newPlayer = {id: player.id, x: player.x, y: player.y, userTeam: player.userTeam, history: player.history};
+					playerData.push(newPlayer);
+				}
+				if (playId === -1) {
+					var newPlayRes = $resource('/create-new-play');
+					newPlayRes.save({userEmail: email, userPlayers: playerData, userBall: ball, playName: result}, function(response) {
+						playId = response.id;
+				  		console.log("New play created with id " + playId + ".");
+				  	}, function errorHandling(err) {
+				        console.error("Could not create new play.");
+				    });
+				} else {
+					var updatePlayRes = $resource('/update-play');
+					updatePlayRes.save({userEmail: email, id: playId, userPlayers: playerData, userBall: ball, playName: result}, function(response) {
+				  		console.log("Play with id " + playId + " saved.");
+				  	}, function errorHandling(err) {
+				        console.error("Could not save play.");
+				    });
+				}
+		    }, function() {
+		    	console.log("Chose not to save.");
+		    });
 		}
 
 		/* Called on every frame. Handles drawing on screen. */

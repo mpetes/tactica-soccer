@@ -57,16 +57,22 @@ soccerDraw.factory('play-creation', ['p5', '$resource', function(p5, $resource) 
 			clearHistoryButton.mousePressed(clearHistory);
 
 			recordCheckbox = sketch.createCheckbox('Record', false);
+			recordCheckbox.elt.childNodes[0].className = "checkbox-input";
+			recordCheckbox.elt.childNodes[1].className = "checkbox-label";
 			recordCheckbox.position(50 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width, 5);
 			recordCheckbox.width = 75;
 			recordCheckbox.changed(setRecord);
 
 			trailCheckbox = sketch.createCheckbox('Trail', true);
+			trailCheckbox.elt.childNodes[0].className = "checkbox-input";
+			trailCheckbox.elt.childNodes[1].className = "checkbox-label";
 			trailCheckbox.position(60 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width + recordCheckbox.width, 5);
 			trailCheckbox.width = 55;
 			trailCheckbox.changed(setTrail);
 
 			advancedCheckbox = sketch.createCheckbox('Advanced', false);
+			advancedCheckbox.elt.childNodes[0].className = "checkbox-input";
+			advancedCheckbox.elt.childNodes[1].className = "checkbox-label";
 			advancedCheckbox.position(70 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width + recordCheckbox.width + trailCheckbox.width, 5);
 			advancedCheckbox.width = 90;
 			advancedCheckbox.changed(setAdvanced);
@@ -171,29 +177,42 @@ soccerDraw.factory('play-creation', ['p5', '$resource', function(p5, $resource) 
 		}
 
 		function savePlay() {
-			var email = document.getElementById('user-email').innerHTML;
-			var playerData = [];
-			for (var i = 0; i < players.length; i++) {
-				var player = players[i];
-				var newPlayer = {id: player.id, x: player.x, y: player.y, userTeam: player.userTeam, history: player.history};
-				playerData.push(newPlayer);
-			}
-			if (playId === -1) {
-				var newPlayRes = $resource('/create-new-play');
-				newPlayRes.save({userEmail: email, userPlayers: playerData, userBall: ball}, function(response) {
-					playId = response.id;
-			  		console.log("New play created with id " + playId + ".");
-			  	}, function errorHandling(err) {
-			        console.error("Could not create new play.");
-			    });
-			} else {
-				var updatePlayRes = $resource('/update-play');
-				updatePlayRes.save({userEmail: email, id: playId, userPlayers: playerData, userBall: ball}, function(response) {
-			  		console.log("Play with id " + playId + " saved.");
-			  	}, function errorHandling(err) {
-			        console.error("Could not save play.");
-			    });
-			}
+			var confirm = $mdDialog.prompt()
+		      .title('Save Play')
+		      .textContent('Enter name of play.')
+		      .placeholder('Type...')
+		      .ariaLabel('Name')
+		      .initialValue('')
+		      .ok('Confirm')
+		      .cancel('Cancel');
+
+			$mdDialog.show(confirm).then(function(result) {
+				var email = document.getElementById('user-email').innerHTML;
+				var playerData = [];
+				for (var i = 0; i < players.length; i++) {
+					var player = players[i];
+					var newPlayer = {id: player.id, x: player.x, y: player.y, userTeam: player.userTeam, history: player.history};
+					playerData.push(newPlayer);
+				}
+				if (playId === -1) {
+					var newPlayRes = $resource('/create-new-play');
+					newPlayRes.save({userEmail: email, userPlayers: playerData, userBall: ball, playName: result}, function(response) {
+						playId = response.id;
+				  		console.log("New play created with id " + playId + ".");
+				  	}, function errorHandling(err) {
+				        console.error("Could not create new play.");
+				    });
+				} else {
+					var updatePlayRes = $resource('/update-play');
+					updatePlayRes.save({userEmail: email, id: playId, userPlayers: playerData, userBall: ball, playName: result}, function(response) {
+				  		console.log("Play with id " + playId + " saved.");
+				  	}, function errorHandling(err) {
+				        console.error("Could not save play.");
+				    });
+				}
+		    }, function() {
+		    	console.log("Chose not to save.");
+		    });
 		}
 
 		/* Called on every frame. Handles drawing on screen. */

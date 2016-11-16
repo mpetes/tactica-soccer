@@ -25,3 +25,24 @@
 	font: 11px Cambria;
 	font-weight: bold;
 }
+
+.checkbox-input {
+	margin-top: 12px;
+}
+
+.checkbox-label {
+	font: 14px Cambria;
+	font-weight: bold;
+}
+
+input[type=checkbox]:checked + label {
+	color: green;
+}
+
+input[type=checkbox] + label {
+	color: red;
+}
+
+.viewport {
+	min-height: 100vh;
+}
