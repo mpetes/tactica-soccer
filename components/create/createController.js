@@ -1,4 +1,4 @@
-soccerDraw.factory('play-creation', ['p5', '$resource', function(p5, $resource) {
+soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', function(p5, $resource, $mdDialog) {
 	return function (sketch) {
 
 		var FRAME_RATE = 60;
@@ -232,28 +232,38 @@ soccerDraw.factory('play-creation', ['p5', '$resource', function(p5, $resource) 
 			for (var i = 0; i < players.length; i++) {
 				var player = players[i];
 				var history = player.getHistory();
-				var currPosition = {};
+				var newPosition = {};
 				if (history.length === 0) {
-					currPosition = player.getPosition();
+					var currPosition = player.getPosition();
+					newPosition.x = currPosition.x * $(window).width();
+					newPosition.y = currPosition.y * $(window).width();
 				} else {
 					if (advanced) {
 						var index = Math.round((currFrame/framesToShow) * history.length);
 						if (index >= history.length) index = history.length - 1;
-						currPosition = history[index];
+						var currPosition = history[index];
+						newPosition.x = currPosition.x * $(window).width();
+						newPosition.y = currPosition.y * $(window).width();
 						if (trail) drawTrail(history, index, true, player.isUserTeam());
 					} else {
 						var start = history[0];
+						var newStart = {};
+						newStart.x = start.x * $(window).width();
+						newStart.y = start.y * $(window).width();
 						var end = history[history.length - 1];
-						var deltaX = end.x - start.x;
-						var deltaY = end.y - start.y;
-						currPosition.x = start.x + Math.round((currFrame/framesToShow) * deltaX);
-						currPosition.y = start.y + Math.round((currFrame/framesToShow) * deltaY);
+						var newEnd = {};
+						newEnd.x = end.x * $(window).width();
+						newEnd.y = end.y * $(window).width();
+						var deltaX = newEnd.x - newStart.x;
+						var deltaY = newEnd.y - newStart.y;
+						newPosition.x = newStart.x + Math.round((currFrame/framesToShow) * deltaX);
+						newPosition.y = newStart.y + Math.round((currFrame/framesToShow) * deltaY);
 						if (trail) {
-							drawLineBetween(start, currPosition, player.isUserTeam());
+							drawLineBetween(newStart, newPosition, player.isUserTeam());
 						}
 					}
 				}
-				player.move(currPosition.x, currPosition.y, false);
+				player.move(newPosition.x, newPosition.y, false);
 			}
 			currFrame++;
 			if (currFrame > framesToShow) {
@@ -277,7 +287,9 @@ soccerDraw.factory('play-creation', ['p5', '$resource', function(p5, $resource) 
 							sketch.fill(17,42,38);
 						}
 						sketch.strokeWeight(3);
-						sketch.line(history[i-1].x, history[i-1].y, history[i].x, history[i].y);
+						var width = $(window).width();
+						var height = $(window).width();
+						sketch.line(history[i-1].x * width, history[i-1].y * height, history[i].x * width, history[i].y * height);
 					}
 				}
 			} else {
@@ -292,7 +304,9 @@ soccerDraw.factory('play-creation', ['p5', '$resource', function(p5, $resource) 
 						sketch.fill(17,42,38);
 					}
 					sketch.strokeWeight(3);
-					sketch.line(start.x, start.y, end.x, end.y);
+					var width = $(window).width();
+					var height = $(window).width();
+					sketch.line(start.x * width, start.y * height, end.x * width, end.y * height);
 				}
 			}
 		}

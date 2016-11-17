@@ -1,5 +1,5 @@
 <div ng-init="fetchUserPlays()"></div>
-<div class="headline">My Library</div>
-<li ng-repeat="play in main.userPlays.owned" class="play-line"><a href="#/Playbook/{{play}}/1">Play {{play.name}}</a></li>
-<div class="headline">My Friend's Libraries</div>
-<li ng-repeat="play in main.userPlays.access" class="play-line"><a href="#/Playbook/{{play}}/0">Access {{play.name}}</a></li>
+<div class="headline">My Plays</div>
+<li ng-repeat="play in main.userPlays.owned" class="play-line"><a href="#/Playbook/{{play.id}}/1">{{play.name}}</a></li>
+<div class="headline">Shared with Me</div>
+<li ng-repeat="play in main.userPlays.access" class="play-line"><a href="#/Playbook/{{play.id}}/0">{{play.name}} from {{play.owner}}</a></li>

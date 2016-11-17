@@ -62,16 +62,22 @@ soccerDraw.factory('saved-play', ['p5', '$resource', '$mdDialog', function(p5, $
 				clearHistoryButton.mousePressed(clearHistory);
 
 				recordCheckbox = sketch.createCheckbox('Record', false);
+				recordCheckbox.elt.childNodes[0].className = "checkbox-input";
+				recordCheckbox.elt.childNodes[1].className = "checkbox-label";
 				recordCheckbox.position(50 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width, 5);
 				recordCheckbox.width = 75;
 				recordCheckbox.changed(setRecord);
 
 				trailCheckbox = sketch.createCheckbox('Trail', true);
+				trailCheckbox.elt.childNodes[0].className = "checkbox-input";
+				trailCheckbox.elt.childNodes[1].className = "checkbox-label";
 				trailCheckbox.position(60 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width + recordCheckbox.width, 5);
 				trailCheckbox.width = 55;
 				trailCheckbox.changed(setTrail);
 
 				advancedCheckbox = sketch.createCheckbox('Advanced', false);
+				advancedCheckbox.elt.childNodes[0].className = "checkbox-input";
+				advancedCheckbox.elt.childNodes[1].className = "checkbox-label";
 				advancedCheckbox.position(70 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width + recordCheckbox.width + trailCheckbox.width, 5);
 				advancedCheckbox.width = 90;
 				advancedCheckbox.changed(setAdvanced);
@@ -230,42 +236,20 @@ soccerDraw.factory('saved-play', ['p5', '$resource', '$mdDialog', function(p5, $
 		}
 
 		function savePlay() {
-			var confirm = $mdDialog.prompt()
-		      .title('Save Play')
-		      .textContent('Enter name of play.')
-		      .placeholder('Type...')
-		      .ariaLabel('Name')
-		      .initialValue('')
-		      .ok('Confirm')
-		      .cancel('Cancel');
-
-			$mdDialog.show(confirm).then(function(result) {
-				var email = document.getElementById('user-email').innerHTML;
-				var playerData = [];
-				for (var i = 0; i < players.length; i++) {
-					var player = players[i];
-					var newPlayer = {id: player.id, x: player.x, y: player.y, userTeam: player.userTeam, history: player.history};
-					playerData.push(newPlayer);
-				}
-				if (playId === -1) {
-					var newPlayRes = $resource('/create-new-play');
-					newPlayRes.save({userEmail: email, userPlayers: playerData, userBall: ball, playName: result}, function(response) {
-						playId = response.id;
-				  		console.log("New play created with id " + playId + ".");
-				  	}, function errorHandling(err) {
-				        console.error("Could not create new play.");
-				    });
-				} else {
-					var updatePlayRes = $resource('/update-play');
-					updatePlayRes.save({userEmail: email, id: playId, userPlayers: playerData, userBall: ball, playName: result}, function(response) {
-				  		console.log("Play with id " + playId + " saved.");
-				  	}, function errorHandling(err) {
-				        console.error("Could not save play.");
-				    });
-				}
-		    }, function() {
-		    	console.log("Chose not to save.");
-		    });
+			var email = document.getElementById('user-email').innerHTML;
+			var playerData = [];
+			for (var i = 0; i < players.length; i++) {
+				var player = players[i];
+				var newPlayer = {id: player.id, x: player.x, y: player.y, userTeam: player.userTeam, history: player.history};
+				playerData.push(newPlayer);
+			}
+		
+			var updatePlayRes = $resource('/update-play');
+			updatePlayRes.save({userEmail: email, id: playId, userPlayers: playerData, userBall: ball}, function(response) {
+		  		console.log("Play with id " + playId + " saved.");
+		  	}, function errorHandling(err) {
+		        console.error("Could not save play.");
+		    }); 
 		}
 
 		/* Called on every frame. Handles drawing on screen. */
@@ -279,34 +263,45 @@ soccerDraw.factory('saved-play', ['p5', '$resource', '$mdDialog', function(p5, $
 			}
 		}
 
+		
 		/* If the client has started the play, this will update the canvas with the new location for
 		where each player should be at the current frame. */
 		function animatePlay() {
 			for (var i = 0; i < players.length; i++) {
 				var player = players[i];
 				var history = player.getHistory();
-				var currPosition = {};
+				var newPosition = {};
 				if (history.length === 0) {
-					currPosition = player.getPosition();
+					var currPosition = player.getPosition();
+					newPosition.x = currPosition.x * $(window).width();
+					newPosition.y = currPosition.y * $(window).width();
 				} else {
 					if (advanced) {
 						var index = Math.round((currFrame/framesToShow) * history.length);
 						if (index >= history.length) index = history.length - 1;
-						currPosition = history[index];
+						var currPosition = history[index];
+						newPosition.x = currPosition.x * $(window).width();
+						newPosition.y = currPosition.y * $(window).width();
 						if (trail) drawTrail(history, index, true, player.isUserTeam());
 					} else {
 						var start = history[0];
+						var newStart = {};
+						newStart.x = start.x * $(window).width();
+						newStart.y = start.y * $(window).width();
 						var end = history[history.length - 1];
-						var deltaX = end.x - start.x;
-						var deltaY = end.y - start.y;
-						currPosition.x = start.x + Math.round((currFrame/framesToShow) * deltaX);
-						currPosition.y = start.y + Math.round((currFrame/framesToShow) * deltaY);
+						var newEnd = {};
+						newEnd.x = end.x * $(window).width();
+						newEnd.y = end.y * $(window).width();
+						var deltaX = newEnd.x - newStart.x;
+						var deltaY = newEnd.y - newStart.y;
+						newPosition.x = newStart.x + Math.round((currFrame/framesToShow) * deltaX);
+						newPosition.y = newStart.y + Math.round((currFrame/framesToShow) * deltaY);
 						if (trail) {
-							drawLineBetween(start, currPosition, player.isUserTeam());
+							drawLineBetween(newStart, newPosition, player.isUserTeam());
 						}
 					}
 				}
-				player.move(currPosition.x, currPosition.y, false);
+				player.move(newPosition.x, newPosition.y, false);
 			}
 			currFrame++;
 			if (currFrame > framesToShow) {
@@ -330,7 +325,9 @@ soccerDraw.factory('saved-play', ['p5', '$resource', '$mdDialog', function(p5, $
 							sketch.fill(17,42,38);
 						}
 						sketch.strokeWeight(3);
-						sketch.line(history[i-1].x, history[i-1].y, history[i].x, history[i].y);
+						var width = $(window).width();
+						var height = $(window).width();
+						sketch.line(history[i-1].x * width, history[i-1].y * height, history[i].x * width, history[i].y * height);
 					}
 				}
 			} else {
@@ -345,10 +342,13 @@ soccerDraw.factory('saved-play', ['p5', '$resource', '$mdDialog', function(p5, $
 						sketch.fill(17,42,38);
 					}
 					sketch.strokeWeight(3);
-					sketch.line(start.x, start.y, end.x, end.y);
+					var width = $(window).width();
+					var height = $(window).width();
+					sketch.line(start.x * width, start.y * height, end.x * width, end.y * height);
 				}
 			}
 		}
+
 
 		/* Draws trails for all players on the screen. */
 		function drawTrails() {

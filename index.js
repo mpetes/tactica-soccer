@@ -101,7 +101,6 @@ app.post('/update-play', function(request, response) {
         var email = request.body.userEmail;
         var players = request.body.userPlayers;
         var ball = request.body.userBall;
-        var name = request.body.playName;
 
          /* Reject attempted logouts with no one logged in. */
         if (request.session.loggedIn !== true) {
@@ -191,7 +190,7 @@ app.post('/create-new-play', function (request, response) {
                                 response.status(500).send(JSON.stringify(err3)); 
                                 return;
                             } else {
-                                client.query("INSERT into Plays(id, players, ball, name) VALUES('" + newId.toString() +"', '" + JSON.stringify(players) + "', '" + JSON.stringify(ball) + "', '" + name + "')", function(err4, insertResult) {
+                                client.query("INSERT into Plays(id, players, ball, name, owner) VALUES('" + newId.toString() +"', '" + JSON.stringify(players) + "', '" + JSON.stringify(ball) + "', '" + name + "', '" + email + "')", function(err4, insertResult) {
                                     done();
                                     if (err4) {
                                         console.log("Error inserting to plays.");
@@ -279,16 +278,21 @@ app.get('/load-play', function (request, response) {
 });
 
 app.get('/play-names', function(request, response) {
+    var email = request.query.email;
 
      /* Reject attempted logouts with no one logged in. */
     if (request.session.loggedIn !== true) {
         response.status(400).send("Permission denied. No one logged in.");
         return;
     }
+    if (request.session.email !== email) {
+        response.status(400).send("Permission denied. Logged in user does not match storing email.");
+        return;
+    }
 
     var ids = request.query.ids;
     pg.connect(process.env.DATABASE_URL, function(err, client, done) {
-        client.query("SELECT plays from Users where email='" + request.session.email + "'", function(err1, userResult) {
+        client.query("SELECT plays from Users where email='" + email + "'", function(err1, userResult) {
             if (err1) {
                 done();
                 response.status(500).send(JSON.stringify(err1));
@@ -302,16 +306,16 @@ app.get('/play-names', function(request, response) {
                     response.status(500).send("You do not have permission to access this.");
                     return;
                 }
-                idsString += id + ", ";
+                idsString += "'" + id + "', '";
             }
-            idsString = idsString.substring(0, idsString.length - 2) + ")";
-            client.query("SELECT * from Plays where id in " + idsString, function(err2, playsResult) {
+            idsString = idsString.substring(0, idsString.length - 3) + ")";
+            client.query("SELECT id, name, owner from Plays where id in " + idsString, function(err2, playsResult) {
                 done();
                 if (err2) {
                     response.status(500).send(JSON.stringify(err2));
                     return;
                 }
-                response.send(playsResult.rows);
+                response.send(JSON.stringify(playsResult.rows));
             })
         });
     });
