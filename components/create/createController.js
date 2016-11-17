@@ -121,9 +121,19 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', function(p5
 			}
 
 			function addYourPlayer() {
-				var player = new Player(sketch, true, numPlayers);
-				numPlayers++;
-				players.push(player);
+				$mdDialog.show({
+			      templateUrl: 'components/create/player-picker.html',
+			      parent: angular.element(document.body),
+			      clickOutsideToClose:true
+			    })
+			    .then(function(answer) {
+			    	console.log(answer);
+			    	var player = new Player(sketch, true, numPlayers);
+					numPlayers++;
+					players.push(player);
+			    }, function() {
+			    });
+				
 			}
 
 			function addOpposingPlayer() {
