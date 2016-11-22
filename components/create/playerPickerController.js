@@ -16,11 +16,13 @@ function PlayerPickerController($scope, $resource, $mdDialog, allPlayers) {
 		var info = {team: allPlayers[i].attackTeam, startingNumber: allPlayers[i].startingNumber, currentNumber: allPlayers[i].currentNumber, new: false, color: allPlayers[i].color, shape: allPlayers[i].shape};
 		if (allPlayers[i].attackTeam) {
 			$scope.playerPicker.attackPlayers.push(info);
+			$scope.selectedAttackShape = info.shape;
 			if (info.currentNumber >= $scope.playerPicker.currAttackNumber) {
 				$scope.playerPicker.currAttackNumber = info.currentNumber + 1;
 			}
 		} else {
 			$scope.playerPicker.defensePlayers.push(info);
+			$scope.selectedDefenseShape = info.shape;
 			if (info.currentNumber >= $scope.playerPicker.currDefenseNumber) {
 				$scope.playerPicker.currDefenseNumber = info.currentNumber + 1;
 			}
@@ -37,7 +39,7 @@ function PlayerPickerController($scope, $resource, $mdDialog, allPlayers) {
 				elem.style.background = $scope.attackColor;
 			}
 		} else {
-			$scope.selectShape("square", "attack");
+			$scope.selectShape($scope.selectedAttackShape, "attack");
 		}
 	});
 
@@ -51,7 +53,7 @@ function PlayerPickerController($scope, $resource, $mdDialog, allPlayers) {
 				elem.style.background = $scope.defenseColor;
 			}
 		} else {
-			$scope.selectShape("circle", "defense");
+			$scope.selectShape($scope.selectedDefenseShape, "defense");
 		}
 	});
 
@@ -108,7 +110,7 @@ function PlayerPickerController($scope, $resource, $mdDialog, allPlayers) {
 
     $scope.addAttackingPlayer = function() {
     	if ($scope.playerPicker.currAttackNumber <= 11) {
-    		var newPlayer = {team: true, startingNumber: $scope.playerPicker.currAttackNumber, currentNumber: $scope.playerPicker.currAttackNumber, new: true};
+    		var newPlayer = {team: true, startingNumber: parseInt($scope.playerPicker.currAttackNumber), currentNumber: parseInt($scope.playerPicker.currAttackNumber), new: true};
 	    	$scope.playerPicker.attackPlayers.push(newPlayer);
 	    	$scope.playerPicker.currAttackNumber++;
 	    }
@@ -116,7 +118,7 @@ function PlayerPickerController($scope, $resource, $mdDialog, allPlayers) {
 
     $scope.addDefensivePlayer = function() {
     	if ($scope.playerPicker.currDefenseNumber <= 11) {
-    		var newPlayer = {team: false, startingNumber: $scope.playerPicker.currDefenseNumber, currentNumber: $scope.playerPicker.currDefenseNumber, new: true};
+    		var newPlayer = {team: false, startingNumber: parseInt($scope.playerPicker.currDefenseNumber), currentNumber: parseInt($scope.playerPicker.currDefenseNumber), new: true};
 	    	$scope.playerPicker.defensePlayers.push(newPlayer);
 	    	$scope.playerPicker.currDefenseNumber++;
 	    }

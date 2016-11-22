@@ -139,6 +139,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', function(p5
 			    			numPlayers++;
 							players.push(player);
 			    		} else {
+
 			    			for (var j = 0; j < players.length; j++) {
 			    				if (players[j].startingNumber === currPlayer.startingNumber) {
 			    					players[j].currentNumber = currPlayer.currentNumber;

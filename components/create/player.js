@@ -17,7 +17,7 @@ function Player(sketch, attackTeam, id, number, color, shape) {
 	this.startingNumber = number;
 	this.color = color;
 	this.shape = shape;
-	this.numberDisplay = this.sketch.createElement('p', this.currentNumber);
+	this.numberDisplay = this.sketch.createP();
 	this.numberDisplay.height = 5;
 	this.numberDisplay.width = 5;
 	this.numberDisplay.addClass('player-number');
@@ -63,13 +63,31 @@ function Player(sketch, attackTeam, id, number, color, shape) {
 	this.display = function() {
 		this.sketch.stroke(this.color.red, this.color.green, this.color.blue);
 		this.sketch.fill(this.color.red, this.color.green, this.color.blue);
-		this.numberDisplay.textContent = this.currentNumber;
-		if (parseInt(this.numberDisplay.textContent) >= 10) {
-			this.numberDisplay.position(-6.5 + this.x * $(window).width(), 31 + this.y * $(window).width());
+		this.numberDisplay.elt.innerHTML = this.currentNumber.toString();
+		if (this.shape === "circle") {
+			if (this.currentNumber >= 10) {
+				this.numberDisplay.position(-7.1 + this.x * $(window).width(), 30.8 + this.y * $(window).width());
+			} else {
+				this.numberDisplay.position(-3.1 + this.x * $(window).width(), 30.8 + this.y * $(window).width());
+			}
+			this.sketch.ellipse(this.x * $(window).width(), this.y * $(window).width(), this.radius, this.radius);
+		} else if (this.shape === "triangle") {
+			if (this.currentNumber >= 10) {
+				this.numberDisplay.position(-6.5 + this.x * $(window).width(), 33 + this.y * $(window).width());
+			} else {
+				this.numberDisplay.position(-3.5 + this.x * $(window).width(), 33 + this.y * $(window).width());
+			}
+			var width = this.x * $(window).width();
+			var height = this.y * $(window).width();
+			this.sketch.triangle(width - this.radius/1.5, height + this.radius/1.5, width, height - this.radius/1.5, width + this.radius/1.5, height + this.radius/1.5);
 		} else {
-			this.numberDisplay.position(-3 + this.x * $(window).width(), 31 + this.y * $(window).width());
+			if (this.currentNumber >= 10) {
+				this.numberDisplay.position(this.x * $(window).width(), 37 + this.y * $(window).width());
+			} else {
+				this.numberDisplay.position(this.x * $(window).width() + 3.5, 37 + this.y * $(window).width());
+			}
+			this.sketch.rect(this.x * $(window).width(), this.y * $(window).width(), this.radius, this.radius);
 		}
-		this.sketch.ellipse(this.x * $(window).width(), this.y * $(window).width(), this.radius, this.radius);
 	}
 
 	/* Returns whether or not the player should be dragged across the screen based on the start point of the mouse press. */
