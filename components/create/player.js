@@ -1,5 +1,5 @@
 /* Defines a player on the screen. */
-function Player(sketch, userTeam, id) {
+function Player(sketch, userTeam, id, number, color) {
 	this.x = 0.3;
 	this.y = 0.2;
 	this.radius = 13;
@@ -8,6 +8,8 @@ function Player(sketch, userTeam, id) {
 	this.id = id;
 	this.history = [];
 	this.sketch = sketch;
+	this.number = number;
+	this.color = color;
 
 	/* Set whether player is being dragged across the screen. */
 	this.setMovement = function(movement) {
@@ -47,13 +49,8 @@ function Player(sketch, userTeam, id) {
 
 	/* Paints the ellipse that represents the player onto the screen. */
 	this.display = function() {
-		if (this.userTeam) {
-			this.sketch.stroke(232, 222, 42);
-			this.sketch.fill(232, 222, 42);
-		} else {
-			this.sketch.stroke(17,42,38);
-			this.sketch.fill(17,42,38);
-		}
+		this.sketch.stroke(color.red, color.green, color.blue);
+		this.sketch.fill(color.red, color.green, color.blue);
 		this.sketch.ellipse(this.x * $(window).width(), this.y * $(window).width(), this.radius, this.radius);
 	}
 

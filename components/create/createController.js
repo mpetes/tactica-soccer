@@ -123,14 +123,19 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', function(p5
 			function addYourPlayer() {
 				$mdDialog.show({
 			      templateUrl: 'components/create/player-picker.html',
+			      controller: 'PlayerPickerController',
 			      parent: angular.element(document.body),
-			      clickOutsideToClose:true
+			      locals: {
+			      	allPlayers: players
+			      }
 			    })
 			    .then(function(answer) {
-			    	console.log(answer);
-			    	var player = new Player(sketch, true, numPlayers);
-					numPlayers++;
-					players.push(player);
+			    	var playersToAdd = JSON.parse(answer);
+			    	for (var i = 0; i < playersToAdd.length; i++) {
+			    		var player = new Player(sketch, playersToAdd[i].team, numPlayers, playersToAdd[i].number, playersToAdd[i].color);
+			    		numPlayers++;
+						players.push(player);
+			    	}
 			    }, function() {
 			    });
 				

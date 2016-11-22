@@ -1,8 +1,8 @@
-<md-dialog aria-label="Add Player" ng-controller="PlayerPickerController">
+<md-dialog aria-label="Add Player">
   <form ng-cloak>
-    <md-toolbar>
-      <div class="md-toolbar-tools">
-        <h2>Add Player</h2>
+    <md-toolbar layout="row">
+      <div class="md-toolbar-tools" style="background-color: #0375B4">
+        <h2>Team Setup</h2>
         <span flex></span>
         <md-button class="md-icon-button" ng-click="cancel()">
           <i class="material-icons">close</i>
@@ -10,35 +10,50 @@
       </div>
     </md-toolbar>
 
-    <md-dialog-content>
-      <div class="md-dialog-content">
-        <h2>Using .md-dialog-content class that sets the padding as the spec</h2>
-        <p>
-          The mango is a juicy stone fruit belonging to the genus Mangifera, consisting of numerous tropical fruiting trees, cultivated mostly for edible fruit. The majority of these species are found in nature as wild mangoes. They all belong to the flowering plant family Anacardiaceae. The mango is native to South and Southeast Asia, from where it has been distributed worldwide to become one of the most cultivated fruits in the tropics.
-        </p>
-
-        <img style="margin: auto; max-width: 100%;" alt="Lush mango tree" src="img/mangues.jpg">
-
-        <p>
-          The highest concentration of Mangifera genus is in the western part of Malesia (Sumatra, Java and Borneo) and in Burma and India. While other Mangifera species (e.g. horse mango, M. foetida) are also grown on a more localized basis, Mangifera indica&mdash;the "common mango" or "Indian mango"&mdash;is the only mango tree commonly cultivated in many tropical and subtropical regions.
-        </p>
-        <p>
-          It originated in Indian subcontinent (present day India and Pakistan) and Burma. It is the national fruit of India, Pakistan, and the Philippines, and the national tree of Bangladesh. In several cultures, its fruit and leaves are ritually used as floral decorations at weddings, public celebrations, and religious ceremonies.
-        </p>
-      </div>
+    <md-dialog-content layout="row" class="md-dialog-content content-box">
+      <span class="team-selection left">
+        <div class="inline">
+          <h3 class="inline">Attack</h3><md-button class="md-icon-button add" ng-click="addAttackingPlayer()"><i class="material-icons md-18">add_circle</i></md-button>
+        </div>
+        <div>
+          <input type="color" ng-model="attackColor"/>
+          <div class="spacer"></div>
+          <div id="triangle" class="triangle attack" ng-click="selectShape('triangle', 'attack')"></div>
+          <div class="square attack" ng-click="selectShape('square', 'attack')"></div>
+          <div class="circle attack" ng-click="selectShape('circle', 'attack')"></div>
+        </div>
+        <div class="player-container">
+          <span ng-repeat="player in playerPicker.attackPlayers">
+            <input type="text" ng-model="player" class="player-shape"/>
+          </span>
+        </div>
+      </span>
+      <span flex></span>
+      <span class="team-selection right">
+        <div class="inline">
+          <md-button class="md-icon-button add" ng-click="addDefensivePlayer()"><i class="material-icons md-18">add_circle</i></md-button><h3 class="inline">Defense</h3>
+        </div>
+        <div>
+          <div id="triangle" class="triangle defense" ng-click="selectShape('triangle', 'defense')"></div>
+          <div class="square defense" ng-click="selectShape('square', 'defense')"></div>
+          <div class="circle defense" ng-click="selectShape('circle', 'defense')"></div>
+          <div class="spacer"></div>
+          <input type="color" ng-model="defenseColor"/>          
+        </div>
+         <div class="player-container">
+          <span ng-repeat="player in playerPicker.defensePlayers">
+            <input type="text" ng-model="player" class="player-shape"/>
+          </span>
+        </div>
+      </span>       
     </md-dialog-content>
 
     <md-dialog-actions layout="row">
-      <md-button href="http://en.wikipedia.org/wiki/Mango" target="_blank" md-autofocus>
-        More on Wikipedia
+      <span flex></span>
+      <md-button ng-click="save()">
+        Save
       </md-button>
       <span flex></span>
-      <md-button ng-click="answer('false')">
-       Not Useful
-      </md-button>
-      <md-button ng-click="answer('true')">
-        Useful
-      </md-button>
     </md-dialog-actions>
   </form>
 </md-dialog>
