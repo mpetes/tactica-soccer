@@ -3,23 +3,27 @@ soccerDraw.controller('PlayerPickerController', PlayerPickerController);
 PlayerPickerController.$inject = ['$scope', '$resource', '$mdDialog', 'allPlayers'];
 function PlayerPickerController($scope, $resource, $mdDialog, allPlayers) {
 	$scope.playerPicker = {};
-	$scope.playerPicker.newPlayers = [];
 	$scope.attackColor = "#000000";
 	$scope.defenseColor = "#000000";
-	$scope.playerPicker.attackRgb = "";
-	$scope.playerPicker.defenseRgb = "";
 	$scope.playerPicker.attackPlayers = [];
 	$scope.playerPicker.defensePlayers = [];
 	$scope.playerPicker.currAttackNumber = 1;
 	$scope.playerPicker.currDefenseNumber = 1;
 	$scope.selectedAttackShape = "circle";
-	$scope.selectedDefenseShape = "square";	
+	$scope.selectedDefenseShape = "square";
 
 	for (var i = 0; i < allPlayers.length; i++) {
-		if (allPlayers[i].isUserTeam()) {
-			$scope.playerPicker.attackPlayers.push(allPlayers[i].number.toString());
+		var info = {team: allPlayers[i].attackTeam, startingNumber: allPlayers[i].startingNumber, currentNumber: allPlayers[i].currentNumber, new: false, color: allPlayers[i].color, shape: allPlayers[i].shape};
+		if (allPlayers[i].attackTeam) {
+			$scope.playerPicker.attackPlayers.push(info);
+			if (info.currentNumber >= $scope.playerPicker.currAttackNumber) {
+				$scope.playerPicker.currAttackNumber = info.currentNumber + 1;
+			}
 		} else {
-			$scope.playerPicker.defensePlayers.push(allPlayers[i].number.toString());
+			$scope.playerPicker.defensePlayers.push(info);
+			if (info.currentNumber >= $scope.playerPicker.currDefenseNumber) {
+				$scope.playerPicker.currDefenseNumber = info.currentNumber + 1;
+			}
 		}
 	}
 
@@ -35,9 +39,6 @@ function PlayerPickerController($scope, $resource, $mdDialog, allPlayers) {
 		} else {
 			$scope.selectShape("square", "attack");
 		}
-		var r = hexToR($scope.attackColor);
-		var g = hexToG($scope.attackColor);
-		var b = hexToB($scope.attackColor);
 	});
 
 	$scope.$watch('defenseColor', function() {
@@ -52,9 +53,6 @@ function PlayerPickerController($scope, $resource, $mdDialog, allPlayers) {
 		} else {
 			$scope.selectShape("circle", "defense");
 		}
-		var r = hexToR($scope.defenseColor);
-		var g = hexToG($scope.defenseColor);
-		var b = hexToB($scope.defenseColor);
 	});
 
 	$scope.selectShape = function(shape, team) {
@@ -70,7 +68,6 @@ function PlayerPickerController($scope, $resource, $mdDialog, allPlayers) {
 		}
 		var elem = document.getElementsByClassName(shape + " " + team)[0];
 		$(elem).addClass('selected');
-		console.log(elem);
 		if (team === 'attack') {
 			$scope.selectedAttackShape = shape;
 			if (elem.id === 'triangle') {
@@ -93,19 +90,34 @@ function PlayerPickerController($scope, $resource, $mdDialog, allPlayers) {
     };
 
     $scope.save = function(answer) {
-    	$mdDialog.hide(JSON.stringify($scope.playerPicker.newPlayers));
+    	var players = [];
+    	for (var i = 0; i < $scope.playerPicker.attackPlayers.length; i++) {
+    		var player = $scope.playerPicker.attackPlayers[i];
+    		player.color = {red: hexToR($scope.attackColor), green: hexToG($scope.attackColor), blue: hexToB($scope.attackColor)};
+    		player.shape = $scope.selectedAttackShape;
+    		players.push(player);
+    	}
+    	for (var i = 0; i < $scope.playerPicker.defensePlayers.length; i++) {
+    		var player = $scope.playerPicker.defensePlayers[i];
+    		player.color = {red: hexToR($scope.defenseColor), green: hexToG($scope.defenseColor), blue: hexToB($scope.defenseColor)};
+    		player.shape = $scope.selectedDefenseShape;
+    		players.push(player);
+    	}
+    	$mdDialog.hide(JSON.stringify(players));
     };
 
     $scope.addAttackingPlayer = function() {
     	if ($scope.playerPicker.currAttackNumber <= 11) {
-	    	$scope.playerPicker.attackPlayers.push($scope.playerPicker.currAttackNumber);
+    		var newPlayer = {team: true, startingNumber: $scope.playerPicker.currAttackNumber, currentNumber: $scope.playerPicker.currAttackNumber, new: true};
+	    	$scope.playerPicker.attackPlayers.push(newPlayer);
 	    	$scope.playerPicker.currAttackNumber++;
 	    }
     };
 
     $scope.addDefensivePlayer = function() {
     	if ($scope.playerPicker.currDefenseNumber <= 11) {
-	    	$scope.playerPicker.defensePlayers.push($scope.playerPicker.currDefenseNumber);
+    		var newPlayer = {team: false, startingNumber: $scope.playerPicker.currDefenseNumber, currentNumber: $scope.playerPicker.currDefenseNumber, new: true};
+	    	$scope.playerPicker.defensePlayers.push(newPlayer);
 	    	$scope.playerPicker.currDefenseNumber++;
 	    }
     }

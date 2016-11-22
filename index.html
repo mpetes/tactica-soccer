@@ -23,6 +23,7 @@
         <script src="components/playbook/savedPlayController.js" type="text/javascript" ></script>
         <script src="components/login-register/login-registerController.js" type="text/javascript" ></script>
         <script src="components/create/player.js" type="text/javascript" ></script>
+        <script src="components/create/ball.js" type="text/javascript" ></script>
 
         <link href="index.css" rel="stylesheet" />
         <link href="components/page-list/page-list.css" rel="stylesheet" />
@@ -39,6 +40,7 @@
 	<body>
 		<md-toolbar ng-if="main.loggedIn" layout="row" style="background-color: #0375B4">
             <md-button class="menu-button" ng-click="openLeftMenu()">Menu</md-button>
+            <span flex></span>
             <md-button class="logout-button" ng-click="logout()">Logout</md-button>
 		</md-toolbar>
         <md-content flex>

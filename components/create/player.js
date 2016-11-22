@@ -1,15 +1,27 @@
 /* Defines a player on the screen. */
-function Player(sketch, userTeam, id, number, color) {
-	this.x = 0.3;
-	this.y = 0.2;
+function Player(sketch, attackTeam, id, number, color, shape) {
+	if (attackTeam) {
+		this.x = 0.3 + 0.01*(number%23);
+		this.y = 0.2 + 0.01*(number%23);
+	} else {
+		this.x = 0.7 - 0.01*(number%23);
+		this.y = 0.2 + 0.01*(number%23);
+	}
 	this.radius = 13;
 	this.moving = false;
-	this.userTeam = userTeam;
+	this.attackTeam = attackTeam;
 	this.id = id;
 	this.history = [];
 	this.sketch = sketch;
-	this.number = number;
+	this.currentNumber = number;
+	this.startingNumber = number;
 	this.color = color;
+	this.shape = shape;
+	this.numberDisplay = this.sketch.createElement('p', this.currentNumber);
+	this.numberDisplay.height = 5;
+	this.numberDisplay.width = 5;
+	this.numberDisplay.addClass('player-number');
+
 
 	/* Set whether player is being dragged across the screen. */
 	this.setMovement = function(movement) {
@@ -43,14 +55,20 @@ function Player(sketch, userTeam, id, number, color) {
 	}
 
 	/* Returns whether this player is a member of the user's team. */
-	this.isUserTeam = function() {
-		return this.userTeam;
+	this.isAttackTeam = function() {
+		return this.attackTeam;
 	}
 
 	/* Paints the ellipse that represents the player onto the screen. */
 	this.display = function() {
-		this.sketch.stroke(color.red, color.green, color.blue);
-		this.sketch.fill(color.red, color.green, color.blue);
+		this.sketch.stroke(this.color.red, this.color.green, this.color.blue);
+		this.sketch.fill(this.color.red, this.color.green, this.color.blue);
+		this.numberDisplay.textContent = this.currentNumber;
+		if (parseInt(this.numberDisplay.textContent) >= 10) {
+			this.numberDisplay.position(-6.5 + this.x * $(window).width(), 31 + this.y * $(window).width());
+		} else {
+			this.numberDisplay.position(-3 + this.x * $(window).width(), 31 + this.y * $(window).width());
+		}
 		this.sketch.ellipse(this.x * $(window).width(), this.y * $(window).width(), this.radius, this.radius);
 	}
 

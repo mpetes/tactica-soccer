@@ -6,7 +6,8 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', function(p5
 		/* Globals used for representing players. */
 		var players = [];
 		var numPlayers = 0;
-		var ball = {};
+		var ball = new Ball(sketch);
+		var ballAdded = false;
 		var playId = -1;
 
 		/* Globals used for movement, recording, and playback. */
@@ -28,60 +29,60 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', function(p5
 			canvas.position(0, 50);
 			sketch.frameRate(FRAME_RATE);
 
-			addYourPlayerButton = sketch.createButton('Add Your Player');
+			addYourPlayerButton = sketch.createButton('Add Players');
 			addYourPlayerButton.addClass("canvas-button");
 			addYourPlayerButton.addClass("md-button");
 			addYourPlayerButton.size(140, 40);
 			addYourPlayerButton.position(10, 5);
 			addYourPlayerButton.mousePressed(addYourPlayer);
 
-			addOpposingPlayerButton = sketch.createButton('Add Opposing Player');
-			addOpposingPlayerButton.addClass("canvas-button");
-			addOpposingPlayerButton.addClass("md-button");
-			addOpposingPlayerButton.size(140, 40);
-			addOpposingPlayerButton.position(20 + addYourPlayerButton.width, 5);
-			addOpposingPlayerButton.mousePressed(addOpposingPlayer);
-
 			clearAllPlayersButton = sketch.createButton('Clear Players');
 			clearAllPlayersButton.addClass("canvas-button");
 			clearAllPlayersButton.addClass("md-button");
 			clearAllPlayersButton.size(140, 40);
-			clearAllPlayersButton.position(30 + addYourPlayerButton.width + addOpposingPlayerButton.width, 5);
+			clearAllPlayersButton.position(20 + addYourPlayerButton.width, 5);
 			clearAllPlayersButton.mousePressed(clearAllPlayers);
 
 			clearHistoryButton = sketch.createButton('Clear Player History');
 			clearHistoryButton.addClass("canvas-button");
 			clearHistoryButton.addClass("md-button");
 			clearHistoryButton.size(140, 40);
-			clearHistoryButton.position(40 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width, 5);
+			clearHistoryButton.position(30 + addYourPlayerButton.width + clearAllPlayersButton.width, 5);
 			clearHistoryButton.mousePressed(clearHistory);
 
 			recordCheckbox = sketch.createCheckbox('Record', false);
 			recordCheckbox.elt.childNodes[0].className = "checkbox-input";
 			recordCheckbox.elt.childNodes[1].className = "checkbox-label";
-			recordCheckbox.position(50 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width, 5);
+			recordCheckbox.position(40 + addYourPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width, 5);
 			recordCheckbox.width = 75;
 			recordCheckbox.changed(setRecord);
 
 			trailCheckbox = sketch.createCheckbox('Trail', true);
 			trailCheckbox.elt.childNodes[0].className = "checkbox-input";
 			trailCheckbox.elt.childNodes[1].className = "checkbox-label";
-			trailCheckbox.position(60 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width + recordCheckbox.width, 5);
+			trailCheckbox.position(50 + addYourPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width + recordCheckbox.width, 5);
 			trailCheckbox.width = 55;
 			trailCheckbox.changed(setTrail);
 
 			advancedCheckbox = sketch.createCheckbox('Advanced', false);
 			advancedCheckbox.elt.childNodes[0].className = "checkbox-input";
 			advancedCheckbox.elt.childNodes[1].className = "checkbox-label";
-			advancedCheckbox.position(70 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width + recordCheckbox.width + trailCheckbox.width, 5);
+			advancedCheckbox.position(60 + addYourPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width + recordCheckbox.width + trailCheckbox.width, 5);
 			advancedCheckbox.width = 90;
 			advancedCheckbox.changed(setAdvanced);
+
+			ballCheckbox = sketch.createCheckbox('Ball', false);
+			ballCheckbox.elt.childNodes[0].className = "checkbox-input";
+			ballCheckbox.elt.childNodes[1].className = "checkbox-label";
+			ballCheckbox.position(70 + addYourPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width + recordCheckbox.width + trailCheckbox.width + advancedCheckbox.width, 5);
+			ballCheckbox.width = 50;
+			ballCheckbox.changed(setBall);
 
 			saveButton = sketch.createButton('Save');
 			saveButton.addClass("canvas-button");
 			saveButton.addClass("md-button");
 			saveButton.size(140, 40);
-			saveButton.position(80 + addYourPlayerButton.width + addOpposingPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width + recordCheckbox.width + trailCheckbox.width + advancedCheckbox.width, 5);
+			saveButton.position(80 + addYourPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width + recordCheckbox.width + trailCheckbox.width + advancedCheckbox.width + ballCheckbox.width, 5);
 			saveButton.mousePressed(savePlay);
 
 			playButton = sketch.createButton('Play');
@@ -130,21 +131,26 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', function(p5
 			      }
 			    })
 			    .then(function(answer) {
-			    	var playersToAdd = JSON.parse(answer);
-			    	for (var i = 0; i < playersToAdd.length; i++) {
-			    		var player = new Player(sketch, playersToAdd[i].team, numPlayers, playersToAdd[i].number, playersToAdd[i].color);
-			    		numPlayers++;
-						players.push(player);
+			    	var allPlayers = JSON.parse(answer);
+			    	for (var i = 0; i < allPlayers.length; i++) {
+			    		var currPlayer = allPlayers[i];
+			    		if (currPlayer.new === true) {
+			    			var player = new Player(sketch, currPlayer.team, numPlayers, currPlayer.currentNumber, currPlayer.color, currPlayer.shape);
+			    			numPlayers++;
+							players.push(player);
+			    		} else {
+			    			for (var j = 0; j < players.length; j++) {
+			    				if (players[j].startingNumber === currPlayer.startingNumber) {
+			    					players[j].currentNumber = currPlayer.currentNumber;
+			    					players[j].color = currPlayer.color;
+			    					players[j].shape = currPlayer.shape;
+			    				}
+			    			}
+			    		}
+
 			    	}
 			    }, function() {
 			    });
-				
-			}
-
-			function addOpposingPlayer() {
-				var player = new Player(sketch, false, numPlayers);
-				numPlayers++;
-				players.push(player);
 			}
 
 			function setRecord() {
@@ -168,6 +174,14 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', function(p5
 					advanced = true;
 				} else {
 					advanced = false;
+				}
+			}
+
+			function setBall() {
+				if (this.checked()) {
+					ballAdded = true;
+				} else {
+					ballAdded = false;
 				}
 			}
 
@@ -206,12 +220,13 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', function(p5
 				var playerData = [];
 				for (var i = 0; i < players.length; i++) {
 					var player = players[i];
-					var newPlayer = {id: player.id, x: player.x, y: player.y, userTeam: player.userTeam, history: player.history};
+					var newPlayer = {id: player.id, x: player.x, y: player.y, attackTeam: player.attackTeam, history: player.history, currentNumber: player.currentNumber, startingNumber: player.startingNumber, color: player.color, shape: player.shape};
 					playerData.push(newPlayer);
 				}
+				var ballData = {x: ball.x, y: ball.y, history: ball.history};
 				if (playId === -1) {
 					var newPlayRes = $resource('/create-new-play');
-					newPlayRes.save({userEmail: email, userPlayers: playerData, userBall: ball, playName: result}, function(response) {
+					newPlayRes.save({userEmail: email, userPlayers: playerData, userBall: ballData, playName: result}, function(response) {
 						playId = response.id;
 				  		console.log("New play created with id " + playId + ".");
 				  	}, function errorHandling(err) {
@@ -219,7 +234,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', function(p5
 				    });
 				} else {
 					var updatePlayRes = $resource('/update-play');
-					updatePlayRes.save({userEmail: email, id: playId, userPlayers: playerData, userBall: ball, playName: result}, function(response) {
+					updatePlayRes.save({userEmail: email, id: playId, userPlayers: playerData, userBall: ballData, playName: result}, function(response) {
 				  		console.log("Play with id " + playId + " saved.");
 				  	}, function errorHandling(err) {
 				        console.error("Could not save play.");
@@ -249,9 +264,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', function(p5
 				var history = player.getHistory();
 				var newPosition = {};
 				if (history.length === 0) {
-					var currPosition = player.getPosition();
-					newPosition.x = currPosition.x * $(window).width();
-					newPosition.y = currPosition.y * $(window).width();
+					var newPosition = player.getPosition();
 				} else {
 					if (advanced) {
 						var index = Math.round((currFrame/framesToShow) * history.length);
@@ -259,7 +272,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', function(p5
 						var currPosition = history[index];
 						newPosition.x = currPosition.x * $(window).width();
 						newPosition.y = currPosition.y * $(window).width();
-						if (trail) drawTrail(history, index, true, player.isUserTeam());
+						if (trail) drawTrail(history, index, true, player);
 					} else {
 						var start = history[0];
 						var newStart = {};
@@ -274,12 +287,34 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', function(p5
 						newPosition.x = newStart.x + Math.round((currFrame/framesToShow) * deltaX);
 						newPosition.y = newStart.y + Math.round((currFrame/framesToShow) * deltaY);
 						if (trail) {
-							drawLineBetween(newStart, newPosition, player.isUserTeam());
+							drawLineBetween(newStart, newPosition, player);
 						}
 					}
 				}
 				player.move(newPosition.x, newPosition.y, false);
 			}
+			
+			if (ballAdded) {
+				var history = ball.getHistory();
+				var newPosition = {};
+				var start = history[0];
+				var newStart = {};
+				newStart.x = start.x * $(window).width();
+				newStart.y = start.y * $(window).width();
+				var end = history[history.length - 1];
+				var newEnd = {};
+				newEnd.x = end.x * $(window).width();
+				newEnd.y = end.y * $(window).width();
+				var deltaX = newEnd.x - newStart.x;
+				var deltaY = newEnd.y - newStart.y;
+				newPosition.x = newStart.x + Math.round((currFrame/framesToShow) * deltaX);
+				newPosition.y = newStart.y + Math.round((currFrame/framesToShow) * deltaY);
+				if (trail) {
+					drawLineBetween(newStart, newPosition, ball);
+				}
+				ball.move(newPosition.x, newPosition.y, false);
+			}
+
 			currFrame++;
 			if (currFrame > framesToShow) {
 				playing = false;
@@ -290,18 +325,13 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', function(p5
 		/* Draws a trail for given player history from the start to the point in the history
 		array at lengthToShow, using the advanced flag to determine how the trail should look
 		and the isUserTeam flag to determine the color of the trail. */
-		function drawTrail(history, lengthToShow, advanced, isUserTeam) {
+		function drawTrail(history, lengthToShow, advanced, player) {
+			sketch.stroke(player.color.red, player.color.green, player.color.blue);
+			sketch.fill(player.color.red, player.color.green, player.color.blue);
+			sketch.strokeWeight(3);
 			if (advanced) {
 				for (var i = 0; i <= lengthToShow; i++) {
 					if (i !== 0 && i < history.length) {
-						if (isUserTeam) {
-							sketch.stroke(232, 222, 42);
-							sketch.fill(232, 222, 42);
-						} else {
-							sketch.stroke(17,42,38);
-							sketch.fill(17,42,38);
-						}
-						sketch.strokeWeight(3);
 						var width = $(window).width();
 						var height = $(window).width();
 						sketch.line(history[i-1].x * width, history[i-1].y * height, history[i].x * width, history[i].y * height);
@@ -311,14 +341,6 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', function(p5
 				if (history.length >= 2) {
 					var start = history[0];
 					var end = history[lengthToShow];
-					if (isUserTeam) {
-						sketch.stroke(232, 222, 42);
-						sketch.fill(232, 222, 42);
-					} else {
-						sketch.stroke(17,42,38);
-						sketch.fill(17,42,38);
-					}
-					sketch.strokeWeight(3);
 					var width = $(window).width();
 					var height = $(window).width();
 					sketch.line(start.x * width, start.y * height, end.x * width, end.y * height);
@@ -330,19 +352,26 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', function(p5
 		function drawTrails() {
 			for (var i = 0; i < players.length; i++) {
 				var history = players[i].getHistory();
-				drawTrail(history, history.length - 1, advanced, players[i].isUserTeam());
+				drawTrail(history, history.length - 1, advanced, players[i]);
+			}
+			if (ballAdded) {
+				var history = ball.getHistory();
+				if (history.length >= 2) {
+					var start = history[0];
+					var end = history[history.length - 1];
+					var width = $(window).width();
+					var height = $(window).width();
+					sketch.stroke(ball.color.red, ball.color.green, ball.color.blue);
+					sketch.fill(ball.color.red, ball.color.green, ball.color.blue);
+					sketch.line(start.x * width, start.y * height, end.x * width, end.y * height);
+				}
 			}
 		}
 
 		/* Differs from drawTrail in that it doesn't have a history but rather two points to draw a line between. */
-		function drawLineBetween(start, end, isUserTeam) {
-			if (isUserTeam) {
-				sketch.stroke(232, 222, 42);
-				sketch.fill(232, 222, 42);
-			} else {
-				sketch.stroke(17,42,38);
-				sketch.fill(17,42,38);
-			}
+		function drawLineBetween(start, end, player) {
+			sketch.stroke(player.color.red, player.color.green, player.color.blue);
+			sketch.fill(player.color.red, player.color.green, player.color.blue);
 			sketch.strokeWeight(3);
 			sketch.line(start.x, start.y, end.x, end.y);
 		}
@@ -356,6 +385,10 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', function(p5
 				//Only one player should be allowed to be dragged at a time
 				if (moved === false) moved = handleDragMovement(player, recording);
 				player.display();
+			}
+			if (ballAdded) {
+				if (moved === false) moved = handleDragMovement(ball, recording);
+				ball.display();
 			}
 		}
 

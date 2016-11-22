@@ -1,3 +1,10 @@
+html {
+	-webkit-user-select: none;  /* Chrome all / Safari all */
+    -moz-user-select: none;     /* Firefox all */
+    -ms-user-select: none;      /* IE 10+ */
+    user-select: none;    
+}
+
 .home-page {
 	height: 89%;
 }
@@ -44,5 +51,15 @@ input[type=checkbox] + label {
 }
 
 .viewport {
-	min-height: 100vh;
+	min-height: 90vh;
+}
+
+.player-number {
+	z-index: 1000000;
+	color: white;
+	font-size: 12px;
+}
+
+.player-number:hover {
+	cursor: default;
 }
