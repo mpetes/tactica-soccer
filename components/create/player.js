@@ -21,7 +21,7 @@ function Player(sketch, attackTeam, id, number, color, shape) {
 	this.numberDisplay.height = 5;
 	this.numberDisplay.width = 5;
 	this.numberDisplay.addClass('player-number');
-
+	this.startTime = 0.0;
 
 	/* Set whether player is being dragged across the screen. */
 	this.setMovement = function(movement) {

@@ -1,0 +1,17 @@
+<md-bottom-sheet class="player-editor">
+	<span ng-cloak>
+		<div class="table-row">
+			<span class="column-entry"><b>Player Number</b></span>
+			<span class="column-entry"><b>Start Time</b></span>
+			<span class="column-entry"><b>Section Speed</b></span>
+		</div>
+	    <md-list flex layout="row" layout-align="left center">
+	    	<div class="table-row">
+				<md-list-item style="padding-left:0" ng-repeat="player in bottomSheet.players">
+					<span class="column-entry">{{player.currentNumber}}</span>
+					<span class="column-entry">{{player.startTime}}</span>
+				</md-list-item>
+			</div>
+	    </md-list>
+    </span>
+</md-bottom-sheet>

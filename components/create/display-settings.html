@@ -1,0 +1,30 @@
+<md-dialog aria-label="Add Player">
+  <form ng-cloak>
+    <md-toolbar layout="row">
+      <div class="md-toolbar-tools" style="background-color: #0375B4">
+        <h2>Display Settings</h2>
+        <span flex></span>
+        <md-button class="md-icon-button" ng-click="cancel()">
+          <i class="material-icons">close</i>
+        </md-button>
+      </div>
+    </md-toolbar>
+
+    <md-dialog-content layout="row" class="md-dialog-content content-box">
+      <div class="checkbox-row">
+        <md-checkbox ng-model="displaySettings.trail">Trails?</md-checkbox>
+        <md-checkbox ng-model="displaySettings.ball">Ball?</md-checkbox>
+        <md-checkbox ng-model="displaySettings.advanced">Exact Path?</md-checkbox>
+        <md-checkbox ng-model="displaySettings.recording">Record?</md-checkbox>
+      </div>
+    </md-dialog-content>
+
+    <md-dialog-actions layout="row">
+      <span flex></span>
+      <md-button ng-click="save()">
+        Save
+      </md-button>
+      <span flex></span>
+    </md-dialog-actions>
+  </form>
+</md-dialog>

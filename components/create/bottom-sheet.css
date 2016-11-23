@@ -1,0 +1,17 @@
+.table-row {
+	font: 14px Cambria;
+}
+
+.column-entry {
+	width: 200px;
+	display: inline-block;
+	text-align: center;
+}
+
+.player-editor {
+	max-height: 300px;
+	overflow: scroll;
+	padding-bottom: 0;
+	position: fixed;
+	bottom: 60px;
+}

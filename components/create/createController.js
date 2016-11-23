@@ -1,4 +1,4 @@
-soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', function(p5, $resource, $mdDialog) {
+soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomSheet', function(p5, $resource, $mdDialog, $mdBottomSheet) {
 	return function (sketch) {
 
 		var FRAME_RATE = 60;
@@ -23,34 +23,51 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', function(p5
 		var mousePressStartY = -100;
 		var mouseCurrentlyPressed = false;
 
+		document.body.addEventListener('keydown', function(e) {
+			if (e.shiftKey) {
+				if (e.keyCode === 82) {
+			   		recording = !recording;
+				}
+				if (e.keyCode === 84) {
+					trail = !trail;
+				} 
+				if (e.keyCode === 69) {
+					advanced = !advanced;
+				}
+				if (e.keyCode === 66) {
+					ballAdded = !ballAdded;
+				}
+			}
+		});
+
 		/* Called once at loading of page. Sets up the canvas and necessary buttons. */
 		sketch.setup = function () {
 			var canvas = sketch.createCanvas($(window).width(), $(window).height() - 50);
 			canvas.position(0, 50);
 			sketch.frameRate(FRAME_RATE);
 
-			addYourPlayerButton = sketch.createButton('Add Players');
+			addYourPlayerButton = sketch.createButton('Players');
 			addYourPlayerButton.addClass("canvas-button");
 			addYourPlayerButton.addClass("md-button");
-			addYourPlayerButton.size(140, 40);
-			addYourPlayerButton.position(10, 5);
+			addYourPlayerButton.size(100, 40);
+			addYourPlayerButton.position(20, 5);
 			addYourPlayerButton.mousePressed(addYourPlayer);
 
-			clearAllPlayersButton = sketch.createButton('Clear Players');
-			clearAllPlayersButton.addClass("canvas-button");
-			clearAllPlayersButton.addClass("md-button");
-			clearAllPlayersButton.size(140, 40);
-			clearAllPlayersButton.position(20 + addYourPlayerButton.width, 5);
-			clearAllPlayersButton.mousePressed(clearAllPlayers);
+			movementButton = sketch.createButton('Movement');
+			movementButton.addClass("canvas-button");
+			movementButton.addClass("md-button");
+			movementButton.size(100, 40);
+			movementButton.position(40 + addYourPlayerButton.width, 5);
+			movementButton.mousePressed(openBottomSheet);
 
-			clearHistoryButton = sketch.createButton('Clear Player History');
-			clearHistoryButton.addClass("canvas-button");
-			clearHistoryButton.addClass("md-button");
-			clearHistoryButton.size(140, 40);
-			clearHistoryButton.position(30 + addYourPlayerButton.width + clearAllPlayersButton.width, 5);
-			clearHistoryButton.mousePressed(clearHistory);
+			displayButton = sketch.createButton('Display');
+			displayButton.addClass("canvas-button");
+			displayButton.addClass("md-button");
+			displayButton.size(100, 40);
+			displayButton.position(60 + addYourPlayerButton.width + movementButton.width, 5);
+			displayButton.mousePressed(openDisplay);
 
-			recordCheckbox = sketch.createCheckbox('Record', false);
+			/*recordCheckbox = sketch.createCheckbox('Record', false);
 			recordCheckbox.elt.childNodes[0].className = "checkbox-input";
 			recordCheckbox.elt.childNodes[1].className = "checkbox-label";
 			recordCheckbox.position(40 + addYourPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width, 5);
@@ -76,20 +93,20 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', function(p5
 			ballCheckbox.elt.childNodes[1].className = "checkbox-label";
 			ballCheckbox.position(70 + addYourPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width + recordCheckbox.width + trailCheckbox.width + advancedCheckbox.width, 5);
 			ballCheckbox.width = 50;
-			ballCheckbox.changed(setBall);
+			ballCheckbox.changed(setBall);*/
 
 			saveButton = sketch.createButton('Save');
 			saveButton.addClass("canvas-button");
 			saveButton.addClass("md-button");
-			saveButton.size(140, 40);
-			saveButton.position(80 + addYourPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width + recordCheckbox.width + trailCheckbox.width + advancedCheckbox.width + ballCheckbox.width, 5);
+			saveButton.size(100, 40);
+			saveButton.position(80 + addYourPlayerButton.width + movementButton.width + displayButton.width, 5);
 			saveButton.mousePressed(savePlay);
 
 			playButton = sketch.createButton('Play');
 			playButton.addClass("canvas-button");
 			playButton.addClass("md-button");
-			playButton.size(140, 40);
-			playButton.position($(window).width() - 10 - playButton.width, 5);
+			playButton.size(100, 40);
+			playButton.position($(window).width() - 20 - playButton.width, 5);
 			playButton.mousePressed(play);
 
 			playbackTimeSelect = sketch.createSelect();
@@ -114,11 +131,49 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', function(p5
 			playbackTimeSelect.option('10');
 			playbackTimeSelect.changed(setPlaybackTime);
 			playbackTimeSelect.width = 45;
-			playbackTimeSelect.position($(window).width() - 30 - playButton.width - playbackTimeSelect.width, 5);
+			playbackTimeSelect.position($(window).width() - 40 - playButton.width - playbackTimeSelect.width, 5);
 
 			function clearAllPlayers() {
 				delete players;
 				players = [];
+			}
+
+			function openBottomSheet() {
+				$mdBottomSheet.show({
+					templateUrl: 'components/create/bottom-sheet.html',
+					controller: 'BottomSheetController',
+					parent: angular.element(document.body),
+					locals: {
+						allPlayers: players
+					}
+				})
+				.then(function(answer) {
+
+				}, function () {
+				});
+			}
+
+			function openDisplay() {
+				$mdDialog.show({
+					templateUrl: 'components/create/display-settings.html',
+					controller: 'DisplaySettingsController',
+					parent: angular.element(document.body),
+					locals: {
+						isRecording: recording,
+						isAdvanced: advanced,
+						isTrail: trail,
+						isBall: ballAdded
+					}
+				})
+				.then(function(answer) {
+					cons
+					var settings = JSON.parse(answer);
+					recording = settings.recording;
+					advanced = settings.advanced;
+					trail = settings.trail;
+					ballAdded = settings.ball;
+				}, function() {
+				});
 			}
 
 			function addYourPlayer() {
