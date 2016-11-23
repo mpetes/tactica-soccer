@@ -67,34 +67,6 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 			displayButton.position(60 + addYourPlayerButton.width + movementButton.width, 5);
 			displayButton.mousePressed(openDisplay);
 
-			/*recordCheckbox = sketch.createCheckbox('Record', false);
-			recordCheckbox.elt.childNodes[0].className = "checkbox-input";
-			recordCheckbox.elt.childNodes[1].className = "checkbox-label";
-			recordCheckbox.position(40 + addYourPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width, 5);
-			recordCheckbox.width = 75;
-			recordCheckbox.changed(setRecord);
-
-			trailCheckbox = sketch.createCheckbox('Trail', true);
-			trailCheckbox.elt.childNodes[0].className = "checkbox-input";
-			trailCheckbox.elt.childNodes[1].className = "checkbox-label";
-			trailCheckbox.position(50 + addYourPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width + recordCheckbox.width, 5);
-			trailCheckbox.width = 55;
-			trailCheckbox.changed(setTrail);
-
-			advancedCheckbox = sketch.createCheckbox('Advanced', false);
-			advancedCheckbox.elt.childNodes[0].className = "checkbox-input";
-			advancedCheckbox.elt.childNodes[1].className = "checkbox-label";
-			advancedCheckbox.position(60 + addYourPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width + recordCheckbox.width + trailCheckbox.width, 5);
-			advancedCheckbox.width = 90;
-			advancedCheckbox.changed(setAdvanced);
-
-			ballCheckbox = sketch.createCheckbox('Ball', false);
-			ballCheckbox.elt.childNodes[0].className = "checkbox-input";
-			ballCheckbox.elt.childNodes[1].className = "checkbox-label";
-			ballCheckbox.position(70 + addYourPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width + recordCheckbox.width + trailCheckbox.width + advancedCheckbox.width, 5);
-			ballCheckbox.width = 50;
-			ballCheckbox.changed(setBall);*/
-
 			saveButton = sketch.createButton('Save');
 			saveButton.addClass("canvas-button");
 			saveButton.addClass("md-button");
@@ -166,7 +138,6 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 					}
 				})
 				.then(function(answer) {
-					cons
 					var settings = JSON.parse(answer);
 					recording = settings.recording;
 					advanced = settings.advanced;
@@ -209,46 +180,8 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 			    });
 			}
 
-			function setRecord() {
-				if (this.checked()) {
-					recording = true;
-				} else {
-					recording = false;
-				}
-			}
-
-			function setTrail() {
-				if (this.checked()) {
-					trail = true;
-				} else {
-					trail = false;
-				}
-			}
-
-			function setAdvanced() {
-				if (this.checked()) {
-					advanced = true;
-				} else {
-					advanced = false;
-				}
-			}
-
-			function setBall() {
-				if (this.checked()) {
-					ballAdded = true;
-				} else {
-					ballAdded = false;
-				}
-			}
-
 			function setPlaybackType() {
 				playbackType = playbackTypeSelect.value();
-			}
-
-			function clearHistory() {
-				for (var i = 0; i < players.length; i++) {
-					players[i].clearHistory();
-				}
 			}
 
 			function setPlaybackTime() {

@@ -34,67 +34,39 @@ soccerDraw.factory('saved-play', ['p5', '$resource', '$mdDialog', function(p5, $
 			sketch.frameRate(FRAME_RATE);
 
 			function setupEditing() {
-				addYourPlayerButton = sketch.createButton('Add Your Player');
+				addYourPlayerButton = sketch.createButton('Players');
 				addYourPlayerButton.addClass("canvas-button");
 				addYourPlayerButton.addClass("md-button");
-				addYourPlayerButton.size(140, 40);
-				addYourPlayerButton.position(10, 5);
+				addYourPlayerButton.size(100, 40);
+				addYourPlayerButton.position(20, 5);
 				addYourPlayerButton.mousePressed(addYourPlayer);
 
-				clearAllPlayersButton = sketch.createButton('Clear Players');
-				clearAllPlayersButton.addClass("canvas-button");
-				clearAllPlayersButton.addClass("md-button");
-				clearAllPlayersButton.size(140, 40);
-				clearAllPlayersButton.position(20 + addYourPlayerButton.width, 5);
-				clearAllPlayersButton.mousePressed(clearAllPlayers);
+				movementButton = sketch.createButton('Movement');
+				movementButton.addClass("canvas-button");
+				movementButton.addClass("md-button");
+				movementButton.size(100, 40);
+				movementButton.position(40 + addYourPlayerButton.width, 5);
+				movementButton.mousePressed(openBottomSheet);
 
-				clearHistoryButton = sketch.createButton('Clear Player History');
-				clearHistoryButton.addClass("canvas-button");
-				clearHistoryButton.addClass("md-button");
-				clearHistoryButton.size(140, 40);
-				clearHistoryButton.position(30 + addYourPlayerButton.width + clearAllPlayersButton.width, 5);
-				clearHistoryButton.mousePressed(clearHistory);
-
-				recordCheckbox = sketch.createCheckbox('Record', false);
-				recordCheckbox.elt.childNodes[0].className = "checkbox-input";
-				recordCheckbox.elt.childNodes[1].className = "checkbox-label";
-				recordCheckbox.position(40 + addYourPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width, 5);
-				recordCheckbox.width = 75;
-				recordCheckbox.changed(setRecord);
-
-				trailCheckbox = sketch.createCheckbox('Trail', true);
-				trailCheckbox.elt.childNodes[0].className = "checkbox-input";
-				trailCheckbox.elt.childNodes[1].className = "checkbox-label";
-				trailCheckbox.position(50 + addYourPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width + recordCheckbox.width, 5);
-				trailCheckbox.width = 55;
-				trailCheckbox.changed(setTrail);
-
-				advancedCheckbox = sketch.createCheckbox('Advanced', false);
-				advancedCheckbox.elt.childNodes[0].className = "checkbox-input";
-				advancedCheckbox.elt.childNodes[1].className = "checkbox-label";
-				advancedCheckbox.position(60 + addYourPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width + recordCheckbox.width + trailCheckbox.width, 5);
-				advancedCheckbox.width = 90;
-				advancedCheckbox.changed(setAdvanced);
-
-				ballCheckbox = sketch.createCheckbox('Ball', false);
-				ballCheckbox.elt.childNodes[0].className = "checkbox-input";
-				ballCheckbox.elt.childNodes[1].className = "checkbox-label";
-				ballCheckbox.position(70 + addYourPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width + recordCheckbox.width + trailCheckbox.width + advancedCheckbox.width, 5);
-				ballCheckbox.width = 50;
-				ballCheckbox.changed(setBall);
+				displayButton = sketch.createButton('Display');
+				displayButton.addClass("canvas-button");
+				displayButton.addClass("md-button");
+				displayButton.size(100, 40);
+				displayButton.position(60 + addYourPlayerButton.width + movementButton.width, 5);
+				displayButton.mousePressed(openDisplay);
 
 				saveButton = sketch.createButton('Save');
 				saveButton.addClass("canvas-button");
 				saveButton.addClass("md-button");
-				saveButton.size(140, 40);
-				saveButton.position(80 + addYourPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width + recordCheckbox.width + trailCheckbox.width + advancedCheckbox.width + ballCheckbox.width, 5);
+				saveButton.size(100, 40);
+				saveButton.position(80 + addYourPlayerButton.width + movementButton.width + displayButton.width, 5);
 				saveButton.mousePressed(savePlay);
 
 				shareButton = sketch.createButton('Share');
 				shareButton.addClass("canvas-button");
 				shareButton.addClass("md-button");
-				shareButton.size(140, 40);
-				shareButton.position(90 + addYourPlayerButton.width + clearAllPlayersButton.width + clearHistoryButton.width + recordCheckbox.width + trailCheckbox.width + advancedCheckbox.width + ballCheckbox.width + saveButton.width, 5);
+				shareButton.size(100, 40);
+				shareButton.position(100 + addYourPlayerButton.width + movementButton.width + displayButton.width + saveButton.width, 5);
 				shareButton.mousePressed(sharePlay);
 			}
 
@@ -160,8 +132,41 @@ soccerDraw.factory('saved-play', ['p5', '$resource', '$mdDialog', function(p5, $
 
 			loadPlay();
 
-			function clearAllPlayers() {
-				players = [];
+			function openBottomSheet() {
+				$mdBottomSheet.show({
+					templateUrl: 'components/create/bottom-sheet.html',
+					controller: 'BottomSheetController',
+					parent: angular.element(document.body),
+					locals: {
+						allPlayers: players
+					}
+				})
+				.then(function(answer) {
+
+				}, function () {
+				});
+			}
+
+			function openDisplay() {
+				$mdDialog.show({
+					templateUrl: 'components/create/display-settings.html',
+					controller: 'DisplaySettingsController',
+					parent: angular.element(document.body),
+					locals: {
+						isRecording: recording,
+						isAdvanced: advanced,
+						isTrail: trail,
+						isBall: ballAdded
+					}
+				})
+				.then(function(answer) {
+					var settings = JSON.parse(answer);
+					recording = settings.recording;
+					advanced = settings.advanced;
+					trail = settings.trail;
+					ballAdded = settings.ball;
+				}, function() {
+				});
 			}
 
 			function addYourPlayer() {
@@ -197,46 +202,8 @@ soccerDraw.factory('saved-play', ['p5', '$resource', '$mdDialog', function(p5, $
 			    });
 			}
 
-			function setRecord() {
-				if (this.checked()) {
-					recording = true;
-				} else {
-					recording = false;
-				}
-			}
-
-			function setTrail() {
-				if (this.checked()) {
-					trail = true;
-				} else {
-					trail = false;
-				}
-			}
-
-			function setAdvanced() {
-				if (this.checked()) {
-					advanced = true;
-				} else {
-					advanced = false;
-				}
-			}
-
-			function setBall() {
-				if (this.checked()) {
-					ballAdded = true;
-				} else {
-					ballAdded = false;
-				}
-			}
-
 			function setPlaybackType() {
 				playbackType = playbackTypeSelect.value();
-			}
-
-			function clearHistory() {
-				for (var i = 0; i < players.length; i++) {
-					players[i].clearHistory();
-				}
 			}
 
 			function setPlaybackTime() {
