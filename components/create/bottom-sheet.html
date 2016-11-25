@@ -7,11 +7,23 @@
 		</div>
 	    <md-list flex layout="row" layout-align="left center">
 	    	<div class="table-row">
-				<md-list-item style="padding-left:0" ng-repeat="player in bottomSheet.players">
+				<md-list-item style="padding-left:0; background-color:rgba({{player.color.red}}, {{player.color.green}}, {{player.color.blue}}, 0.5)" ng-repeat="player in bottomSheet.players">
 					<span class="column-entry">{{player.currentNumber}}</span>
-					<span class="column-entry">{{player.startTime}}</span>
+					<span class="column-entry">
+						<md-input-container>
+						  <input type="number" min="0" max="10" step="0.1" class="number-input" aria-label="startTime" ng-model="player.startTime">
+						</md-input-container>
+					</span>
 				</md-list-item>
 			</div>
 	    </md-list>
+	    <div>
+	   		<span flex></span>
+			<md-button ng-click="save()">Save</md-button>
+		    <span flex></span>
+	    </div>
     </span>
+
+
+    
 </md-bottom-sheet>

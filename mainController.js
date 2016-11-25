@@ -18,8 +18,8 @@ soccerDraw.config(['$routeProvider',
                 controller: 'PlaybookController'
             }).
             when('/Playbook/:playId/:owned', {
-                templateUrl: 'components/playbook/saved-play-template.html',
-                controller: 'SavedPlayController'
+                templateUrl: 'components/create/create-template.html',
+                controller: 'CreateController'
             }).
             otherwise({
                 redirectTo: '/Create'

@@ -4,4 +4,8 @@ BottomSheetController.$inject = ['$scope', '$resource', '$mdBottomSheet', 'allPl
 function BottomSheetController($scope, $resource, $mdBottomSheet, allPlayers) {
 	$scope.bottomSheet = {};
 	$scope.bottomSheet.players = allPlayers;
+
+	$scope.save = function() {
+		$mdBottomSheet.hide($scope.bottomSheet.players);
+	}
 }

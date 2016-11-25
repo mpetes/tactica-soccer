@@ -15,3 +15,8 @@
 	position: fixed;
 	bottom: 60px;
 }
+
+.number-input {
+	max-width: 75px;
+	text-align: center;
+}

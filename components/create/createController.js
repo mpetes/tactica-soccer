@@ -1,6 +1,12 @@
 soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomSheet', function(p5, $resource, $mdDialog, $mdBottomSheet) {
 	return function (sketch) {
 
+		var playId = document.getElementById('saved-play-id').innerHTML;
+		if (playId === undefined || playId === "") playId = -1;
+		var userEmail = document.getElementById('user-email').innerHTML;
+		var userOwned = document.getElementById('user-owned').innerHTML;
+		if (userOwned !== "0" && userOwned !== "1") userOwned = -1;
+
 		var FRAME_RATE = 60;
 
 		/* Globals used for representing players. */
@@ -8,7 +14,6 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 		var numPlayers = 0;
 		var ball = new Ball(sketch);
 		var ballAdded = false;
-		var playId = -1;
 
 		/* Globals used for movement, recording, and playback. */
 		var recording = false;
@@ -46,33 +51,54 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 			canvas.position(0, 50);
 			sketch.frameRate(FRAME_RATE);
 
-			addYourPlayerButton = sketch.createButton('Players');
-			addYourPlayerButton.addClass("canvas-button");
-			addYourPlayerButton.addClass("md-button");
-			addYourPlayerButton.size(100, 40);
-			addYourPlayerButton.position(20, 5);
-			addYourPlayerButton.mousePressed(addYourPlayer);
+			function setupEditing() {
+				addYourPlayerButton = sketch.createButton('Players');
+				addYourPlayerButton.addClass("canvas-button");
+				addYourPlayerButton.addClass("md-button");
+				addYourPlayerButton.size(100, 40);
+				addYourPlayerButton.position(20, 5);
+				addYourPlayerButton.mousePressed(addYourPlayer);
 
-			movementButton = sketch.createButton('Movement');
-			movementButton.addClass("canvas-button");
-			movementButton.addClass("md-button");
-			movementButton.size(100, 40);
-			movementButton.position(40 + addYourPlayerButton.width, 5);
-			movementButton.mousePressed(openBottomSheet);
+				movementButton = sketch.createButton('Movement');
+				movementButton.addClass("canvas-button");
+				movementButton.addClass("md-button");
+				movementButton.size(100, 40);
+				movementButton.position(40 + addYourPlayerButton.width, 5);
+				movementButton.mousePressed(openBottomSheet);
 
-			displayButton = sketch.createButton('Display');
-			displayButton.addClass("canvas-button");
-			displayButton.addClass("md-button");
-			displayButton.size(100, 40);
-			displayButton.position(60 + addYourPlayerButton.width + movementButton.width, 5);
-			displayButton.mousePressed(openDisplay);
+				displayButton = sketch.createButton('Display');
+				displayButton.addClass("canvas-button");
+				displayButton.addClass("md-button");
+				displayButton.size(100, 40);
+				displayButton.position(60 + addYourPlayerButton.width + movementButton.width, 5);
+				displayButton.mousePressed(openDisplay);
 
-			saveButton = sketch.createButton('Save');
-			saveButton.addClass("canvas-button");
-			saveButton.addClass("md-button");
-			saveButton.size(100, 40);
-			saveButton.position(80 + addYourPlayerButton.width + movementButton.width + displayButton.width, 5);
-			saveButton.mousePressed(savePlay);
+				saveButton = sketch.createButton('Save');
+				saveButton.addClass("canvas-button");
+				saveButton.addClass("md-button");
+				saveButton.size(100, 40);
+				saveButton.position(80 + addYourPlayerButton.width + movementButton.width + displayButton.width, 5);
+				saveButton.mousePressed(savePlay);
+			}
+
+			function setupSharing() {
+				shareButton = sketch.createButton('Share');
+				shareButton.addClass("canvas-button");
+				shareButton.addClass("md-button");
+				shareButton.size(100, 40);
+				shareButton.position(100 + addYourPlayerButton.width + movementButton.width + displayButton.width + saveButton.width, 5);
+				shareButton.mousePressed(sharePlay);
+			}
+
+			if (playId === -1) {
+				setupEditing();
+			} else if (userOwned === "1") {
+				setupEditing();
+				setupSharing();
+				loadPlay();
+			} else if (userOwned === "0") {
+				loadPlay();
+			}
 
 			playButton = sketch.createButton('Play');
 			playButton.addClass("canvas-button");
@@ -105,9 +131,29 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 			playbackTimeSelect.width = 45;
 			playbackTimeSelect.position($(window).width() - 40 - playButton.width - playbackTimeSelect.width, 5);
 
-			function clearAllPlayers() {
-				delete players;
-				players = [];
+			function loadPlay() {
+				var playRes = $resource("/load-play");
+				playRes.get({email: userEmail, id: playId, owned: userOwned}, function(response) {
+					var play = response;
+					var oldPlayers = JSON.parse(play.players);
+					for (var i = 0; i < oldPlayers.length; i++) {
+						var newPlayer = new Player(sketch, oldPlayers[i].attackTeam, oldPlayers[i].id, oldPlayers[i].currentNumber, oldPlayers[i].color, oldPlayers[i].shape);
+						newPlayer.setHistory(oldPlayers[i].history);
+						newPlayer.x = oldPlayers[i].x;
+						newPlayer.y = oldPlayers[i].y;
+						players.push(newPlayer);
+					}
+					var playBall = JSON.parse(play.ball);
+					if (playBall.history !== undefined) {
+						ball = new Ball(sketch);
+						ball.x = playBall.x;
+						ball.y = playBall.y;
+						ball.setHistory(playBall.history);
+						ballAdded = true;
+					}
+				}, function errorHandling(err) {
+					console.log("Failed to fetch play with id " + playId + ".");
+				});
 			}
 
 			function openBottomSheet() {
@@ -120,7 +166,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 					}
 				})
 				.then(function(answer) {
-
+					players = answer;
 				}, function () {
 				});
 			}
@@ -194,6 +240,29 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 			}
 		}
 
+		function sharePlay() {
+			var confirm = $mdDialog.prompt()
+		      .title('Share Play')
+		      .textContent('Enter email to share with.')
+		      .placeholder('jmosmooth@stanford.edu')
+		      .ariaLabel('Email')
+		      .initialValue('')
+		      .ok('Share')
+		      .cancel('Cancel');
+
+			$mdDialog.show(confirm).then(function(result) {
+		     	var sharePlayRes = $resource("/share-play");
+		     	var email = document.getElementById('user-email').innerHTML;
+		     	sharePlayRes.save({userEmail: email, emailToShare: result, play: playId}, function(response) {
+		     		console.log("play shared!");
+			    }, function errorHandling(err) {
+			     	alert(err);
+			    });
+		    }, function() {
+		    	console.log("Chose not to share.");
+		    });
+		}
+
 		function savePlay() {
 			var confirm = $mdDialog.prompt()
 		      .title('Save Play')
@@ -250,10 +319,11 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 		function animatePlay() {
 			for (var i = 0; i < players.length; i++) {
 				var player = players[i];
+				player.endTime = parseFloat(playbackTimeSelect.value());
 				var history = player.getHistory();
 				var newPosition = {};
 				if (history.length === 0) {
-					var newPosition = player.getPosition();
+					newPosition = player.getPosition();
 				} else {
 					if (advanced) {
 						var index = Math.round((currFrame/framesToShow) * history.length);
@@ -263,18 +333,32 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 						newPosition.y = currPosition.y * $(window).width();
 						if (trail) drawTrail(history, index, true, player);
 					} else {
+						var currentTime = currFrame / 60.0;
+
 						var start = history[0];
 						var newStart = {};
 						newStart.x = start.x * $(window).width();
 						newStart.y = start.y * $(window).width();
+
 						var end = history[history.length - 1];
 						var newEnd = {};
 						newEnd.x = end.x * $(window).width();
 						newEnd.y = end.y * $(window).width();
-						var deltaX = newEnd.x - newStart.x;
-						var deltaY = newEnd.y - newStart.y;
-						newPosition.x = newStart.x + Math.round((currFrame/framesToShow) * deltaX);
-						newPosition.y = newStart.y + Math.round((currFrame/framesToShow) * deltaY);
+
+						if (currentTime < player.startTime) {
+							newPosition = newStart;
+						} else if (currentTime > player.endTime) {
+							newPosition = newEnd;
+						} else {
+							var deltaX = newEnd.x - newStart.x;
+							var deltaY = newEnd.y - newStart.y;
+
+							var moveFrames = (player.endTime - player.startTime) * FRAME_RATE;
+							var shiftedFrame = currFrame - (player.startTime * FRAME_RATE);
+
+							newPosition.x = newStart.x + Math.round((shiftedFrame/moveFrames) * deltaX);
+							newPosition.y = newStart.y + Math.round((shiftedFrame/moveFrames) * deltaY);
+						}
 						if (trail) {
 							drawLineBetween(newStart, newPosition, player);
 						}
@@ -452,8 +536,17 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 
 }]);
 
-soccerDraw.controller('CreateController', ['$scope', '$http', '$resource', '$location', '$rootScope',
-  function ($scope, $http, $resource, $location, $rootScope) {
+soccerDraw.controller('CreateController', ['$scope', '$http', '$resource', '$location', '$rootScope', '$routeParams',
+  function ($scope, $http, $resource, $location, $rootScope, $routeParams) {
+
+  	$scope.savedPlay = {};
+  	$scope.savedPlay.id = $routeParams.playId;
+  	$scope.savedPlay.owned = parseInt($routeParams.owned);
+  	if ($scope.savedPlay.owned !== 1) {
+  		$scope.savedPlay.owned = 0;
+  	}
+  	document.getElementById('saved-play-id').innerHTML = $scope.savedPlay.id;
   	document.getElementById('user-email').innerHTML = $scope.main.email;
+  	document.getElementById('user-owned').innerHTML = $scope.savedPlay.owned;
 }]);
 
