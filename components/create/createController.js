@@ -2,7 +2,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 	return function (sketch) {
 
 		var playId = document.getElementById('saved-play-id').innerHTML;
-		if (playId === undefined || playId === "") playId = -1;
+		if (playId === "undefined" || playId === "") playId = -1;
 		var userEmail = document.getElementById('user-email').innerHTML;
 		var userOwned = document.getElementById('user-owned').innerHTML;
 		if (userOwned !== "0" && userOwned !== "1") userOwned = -1;
