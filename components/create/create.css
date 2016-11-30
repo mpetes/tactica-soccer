@@ -4,3 +4,13 @@
 	display: inline-block;
 	padding-top: 0.2%;
 }
+
+.playback-time {
+	font: 16px Cambria;
+}
+
+.playback-time-label {
+	font: 12px Cambria;
+	font-weight: bold;
+	text-align: center;
+}

@@ -55,7 +55,7 @@ input[type=checkbox] + label {
 }
 
 .player-number {
-	z-index: 1000000;
+	z-index: 1;
 	color: white;
 	font-size: 12px;
 }
