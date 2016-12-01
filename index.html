@@ -16,7 +16,6 @@
         <script src="angular-p5.js/angular-p5.js"></script>
 
         <script src="mainController.js" type="text/javascript" ></script>
-        <script src="components/page-list/page-listController.js" type="text/javascript" ></script>
         <script src="components/create/playerPickerController.js" type="text/javascript" ></script>
         <script src="components/create/bottomSheetController.js" type="text/javascript" ></script>
         <script src="components/create/displaySettingsController.js" type="text/javascript" ></script>
@@ -27,7 +26,6 @@
         <script src="components/create/ball.js" type="text/javascript" ></script>
 
         <link href="index.css" rel="stylesheet" />
-        <link href="components/page-list/page-list.css" rel="stylesheet" />
         <link href="components/login-register/login-register.css" rel="stylesheet" />
         <link href="components/create/create.css" rel="stylesheet" />
         <link href="components/playbook/playbook.css" rel="stylesheet" />
@@ -40,16 +38,17 @@
         <link rel='shortcut icon' href='images/soccer-ball.png' type='image/x-icon'/ >
 	</head>
 	<body>
-		<md-toolbar ng-if="main.loggedIn" layout="row" style="background-color: #0375B4">
-            <md-button class="menu-button" ng-click="openLeftMenu()">Menu</md-button>
+		<md-toolbar ng-if="main.loggedIn" layout="row" id="toolbar">
+            <span id="toolbar-home-transform">
+                <label id="site-label">Tactica Soccer</label>
+            </span>
+            <md-button id="menu-button" ng-click="navigateTo('Create')">Create</md-button>
+            <md-button id="menu-button" ng-click="navigateTo('Playbook')">Playbook</md-button>
             <span flex></span>
-            <md-button class="logout-button" ng-click="logout()">Logout</md-button>
+            <md-button id="menu-button" ng-click="logout()">Logout</md-button>
 		</md-toolbar>
         <md-content flex>
             <div layout="row" class="home-page">
-                <md-sidenav md-component-id="left" class="md-sidenav-left md-whiteframe-z2" layout="column" style="height:100%">
-                    <div ng-include="'components/page-list/page-listTemplate.html'" ng-controller="PageListController"></div>
-                </md-sidenav>
         		<md-content flex id="content" style="overflow: hidden">
         			<div ng-view id="ng-view" class="viewport"></div>
         		</md-content>

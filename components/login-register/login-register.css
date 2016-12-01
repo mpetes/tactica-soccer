@@ -1,16 +1,16 @@
 .background-image { 
-  background: url(../../images/StanfordMSoccer1.jpg) no-repeat center center fixed; 
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
-  background-size: cover;
-  height:100vh;
+	background: url(../../images/StanfordMSoccer1.jpg) no-repeat center center fixed; 
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
+	height:100vh;
 }
 
 .mask {
-  position: relative;
-  height: 100%;
-  background-color: rgba(0,10,20,.6);
+	position: relative;
+	height: 100%;
+	background-color: rgba(0,10,20,.6);
 }
 
 /* Styles the login forms in login-register.html. */
@@ -47,10 +47,13 @@
 	background-color: #FFFFFF;
 	margin-bottom: 20px;
 	width: 100%;
+	border-radius: 4px;
+	padding-left: 2px;
+	font-size: 18px;
 }
 
 .title {
-	font-size: 20px;
+	font-size: 24px;
 	font-family: Tahoma;
 	padding-bottom: 20px;
 }
@@ -61,17 +64,18 @@
 }
 
 /* Styles the error response for logging in or register. */
-.login-response {
+#login-response {
 	font-family: Tahoma;
 	font-size: 15px;
 	font-weight: bold;
-	padding-bottom: 15px;
+	padding-bottom: 5px;
 	padding-top: 5px;
 	color: red;
+	visibility: hidden;
 }
 
 .heading {
-	font-size: 17px;
+	font-size: 20px;
 	padding-bottom: 2px;
 }
 
@@ -80,6 +84,7 @@
 	padding-left: 10px;
 	padding-right: 10px;
 	display: inline-block;
-	background-color: green;
+	background-color: grey;
 	text-align: center;
+	border: 1px solid black;
 }

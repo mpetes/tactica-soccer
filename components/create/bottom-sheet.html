@@ -10,11 +10,11 @@
 				<md-list-item style="padding-left:0; background-color:rgba({{player.color.red}}, {{player.color.green}}, {{player.color.blue}}, 0.5)" ng-repeat="player in bottomSheet.players">
 					<span class="column-entry">{{player.currentNumber}}</span>
 					<span class="column-entry" ng-repeat="section in player.history">
-						<md-input-container>
-							<input type="number" min="{{player.history[$index - 1].endTime}}" max="{{section.endTime}}" step="0.1" class="number-input" aria-label="startTime" ng-model="section.startTime" maxlength="4">
+						<md-input-container id="input-holder">
+							<input type="number" min="{{player.history[$index - 1].endTime || 0}}" max="{{section.endTime}}" step="0.1" class="number-input" aria-label="startTime" ng-model="section.startTime" maxlength="4">
 						</md-input-container>
-						<md-input-container>
-							<input type="number" min="{{section.startTime}}" max="{{player.history[$index + 1].startTime}}" step="0.1" class="number-input" aria-label="endTime" ng-model="section.endTime" maxlength="4">
+						<md-input-container id="input-holder">
+							<input type="number" min="{{section.startTime}}" max="{{player.history[$index + 1].startTime || 25}}" step="0.1" class="number-input" aria-label="endTime" ng-model="section.endTime" maxlength="4">
 						</md-input-container>
 					</span>
 				</md-list-item>

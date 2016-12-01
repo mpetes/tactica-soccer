@@ -36,10 +36,6 @@ soccerDraw.controller('MainController', ['$scope', '$rootScope', '$location', '$
         $scope.main.email = "";
         $scope.main.password = "";
 
-        $scope.openLeftMenu = function () {
-            $mdSidenav('left').toggle();
-        }
-
         /* When the route changes to anything other than login-register, 
         verify that the user is logged in. Otherwise, redirect the user to the
         login-register page. */
@@ -63,6 +59,10 @@ soccerDraw.controller('MainController', ['$scope', '$rootScope', '$location', '$
             });
         });
 
+        $scope.navigateTo = function(page) {
+            $location.path("/" + page);
+        }
+
         /* Used by a user to logout. */
         $scope.logout = function() {
             var logoutRes = $resource("/logout");
@@ -79,14 +79,14 @@ soccerDraw.controller('MainController', ['$scope', '$rootScope', '$location', '$
         }
 
         $scope.safeApply = function(fn) {
-          var phase = this.$root.$$phase;
-          if(phase == '$apply' || phase == '$digest') {
-            if(fn && (typeof(fn) === 'function')) {
-              fn();
+            var phase = this.$root.$$phase;
+            if(phase == '$apply' || phase == '$digest') {
+                if(fn && (typeof(fn) === 'function')) {
+                  fn();
+                }
+            } else {
+                this.$apply(fn);
             }
-          } else {
-            this.$apply(fn);
-          }
         };
 
     }]);

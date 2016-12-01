@@ -7,7 +7,10 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 		var userOwned = document.getElementById('user-owned').innerHTML;
 		if (userOwned !== "0" && userOwned !== "1") userOwned = -1;
 
+		/* Constants. */
 		var FRAME_RATE = 60;
+		var CANVAS_Y_OFFSET = 60;
+		var BUTTON_Y_OFFSET = 12;
 
 		/* Globals used for representing players. */
 		var players = [];
@@ -28,12 +31,18 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 		var mousePressStartY = -100;
 		var mouseCurrentlyPressed = false;
 
+		/* Globals used to check for changing window size. */
+		var currWindowSize = 0;
+		var canvas;
+
+		/* Defines where a player is in his movement during a play. */
 		var SECTION_TYPES = {
 			BEFORE_START: 0,
 			IN_MIDDLE: 1,
 			AFTER_END: 2
 		};
 
+		/* Shift + R = recording, Shift + T = trail, Shift + E = exact/advanced, Shift + B = ball. */
 		document.body.addEventListener('keydown', function(e) {
 			if (e.shiftKey) {
 				if (e.keyCode === 82) {
@@ -53,49 +62,53 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 
 		/* Called once at loading of page. Sets up the canvas and necessary buttons. */
 		sketch.setup = function () {
-			var canvas = sketch.createCanvas($(window).width(), $(window).height() - 50);
-			canvas.position(0, 50);
+			currWindowSize = $(window).width();
+			canvas = sketch.createCanvas($(window).width(), $(window).height() - CANVAS_Y_OFFSET);
+			canvas.position(0, CANVAS_Y_OFFSET);
 			sketch.frameRate(FRAME_RATE);
 
+			/* Add the editor tools. */
 			function setupEditing() {
 				addYourPlayerButton = sketch.createButton('Players');
 				addYourPlayerButton.addClass("canvas-button");
 				addYourPlayerButton.addClass("md-button");
 				addYourPlayerButton.size(100, 40);
-				addYourPlayerButton.position(20, 5);
+				addYourPlayerButton.position(20, BUTTON_Y_OFFSET);
 				addYourPlayerButton.mousePressed(addYourPlayer);
 
 				movementButton = sketch.createButton('Movement');
 				movementButton.addClass("canvas-button");
 				movementButton.addClass("md-button");
 				movementButton.size(100, 40);
-				movementButton.position(40 + addYourPlayerButton.width, 5);
+				movementButton.position(40 + addYourPlayerButton.width, BUTTON_Y_OFFSET);
 				movementButton.mousePressed(openBottomSheet);
 
 				displayButton = sketch.createButton('Display');
 				displayButton.addClass("canvas-button");
 				displayButton.addClass("md-button");
 				displayButton.size(100, 40);
-				displayButton.position(60 + addYourPlayerButton.width + movementButton.width, 5);
+				displayButton.position(60 + addYourPlayerButton.width + movementButton.width, BUTTON_Y_OFFSET);
 				displayButton.mousePressed(openDisplay);
 
 				saveButton = sketch.createButton('Save');
 				saveButton.addClass("canvas-button");
 				saveButton.addClass("md-button");
 				saveButton.size(100, 40);
-				saveButton.position(80 + addYourPlayerButton.width + movementButton.width + displayButton.width, 5);
+				saveButton.position(80 + addYourPlayerButton.width + movementButton.width + displayButton.width, BUTTON_Y_OFFSET);
 				saveButton.mousePressed(savePlay);
 			}
 
+			/* Add owner sharing tools. */
 			function setupSharing() {
 				shareButton = sketch.createButton('Share');
 				shareButton.addClass("canvas-button");
 				shareButton.addClass("md-button");
 				shareButton.size(100, 40);
-				shareButton.position(100 + addYourPlayerButton.width + movementButton.width + displayButton.width + saveButton.width, 5);
+				shareButton.position(100 + addYourPlayerButton.width + movementButton.width + displayButton.width + saveButton.width, BUTTON_Y_OFFSET);
 				shareButton.mousePressed(sharePlay);
 			}
 
+			/* Determine sharing, editing abilities and whether the play needs to be fetched from DB. */
 			if (playId === -1) {
 				setupEditing();
 			} else if (userOwned === "1") {
@@ -106,28 +119,34 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 				loadPlay();
 			}
 
-			playButton = sketch.createButton('Play');
-			playButton.addClass("canvas-button");
-			playButton.addClass("md-button");
-			playButton.size(100, 40);
-			playButton.position($(window).width() - 20 - playButton.width, 5);
-			playButton.mousePressed(play);
+			/* Add playback tools. */
+			function setupPlaying() {
+				playButton = sketch.createButton('Play');
+				playButton.addClass("canvas-button");
+				playButton.addClass("md-button");
+				playButton.size(100, 40);
+				playButton.position($(window).width() - 20 - playButton.width, BUTTON_Y_OFFSET);
+				playButton.mousePressed(play);
 
-			playbackTimeSelect = sketch.createInput(3.0);
-			playbackTimeSelect.elt.type = "number";
-			playbackTimeSelect.elt.min = 0.1;
-			playbackTimeSelect.elt.max = 25.0;
-			playbackTimeSelect.elt.step = 0.1;
-			playbackTimeSelect.addClass('playback-time');
-			playbackTimeSelect.changed(setPlaybackTime);
-			playbackTimeSelect.size(45, 30);
-			playbackTimeSelect.position($(window).width() - 40 - playButton.width - playbackTimeSelect.width, 10);
+				playbackTimeSelect = sketch.createInput(3.0);
+				playbackTimeSelect.elt.type = "number";
+				playbackTimeSelect.elt.min = 0.1;
+				playbackTimeSelect.elt.max = 25.0;
+				playbackTimeSelect.elt.step = 0.1;
+				playbackTimeSelect.addClass('playback-time');
+				playbackTimeSelect.changed(setPlaybackTime);
+				playbackTimeSelect.size(45, 30);
+				playbackTimeSelect.position($(window).width() - 40 - playButton.width - playbackTimeSelect.width, BUTTON_Y_OFFSET + 3);
 
-			playbackTimeLabel = sketch.createP('PLAYBACK TIME: ');
-			playbackTimeLabel.addClass('playback-time-label');
-			playbackTimeLabel.size(100, 40);
-			playbackTimeLabel.position($(window).width() - 44 - playButton.width - playbackTimeSelect.width - playbackTimeLabel.width, 10);
+				playbackTimeLabel = sketch.createP('PLAYBACK TIME: ');
+				playbackTimeLabel.addClass('playback-time-label');
+				playbackTimeLabel.size(100, 40);
+				playbackTimeLabel.position($(window).width() - 44 - playButton.width - playbackTimeSelect.width - playbackTimeLabel.width, BUTTON_Y_OFFSET + 1.5);
+			}
 
+			setupPlaying();
+
+			/* Called if we determine that we are loading a previously created play. */
 			function loadPlay() {
 				var playRes = $resource("/load-play");
 				playRes.get({email: userEmail, id: playId, owned: userOwned}, function(response) {
@@ -138,6 +157,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 						newPlayer.setHistory(oldPlayers[i].history);
 						newPlayer.x = oldPlayers[i].x;
 						newPlayer.y = oldPlayers[i].y;
+						newPlayer.startingNumber = oldPlayers[i].startingNumber;
 						players.push(newPlayer);
 					}
 					var playBall = JSON.parse(play.ball);
@@ -153,6 +173,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 				});
 			}
 
+			// CALLBACK FUNCTIONS FOR CREATIVE TOOLS
 			function openBottomSheet() {
 				$mdBottomSheet.show({
 					templateUrl: 'components/create/bottom-sheet.html',
@@ -166,6 +187,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 				.then(function(answer) {
 					players = answer;
 				}, function () {
+					console.error("Could not parse movement settings.");
 				});
 			}
 
@@ -188,6 +210,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 					trail = settings.trail;
 					ballAdded = settings.ball;
 				}, function() {
+					console.error("Could not parse display settings.");
 				});
 			}
 
@@ -221,6 +244,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 
 			    	}
 			    }, function() {
+			    	console.log("Failed to add players.");
 			    });
 			}
 
@@ -299,6 +323,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 			    	console.log("Chose not to save.");
 			    });
 			}
+			// END CALLBACK FUNCTIONS FOR CREATIVE TOOLS
 		}
 
 		/* Called on every frame. Handles drawing on screen. */
@@ -353,6 +378,8 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 
 			/* Otherwise, follow direct line from start to end for each section. */
 			} else {
+
+				// Determine which 'section' of the player's history we are in. Draw all prior sections if client wants trails.
 				var currentTime = currFrame / 60.0;
 				var sectionType = SECTION_TYPES.BEFORE_START;
 				var sectionNumber = 0;
@@ -373,9 +400,13 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 					}
 				}
 
+				// If we are before the start of a section, position should be at the start of that section
 				if (sectionType === SECTION_TYPES.BEFORE_START) {
 					newPosition.x = history[sectionNumber].movement[0].x * $(window).width();
 					newPosition.y = history[sectionNumber].movement[0].y * $(window).width();
+
+				// If we are in the middle of a section, position should be at a scaled point along the direct line between
+				// the start and end of the section.
 				} else if (sectionType === SECTION_TYPES.IN_MIDDLE) {
 					var section = history[sectionNumber];
 					var startTime = section.startPercentage * playTime;
@@ -405,6 +436,8 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 					newPosition.x = newStart.x + Math.round((shiftedFrame/moveFrames) * deltaX);
 					newPosition.y = newStart.y + Math.round((shiftedFrame/moveFrames) * deltaY);
 					if (trail) drawLineBetween(newStart, newPosition, player);
+
+				// If we are at the end of a section, position should be that section's end.
 				} else {
 					var section = history[history.length - 1];
 					newPosition.x = section.movement[section.movement.length - 1].x * $(window).width();
@@ -422,21 +455,16 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 			sketch.stroke(player.color.red, player.color.green, player.color.blue);
 			sketch.fill(player.color.red, player.color.green, player.color.blue);
 			sketch.strokeWeight(3);
+			var currWidth = $(window).width();
 			if (advanced) {
 				for (var i = 0; i <= lengthToShow; i++) {
-					if (i !== 0 && i < history.length) {
-						var width = $(window).width();
-						var height = $(window).width();
-						sketch.line(history[i-1].x * width, history[i-1].y * height, history[i].x * width, history[i].y * height);
-					}
+					if (i !== 0 && i < history.length) sketch.line(history[i-1].x * currWidth, history[i-1].y * currWidth, history[i].x * currWidth, history[i].y * currWidth);
 				}
 			} else {
 				if (history.length >= 2) {
 					var start = history[0];
 					var end = history[lengthToShow];
-					var width = $(window).width();
-					var height = $(window).width();
-					sketch.line(start.x * width, start.y * height, end.x * width, end.y * height);
+					sketch.line(start.x * currWidth, start.y * currWidth, end.x * currWidth, end.y * currWidth);
 				}
 			}
 		}
@@ -461,7 +489,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 			}
 		}
 
-		/* Differs from drawTrail in that it doesn't have a history but rather two points to draw a line between. */
+		/* Differs from showHistory in that it doesn't have a history but rather two points to draw a line between. */
 		function drawLineBetween(start, end, player) {
 			sketch.stroke(player.color.red, player.color.green, player.color.blue);
 			sketch.fill(player.color.red, player.color.green, player.color.blue);
@@ -475,10 +503,11 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 			for (var x = 0; x < players.length; x++) {
 				var player = players[x];
 
-				//Only one player should be allowed to be dragged at a time
+				//Only one object should be allowed to be dragged at a time
 				if (moved === false) moved = handleDragMovement(player, recording);
 				player.display();
 			}
+
 			if (ballAdded) {
 				if (moved === false) moved = handleDragMovement(ball, recording);
 				ball.display();
@@ -487,22 +516,19 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 
 		/* Sets up the soccer field on the screen. */
 		function drawInitialField() {
+			if (currWindowSize !== $(window).width()) {
+				canvas.size($(window).width(), $(window).height() - CANVAS_Y_OFFSET);
+				canvas.position(0, CANVAS_Y_OFFSET);
+				currWindowSize = $(window).width();
+			}
+
 			sketch.background("green");
-			sketch.stroke(0, 0, 0);
-			sketch.strokeWeight(2);
+			sketch.stroke(255, 255, 255);
 			sketch.noFill();
 
 			//Corner flags
 			sketch.arc(0, 0, 30, 30, 0, 1.57);
 			sketch.arc($(window).width(), 0, 30, 30, 1.57, 3.14);
-
-			//sidelines
-			sketch.strokeWeight(4);
-			sketch.line(0, 0, $(window).width(), 0);
-			sketch.line(0, 0, 0, $(window).height());
-			sketch.line($(window).width(), 0, $(window).width(), $(window).height());
-
-			sketch.stroke(255, 255, 255);
 
 			//goal
 			sketch.line($(window).width()/2 - 0.0534*$(window).width(), 0, $(window).width()/2 + 0.0534*$(window).width(), 0);
@@ -520,6 +546,15 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 			//Penalty spot and arc outside box
 			sketch.ellipse($(window).width()/2, 0.1606*$(window).width(), 5, 5);
 			sketch.arc($(window).width()/2, 0.1606*$(window).width(), 0.2671*$(window).width(), 0.2671*$(window).width(), 0.65, 2.48);
+
+			sketch.stroke(0, 0, 0);
+
+			//sidelines
+			sketch.strokeWeight(4);
+			sketch.line(0, 0, $(window).width()/2 - 0.0534*$(window).width(), 0);
+			sketch.line($(window).width()/2 + 0.0534*$(window).width(), 0, $(window).width(), 0);
+			sketch.line(0, 0, 0, $(window).height());
+			sketch.line($(window).width(), 0, $(window).width(), $(window).height());
 		}
 
 		/* Used to set where the mouse was initially clicked for dragging operations. */

@@ -3,10 +3,14 @@
 }
 
 .column-entry {
-	width: 200px;
+	width: 160px;
 	display: inline-block;
 	text-align: center;
 	white-space: nowrap;
+	height: 50px;
+	line-height: 50px;
+	vertical-align: center;
+	padding-right: 1%;
 }
 
 .player-editor {
@@ -20,4 +24,13 @@
 .number-input {
 	max-width: 75px;
 	text-align: center;
+}
+
+#input-holder {
+	max-height: 50px;
+	margin-bottom: 0;
+	line-height: 50px;
+	vertical-align: center;
+	margin-top: 8px;
+	width: 75px;
 }

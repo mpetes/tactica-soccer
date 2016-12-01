@@ -82,25 +82,25 @@ function Player(sketch, attackTeam, id, number, color, shape) {
 		numberDisplay.elt.innerHTML = this.currentNumber.toString();
 		if (this.shape === "circle") {
 			if (this.currentNumber >= 10) {
-				numberDisplay.position(-7.1 + this.x * $(window).width(), 30.8 + this.y * $(window).width());
+				numberDisplay.position(-7.1 + this.x * $(window).width(), 40.8 + this.y * $(window).width());
 			} else {
-				numberDisplay.position(-3.1 + this.x * $(window).width(), 30.8 + this.y * $(window).width());
+				numberDisplay.position(-3.1 + this.x * $(window).width(), 40.8 + this.y * $(window).width());
 			}
 			sketch.ellipse(this.x * $(window).width(), this.y * $(window).width(), radius, radius);
 		} else if (this.shape === "triangle") {
 			if (this.currentNumber >= 10) {
-				numberDisplay.position(-6.5 + this.x * $(window).width(), 33 + this.y * $(window).width());
+				numberDisplay.position(-6.5 + this.x * $(window).width(), 42 + this.y * $(window).width());
 			} else {
-				numberDisplay.position(-3.5 + this.x * $(window).width(), 33 + this.y * $(window).width());
+				numberDisplay.position(-3.5 + this.x * $(window).width(), 42 + this.y * $(window).width());
 			}
 			var width = this.x * $(window).width();
 			var height = this.y * $(window).width();
 			sketch.triangle(width - radius/1.5, height + radius/1.5, width, height - radius/1.5, width + radius/1.5, height + radius/1.5);
 		} else {
 			if (this.currentNumber >= 10) {
-				numberDisplay.position(this.x * $(window).width(), 37 + this.y * $(window).width());
+				numberDisplay.position(this.x * $(window).width(), 47 + this.y * $(window).width());
 			} else {
-				numberDisplay.position(this.x * $(window).width() + 3.5, 37 + this.y * $(window).width());
+				numberDisplay.position(this.x * $(window).width() + 3.5, 47 + this.y * $(window).width());
 			}
 			sketch.rect(this.x * $(window).width(), this.y * $(window).width(), radius, radius);
 		}

@@ -3,7 +3,6 @@
 soccerDraw.controller('LoginRegisterController', ['$scope', '$http', '$resource', '$location', '$rootScope', 
 	function ($scope, $http, $resource, $location, $rootScope) {
 	    $scope.messageReport = "";
-	    $scope.messageToShow = false;
 	    var windowHeight = $(window).height();
 	    document.getElementById('ng-view').style = "min-height: " + windowHeight + "px";
 
@@ -22,7 +21,6 @@ soccerDraw.controller('LoginRegisterController', ['$scope', '$http', '$resource'
 
 	  		var loginRes = $resource("/login");
 	  		loginRes.save({email: $scope.main.email, password: $scope.main.password}, function(response) {
-	        	$scope.messageToShow = false;
 	    		$scope.main.loggedIn = true;
 	   			$scope.main.name = response.name;
 	        	$scope.main.email = response.email;
@@ -70,14 +68,18 @@ soccerDraw.controller('LoginRegisterController', ['$scope', '$http', '$resource'
 	    }
 
 	    function sendFeedback(message, error) {
-			$scope.messageToShow = true;
+			var responseDiv = document.getElementById("login-response");
 			if (error) {
+				responseDiv.style.color = "red";
 				$scope.messageReport = "Error: " + message;
-				$('.login-response').css('color: red');
 			} else {
+				responseDiv.style.color = "green";
 				$scope.messageReport = "Success: " + message;
-				$('.login-response').css('color: green');
 			}
+			responseDiv.style.visibility = "visible";
+			setTimeout(function() {
+				responseDiv.style.visibility = "hidden";
+			}, 4000);
 	    }
 
 	    document.body.addEventListener('keydown', function(e) {
