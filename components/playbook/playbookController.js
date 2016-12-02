@@ -29,10 +29,11 @@ soccerDraw.controller('PlaybookController', ['$scope', '$http', '$resource', '$l
 					playbookInfo.name = response[i].name;
 					playbookInfo.owner = response[i].owner;
 					playbookInfo.date = response[i].date;
-					if (plays.owned.indexOf(response[i].id) !== -1) {
+					console.log(plays);
+					if (plays.owned.indexOf(parseInt(response[i].id)) !== -1) {
 						playbookInfo.edit = "Yes";
 						$scope.playbook.myPlays.push(playbookInfo);
-					} else if (plays.edit.indexOf(response[i].id) !== -1) {
+					} else if (plays.edit.indexOf(parseInt(response[i].id)) !== -1) {
 						playbookInfo.edit = "Yes";
 						$scope.playbook.sharedPlays.push(playbookInfo);
 					} else {
