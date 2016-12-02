@@ -1,5 +1,27 @@
 <div ng-init="fetchUserPlays()"></div>
-<div class="headline">My Plays</div>
-<li ng-repeat="play in main.userPlays.owned" class="play-line"><a href="#/Playbook/{{play.id}}/1">{{play.name}}</a></li>
-<div class="headline">Shared with Me</div>
-<li ng-repeat="play in main.userPlays.access" class="play-line"><a href="#/Playbook/{{play.id}}/0">{{play.name}} from {{play.owner}}</a></li>
+
+<md-list ng-if="playbook.myPlays.length !== 0">
+  <div class="headline">My Plays</div>
+  <md-list-item class="md-3-line" ng-repeat="play in playbook.myPlays">
+    <div class="md-list-item-text">
+      <h2 style="margin-bottom: 2px; margin-left: 10px; margin-top: 0">{{play.name}}</h2>
+      <h3 style="margin-left: 25px">{{play.date}}</h3>
+    </div>
+    <md-button id="playbook-button" ng-click="viewPlay(play.id, 1)">View</md-button>
+    <md-divider ng-if="!$last"></md-divider>
+  </md-list-item>
+</md-list>
+
+<md-list ng-if="playbook.sharedPlays.length !== 0">
+  <div class="headline">Shared with Me</div>
+  <md-list-item class="md-3-line" ng-repeat="play in playbook.sharedPlays">
+    <div class="md-list-item-text">
+      <h2 style="margin-bottom: 2px; margin-left: 10px; margin-top: 20px">{{play.name}}</h2>
+      <h3 style="margin-left: 25px">{{play.date}}</h3>
+      <h3 style="margin-left: 25px">{{play.owner}}</h3>
+      <h3 style="margin-left: 25px">Can Edit: {{play.edit}}</h3>
+    </div>
+    <md-button id="playbook-button" ng-click="viewPlay(play.id, play.edit)">View</md-button>
+    <md-divider ng-if="!$last"></md-divider>
+  </md-list-item>
+</md-list>

@@ -1,6 +1,7 @@
 soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomSheet', function(p5, $resource, $mdDialog, $mdBottomSheet) {
 	return function (sketch) {
 
+		/* Parse route parameters. */
 		var playId = document.getElementById('saved-play-id').innerHTML;
 		if (playId === "undefined" || playId === "") playId = -1;
 		var userEmail = document.getElementById('user-email').innerHTML;
@@ -90,7 +91,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 				displayButton.position(60 + addYourPlayerButton.width + movementButton.width, BUTTON_Y_OFFSET);
 				displayButton.mousePressed(openDisplay);
 
-				saveButton = sketch.createButton('Save');
+				saveButton = sketch.createButton('Save Play');
 				saveButton.addClass("canvas-button");
 				saveButton.addClass("md-button");
 				saveButton.size(100, 40);
@@ -100,7 +101,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 
 			/* Add owner sharing tools. */
 			function setupSharing() {
-				shareButton = sketch.createButton('Share');
+				shareButton = sketch.createButton('Share Play');
 				shareButton.addClass("canvas-button");
 				shareButton.addClass("md-button");
 				shareButton.size(100, 40);
@@ -111,13 +112,9 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 			/* Determine sharing, editing abilities and whether the play needs to be fetched from DB. */
 			if (playId === -1) {
 				setupEditing();
-			} else if (userOwned === "1") {
-				setupEditing();
-				setupSharing();
+			} else {
 				loadPlay();
-			} else if (userOwned === "0") {
-				loadPlay();
-			}
+			} 
 
 			/* Add playback tools. */
 			function setupPlaying() {
@@ -161,13 +158,17 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 						players.push(newPlayer);
 					}
 					var playBall = JSON.parse(play.ball);
-					if (playBall.history !== undefined) {
+					if (playBall.history.length !== 0) {
 						ball = new Ball(sketch);
 						ball.x = playBall.x;
 						ball.y = playBall.y;
 						ball.setHistory(playBall.history);
 						ballAdded = true;
 					}
+					if (userOwned === "1") {
+						setupEditing();
+						setupSharing();
+					} 
 				}, function errorHandling(err) {
 					console.log("Failed to fetch play with id " + playId + ".");
 				});
@@ -181,13 +182,15 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 					parent: angular.element(document.body),
 					locals: {
 						allPlayers: players,
-						playTime: parseFloat(playbackTimeSelect.value())
+						playTime: parseFloat(playbackTimeSelect.value()),
+						gameBall: ball
 					}
 				})
 				.then(function(answer) {
-					players = answer;
+					players = answer.players;
+					ball = answer.ball;
 				}, function () {
-					console.error("Could not parse movement settings.");
+					console.log("Chose not to save movement settings.");
 				});
 			}
 
@@ -244,7 +247,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 
 			    	}
 			    }, function() {
-			    	console.log("Failed to add players.");
+			    	console.log("Chose not to add players.");
 			    });
 			}
 
@@ -262,20 +265,17 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 			}
 
 			function sharePlay() {
-				var confirm = $mdDialog.prompt()
-			      .title('Share Play')
-			      .textContent('Enter email to share with.')
-			      .placeholder('jmosmooth@stanford.edu')
-			      .ariaLabel('Email')
-			      .initialValue('')
-			      .ok('Share')
-			      .cancel('Cancel');
-
-				$mdDialog.show(confirm).then(function(result) {
-			     	var sharePlayRes = $resource("/share-play");
+				$mdDialog.show({
+					templateUrl: 'components/create/share-play.html',
+					controller: 'SharePlayController',
+					parent: angular.element(document.body)
+			    })
+			    .then(function(result) {
+			    	var sharePlayRes = $resource("/share-play");
 			     	var email = document.getElementById('user-email').innerHTML;
-			     	sharePlayRes.save({userEmail: email, emailToShare: result, play: playId}, function(response) {
-			     		console.log("play shared!");
+			     	var shareInfo = JSON.parse(result);
+			     	sharePlayRes.save({userEmail: email, emailToShare: shareInfo.email, play: playId, accessLevel: shareInfo.accessLevel}, function(response) {
+			     		console.log("Play shared!");
 				    }, function errorHandling(err) {
 				     	alert(err);
 				    });
@@ -285,17 +285,14 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 			}
 
 			function savePlay() {
-				var confirm = $mdDialog.prompt()
-			      .title('Save Play')
-			      .textContent('Enter name of play.')
-			      .placeholder('Type...')
-			      .ariaLabel('Name')
-			      .initialValue('')
-			      .ok('Confirm')
-			      .cancel('Cancel');
-
-				$mdDialog.show(confirm).then(function(result) {
-					var email = document.getElementById('user-email').innerHTML;
+				$mdDialog.show({
+					templateUrl: 'components/create/save-play.html',
+					controller: 'SavePlayController',
+					parent: angular.element(document.body)
+			    })
+			    .then(function(result) {
+			    	var email = document.getElementById('user-email').innerHTML;
+			    	var name = JSON.parse(result).name;
 					var playerData = [];
 					for (var i = 0; i < players.length; i++) {
 						var player = players[i];
@@ -305,7 +302,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 					var ballData = {x: ball.x, y: ball.y, history: ball.history};
 					if (playId === -1) {
 						var newPlayRes = $resource('/create-new-play');
-						newPlayRes.save({userEmail: email, userPlayers: playerData, userBall: ballData, playName: result}, function(response) {
+						newPlayRes.save({userEmail: email, userPlayers: playerData, userBall: ballData, playName: name}, function(response) {
 							playId = response.id;
 					  		console.log("New play created with id " + playId + ".");
 					  	}, function errorHandling(err) {
@@ -313,12 +310,12 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 					    });
 					} else {
 						var updatePlayRes = $resource('/update-play');
-						updatePlayRes.save({userEmail: email, id: playId, userPlayers: playerData, userBall: ballData, playName: result}, function(response) {
+						updatePlayRes.save({userEmail: email, id: playId, userPlayers: playerData, userBall: ballData, playName: name}, function(response) {
 					  		console.log("Play with id " + playId + " saved.");
 					  	}, function errorHandling(err) {
 					        console.error("Could not save play.");
 					    });
-					}
+			    	}
 			    }, function() {
 			    	console.log("Chose not to save.");
 			    });
@@ -387,7 +384,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 					var section = history[j];
 					var startTime = section.startPercentage * playTime;
 					var endTime = section.endPercentage * playTime;
-					if (currentTime >= startTime && currentTime <= endTime) {
+					if (currentTime >= startTime && currentTime < endTime) {
 						sectionType = SECTION_TYPES.IN_MIDDLE;
 						sectionNumber = j;
 						break;
@@ -483,7 +480,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 				if (history.length > 0) {
 					for (var j = 0; j < history.length; j++) {
 						var section = history[j];
-						showHistory(section.movement, section.movement.length - 1, advanced, players[i]);
+						showHistory(section.movement, section.movement.length - 1, advanced, ball);
 					}
 				}
 			}
@@ -516,10 +513,11 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 
 		/* Sets up the soccer field on the screen. */
 		function drawInitialField() {
-			if (currWindowSize !== $(window).width()) {
-				canvas.size($(window).width(), $(window).height() - CANVAS_Y_OFFSET);
+			var currFrameWidth = $(window).width();
+			if (currWindowSize !== currFrameWidth) {
+				canvas.size(currFrameWidth, $(window).height() - CANVAS_Y_OFFSET);
 				canvas.position(0, CANVAS_Y_OFFSET);
-				currWindowSize = $(window).width();
+				currWindowSize = currFrameWidth;
 			}
 
 			sketch.background("green");
@@ -528,33 +526,33 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 
 			//Corner flags
 			sketch.arc(0, 0, 30, 30, 0, 1.57);
-			sketch.arc($(window).width(), 0, 30, 30, 1.57, 3.14);
+			sketch.arc(currFrameWidth, 0, 30, 30, 1.57, 3.14);
 
 			//goal
-			sketch.line($(window).width()/2 - 0.0534*$(window).width(), 0, $(window).width()/2 + 0.0534*$(window).width(), 0);
+			sketch.line(currFrameWidth/2 - 0.0534*currFrameWidth, 0, currFrameWidth/2 + 0.0534*currFrameWidth, 0);
 
 			//Outer box
-			sketch.line($(window).width()/2 - 0.2943*$(window).width(), 0, $(window).width()/2 - 0.2943*$(window).width(), 0.2409*$(window).width());
-			sketch.line($(window).width()/2 + 0.2943*$(window).width(), 0, $(window).width()/2 + 0.2943*$(window).width(), 0.2409*$(window).width());
-			sketch.line($(window).width()/2 - 0.2943*$(window).width(), 0.2409*$(window).width(), $(window).width()/2 + 0.2943*$(window).width(), 0.2409*$(window).width());
+			sketch.line(currFrameWidth/2 - 0.2943*currFrameWidth, 0, currFrameWidth/2 - 0.2943*currFrameWidth, 0.2409*currFrameWidth);
+			sketch.line(currFrameWidth/2 + 0.2943*currFrameWidth, 0, currFrameWidth/2 + 0.2943*currFrameWidth, 0.2409*currFrameWidth);
+			sketch.line(currFrameWidth/2 - 0.2943*currFrameWidth, 0.2409*currFrameWidth, currFrameWidth/2 + 0.2943*currFrameWidth, 0.2409*currFrameWidth);
 
 			//Inner box
-			sketch.line($(window).width()/2 + 0.1337*$(window).width(), 0, $(window).width()/2 + 0.1337*$(window).width(), 0.0803*$(window).width());
-			sketch.line($(window).width()/2 - 0.1337*$(window).width(), 0, $(window).width()/2 - 0.1337*$(window).width(), 0.0803*$(window).width());
-			sketch.line($(window).width()/2 - 0.1337*$(window).width(), 0.0803*$(window).width(), $(window).width()/2 + 0.1337*$(window).width(), 0.0803*$(window).width());
+			sketch.line(currFrameWidth/2 + 0.1337*currFrameWidth, 0, currFrameWidth/2 + 0.1337*currFrameWidth, 0.0803*currFrameWidth);
+			sketch.line(currFrameWidth/2 - 0.1337*currFrameWidth, 0, currFrameWidth/2 - 0.1337*currFrameWidth, 0.0803*currFrameWidth);
+			sketch.line(currFrameWidth/2 - 0.1337*currFrameWidth, 0.0803*currFrameWidth, currFrameWidth/2 + 0.1337*currFrameWidth, 0.0803*currFrameWidth);
 
 			//Penalty spot and arc outside box
-			sketch.ellipse($(window).width()/2, 0.1606*$(window).width(), 5, 5);
-			sketch.arc($(window).width()/2, 0.1606*$(window).width(), 0.2671*$(window).width(), 0.2671*$(window).width(), 0.65, 2.48);
+			sketch.ellipse(currFrameWidth/2, 0.1606*currFrameWidth, 5, 5);
+			sketch.arc(currFrameWidth/2, 0.1606*currFrameWidth, 0.2671*currFrameWidth, 0.2671*currFrameWidth, 0.65, 2.48);
 
 			sketch.stroke(0, 0, 0);
 
 			//sidelines
 			sketch.strokeWeight(4);
-			sketch.line(0, 0, $(window).width()/2 - 0.0534*$(window).width(), 0);
-			sketch.line($(window).width()/2 + 0.0534*$(window).width(), 0, $(window).width(), 0);
+			sketch.line(0, 0, currFrameWidth/2 - 0.0534*currFrameWidth, 0);
+			sketch.line(currFrameWidth/2 + 0.0534*currFrameWidth, 0, currFrameWidth, 0);
 			sketch.line(0, 0, 0, $(window).height());
-			sketch.line($(window).width(), 0, $(window).width(), $(window).height());
+			sketch.line(currFrameWidth, 0, currFrameWidth, $(window).height());
 		}
 
 		/* Used to set where the mouse was initially clicked for dragging operations. */

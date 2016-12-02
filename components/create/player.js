@@ -3,11 +3,11 @@ function Player(sketch, attackTeam, id, number, color, shape) {
 
 	/* Set variables that will need to be stored for this player. */
 	if (attackTeam) {
-		this.x = 0.3 + 0.01*(number%23);
-		this.y = 0.2 + 0.01*(number%23);
+		this.x = 0.3 + 0.01*(number%17);
+		this.y = 0.2 + 0.01*(number%17);
 	} else {
-		this.x = 0.7 - 0.01*(number%23);
-		this.y = 0.2 + 0.01*(number%23);
+		this.x = 0.7 - 0.01*(number%17);
+		this.y = 0.2 + 0.01*(number%17);
 	}
 	this.attackTeam = attackTeam;
 	this.id = id;
@@ -35,7 +35,7 @@ function Player(sketch, attackTeam, id, number, color, shape) {
 				} else {
 					section.startPercentage = this.history[i-1].endPercentage;
 					var interval = (1 - section.startPercentage) / (this.history.length - i);
-					section.endTime = section.startPercentage + interval;
+					section.endPercentage = section.startPercentage + interval;
 				}
 				section.startTime = section.startPercentage * playTime;
 				section.endTime = section.endPercentage * playTime;
@@ -89,7 +89,7 @@ function Player(sketch, attackTeam, id, number, color, shape) {
 			sketch.ellipse(this.x * $(window).width(), this.y * $(window).width(), radius, radius);
 		} else if (this.shape === "triangle") {
 			if (this.currentNumber >= 10) {
-				numberDisplay.position(-6.5 + this.x * $(window).width(), 42 + this.y * $(window).width());
+				numberDisplay.position(-6.5 + this.x * $(window).width(), 44 + this.y * $(window).width());
 			} else {
 				numberDisplay.position(-3.5 + this.x * $(window).width(), 42 + this.y * $(window).width());
 			}

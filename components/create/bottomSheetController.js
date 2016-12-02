@@ -1,12 +1,27 @@
 soccerDraw.controller('BottomSheetController', BottomSheetController);
 
-BottomSheetController.$inject = ['$scope', '$resource', '$mdBottomSheet', 'allPlayers', 'playTime'];
-function BottomSheetController($scope, $resource, $mdBottomSheet, allPlayers, playTime) {
+BottomSheetController.$inject = ['$scope', '$resource', '$mdBottomSheet', 'allPlayers', 'playTime', 'gameBall'];
+function BottomSheetController($scope, $resource, $mdBottomSheet, allPlayers, playTime, gameBall) {
 	$scope.bottomSheet = {};
 	$scope.bottomSheet.players = allPlayers;
+	$scope.bottomSheet.ball = gameBall;
 
 	for (var i = 0; i < allPlayers.length; i++) {
 		var player = allPlayers[i];
+		setStartAndEndTime(player);
+	}
+	setStartAndEndTime($scope.bottomSheet.ball);
+
+	$scope.save = function() {
+		for (var i = 0; i < $scope.bottomSheet.players.length; i++) {
+			var player = $scope.bottomSheet.players[i];
+			updateHistory(player);
+		}
+		updateHistory($scope.bottomSheet.ball);
+		$mdBottomSheet.hide({players: $scope.bottomSheet.players, ball: $scope.bottomSheet.ball});
+	}
+
+	function setStartAndEndTime(player) {
 		var history = player.getHistory();
 		var numSections = history.length;
 		var interval = playTime / numSections;
@@ -27,23 +42,21 @@ function BottomSheetController($scope, $resource, $mdBottomSheet, allPlayers, pl
 				section.timesPicked = true;
 			}
 			section.startTime = section.startPercentage * playTime;
+			section.startTime = parseFloat(section.startTime.toFixed(4));
 			section.endTime = section.endPercentage * playTime;
+			section.endTime = parseFloat(section.endTime.toFixed(4));
 		}
 	}
 
-	$scope.save = function() {
-		for (var i = 0; i < $scope.bottomSheet.players.length; i++) {
-			var player = $scope.bottomSheet.players[i];
-			var history = player.getHistory();
-			for (var j = 0; j < history.length; j++) {
-				var section = history[j];
-				section.startPercentage = section.startTime / playTime;
-				section.endPercentage = section.endTime / playTime;
-				delete section.startTime;
-				delete section.endTime;
-			}
-			player.setHistory(history);
+	function updateHistory(player) {
+		var history = player.getHistory();
+		for (var j = 0; j < history.length; j++) {
+			var section = history[j];
+			section.startPercentage = section.startTime / playTime;
+			section.endPercentage = section.endTime / playTime;
+			delete section.startTime;
+			delete section.endTime;
 		}
-		$mdBottomSheet.hide($scope.bottomSheet.players);
+		player.setHistory(history);
 	}
 }

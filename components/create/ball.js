@@ -12,14 +12,15 @@ function Ball(sketch) {
 			var section = this.history[i];
 			if (!section.timesPicked) {
 				if (i === 0) {
-					var interval = playTime / this.history.length;
-					section.startTime = i * interval;
-					section.endTime = (i + 1) * interval;
+					section.startPercentage = 0;
+					section.endPercentage = 1 / this.history.length;
 				} else {
-					section.startTime = this.history[i-1].endTime;
-					var interval = (playTime - section.startTime) / (this.history.length - i);
-					section.endTime = section.startTime + interval;
+					section.startPercentage = this.history[i-1].endPercentage;
+					var interval = (1 - section.startPercentage) / (this.history.length - i);
+					section.endPercentage = section.startPercentage + interval;
 				}
+				section.startTime = section.startPercentage * playTime;
+				section.endTime = section.endPercentage * playTime;
 			}
 		}
 	}
@@ -51,8 +52,8 @@ function Ball(sketch) {
 	this.combineHistory = function() {
 		var allHistory = [];
 		for (var i = 0; i < this.history.length; i++) {
-			for (var j = 0; j < this.history[i].length; j++) {
-				allHistory.push(this.history[i][j]);
+			for (var j = 0; j < this.history[i].movement.length; j++) {
+				allHistory.push(this.history[i].movement[j]);
 			}
 		}
 		return allHistory;
