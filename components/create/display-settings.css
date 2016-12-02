@@ -1,0 +1,41 @@
+.checkbox-row {
+	display: inline-block;
+	text-align: left;
+	width: 100%;
+	padding-top: 10px;
+	padding-left: 5px;
+}
+
+#toolbar-display-transform {
+	margin-left: -2%;
+	transform: skew(-25deg, 0);
+	line-height: 40px;
+	background-color: #262228;
+	z-index: 1;
+	padding-left: 2%;
+	position: relative;
+	overflow: hidden;
+	display: inline-block;
+	width: 17%;
+	height: 100%;
+}
+
+#display-name {
+	font-weight: bold;
+	color: white;
+	text-transform: uppercase;
+	font-family: Roboto, "Helvetica Neue", sans serif;
+	font-size: 14px;
+	margin-left: 2%;
+	line-height: 40px;
+	transform: skew(25deg, 0);
+	margin-right: 2%;
+	z-index: 3;
+	position: absolute;
+	display: inline-block;
+}
+
+#display-toolbar {
+	max-height: 40px;
+	min-height: 40px;
+}

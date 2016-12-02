@@ -1,0 +1,28 @@
+<md-dialog aria-label="Save Play">
+  <form ng-cloak>
+    <md-toolbar layout="row" id="save-toolbar">
+      <div class="md-toolbar-tools" style="background-color: #0375B4; max-height: 40px; min-height: 40px">
+        <span id="toolbar-save-transform"><h2 id="save-name">Save Play</h2></span>
+        <span flex></span>
+        <md-button class="md-icon-button" ng-click="cancel()">
+          <i class="material-icons">close</i>
+        </md-button>
+      </div>
+    </md-toolbar>
+
+    <md-dialog-content layout="column" class="md-dialog-content content-box">
+      <md-input-container id="name-container">
+        <label>Play Name</label>
+        <input type="text" ng-model="savePlay.name" />
+      </md-input-container>
+    </md-dialog-content>
+
+    <md-dialog-actions layout="row">
+      <span flex></span>
+      <md-button id="save-button" ng-click="save()">
+        Save
+      </md-button>
+      <span flex></span>
+    </md-dialog-actions>
+  </form>
+</md-dialog>

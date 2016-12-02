@@ -47,7 +47,7 @@ function PlayerPickerController($scope, $resource, $mdDialog, allPlayers) {
 		if (x.length !== 0) {
 			var elem = x[0];
 			if (elem.id === 'triangle') {
-				elem.setAttribute('border-bottom', '28px solid ' + $scope.attackColor);
+				elem.style.borderBottom = '28px solid ' + $scope.attackColor;
 			} else {
 				elem.style.background = $scope.attackColor;
 			}

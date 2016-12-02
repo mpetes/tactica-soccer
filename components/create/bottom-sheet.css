@@ -1,0 +1,43 @@
+.table-row {
+	font: 14px Cambria;
+}
+
+.column-entry {
+	width: 160px;
+	display: inline-block;
+	text-align: center;
+	white-space: nowrap;
+	height: 50px;
+	line-height: 50px;
+	vertical-align: center;
+	padding-right: 1%;
+}
+
+.player-editor {
+	max-height: 300px;
+	overflow: scroll;
+	padding-bottom: 0;
+	position: fixed;
+	bottom: 60px;
+}
+
+.number-input {
+	max-width: 75px;
+	text-align: center;
+}
+
+#input-holder {
+	max-height: 32px;
+	margin: 0;
+	line-height: 32px;
+	vertical-align: center;
+	width: 75px;
+	display: inline-block;
+}
+
+#save-button {
+	border: 1px solid black;
+	background-color: lightgrey;
+	font-weight: bold;
+	font: 14px Cambria;
+}

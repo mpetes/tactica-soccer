@@ -82,8 +82,9 @@ app.post('/register', function (request, response) {
     var name = request.body.name;
     var email = request.body.email;
     var ownedPlays = [];
+    var canEditPlays = [];
     var canAccessPlays = [];
-    var plays = {owned: ownedPlays, access: canAccessPlays};
+    var plays = {owned: ownedPlays, access: canAccessPlays, edit: canEditPlays};
     client.query("INSERT into Users(email, password, name, plays) VALUES('" + email + "', '" + password + "', '" + name + "', '" + JSON.stringify(plays) + "')", function(err, result) {
         done();
         if (err) { 
@@ -190,7 +191,7 @@ app.post('/create-new-play', function (request, response) {
                                 response.status(500).send(JSON.stringify(err3)); 
                                 return;
                             } else {
-                                client.query("INSERT into Plays(id, players, ball, name, owner) VALUES('" + newId.toString() +"', '" + JSON.stringify(players) + "', '" + JSON.stringify(ball) + "', '" + name + "', '" + email + "')", function(err4, insertResult) {
+                                client.query("INSERT into Plays(id, players, ball, name, owner, date) VALUES('" + newId.toString() +"', '" + JSON.stringify(players) + "', '" + JSON.stringify(ball) + "', '" + name + "', '" + email + "', '" + new Date().toString() + "')", function(err4, insertResult) {
                                     done();
                                     if (err4) {
                                         console.log("Error inserting to plays.");
@@ -248,8 +249,8 @@ app.get('/load-play', function (request, response) {
         return;
     }
 
-    var id = request.query.id;
-    var owned = request.query.owned;
+    var id = parseInt(request.query.id);
+    var canEdit = parseInt(request.query.owned);
 
     pg.connect(process.env.DATABASE_URL, function(err, client, done) {
         client.query("SELECT plays from Users where email='" + email + "'", function(err1, userResult) {
@@ -259,7 +260,7 @@ app.get('/load-play', function (request, response) {
                 return;
             }
             var plays = JSON.parse(userResult.rows[0].plays);
-            if ((plays.owned.indexOf(parseInt(id)) === -1 && plays.access.indexOf(parseInt(id)) === -1) || (parseInt(owned) && plays.owned.indexOf(parseInt(id)) === -1)) {
+            if ((plays.owned.indexOf(id) === -1 && plays.access.indexOf(id) === -1 && plays.edit.indexOf(id) === -1) || (canEdit === 1 && plays.owned.indexOf(id) === -1 && plays.edit.indexOf(id) === -1)) {
                 done();
                 console.log("Play not found in user's registry.");
                 response.status(404).send("Not allowed to see this play.");
@@ -301,15 +302,15 @@ app.get('/play-names', function(request, response) {
             var plays = JSON.parse(userResult.rows[0].plays);
             var idsString = "(";
             for (var id in ids) {
-                if (plays.owned.indexOf(parseInt(id)) === -1 && plays.access.indexOf(parseInt(id)) === -1) {
+                if (plays.owned.indexOf(parseInt(id)) === -1 && plays.access.indexOf(parseInt(id)) === -1 && plays.edit.indexOf(parseInt(id)) === -1) {
                     done();
                     response.status(500).send("You do not have permission to access this.");
                     return;
                 }
-                idsString += "'" + id + "', '";
+                idsString += "'" + id + "', ";
             }
-            idsString = idsString.substring(0, idsString.length - 3) + ")";
-            client.query("SELECT id, name, owner from Plays where id in " + idsString, function(err2, playsResult) {
+            idsString = idsString.substring(0, idsString.length - 2) + ")";
+            client.query("SELECT id, name, owner, date from Plays where id in " + idsString, function(err2, playsResult) {
                 done();
                 if (err2) {
                     response.status(500).send(JSON.stringify(err2));
@@ -336,7 +337,8 @@ app.post('/share-play', function (request, response) {
         }
 
         var emailToShare = request.body.emailToShare;
-        var playId = request.body.play;
+        var playId = parseInt(request.body.play);
+        var accessLevel = parseInt(request.body.accessLevel);
 
         client.query("SELECT plays from Users where email='" + email + "'", function(err1, userResult) {
             if (err1) {
@@ -345,7 +347,7 @@ app.post('/share-play', function (request, response) {
                 return;
             }
             var plays = JSON.parse(userResult.rows[0].plays);
-            if (plays.owned.indexOf(parseInt(playId)) === -1) {
+            if (plays.owned.indexOf(playId) === -1 && plays.edit.indexOf(playId) === -1) {
                 done();
                 console.log("You do not have permission to share this play.");
                 response.status(404).send("Not allowed to share this play.");
@@ -358,7 +360,15 @@ app.post('/share-play', function (request, response) {
                     return;
                 }
                 var sharePlays = JSON.parse(shareResult.rows[0].plays);
-                if(sharePlays.owned.indexOf(parseInt(playId)) === -1 && sharePlays.access.indexOf(parseInt(playId))) sharePlays.access.push(parseInt(playId));
+                if (accessLevel === 0 && sharePlays.access.indexOf(playId) === -1) {
+                    sharePlays.access.push(playId);
+                } else if (accessLevel === 1 && sharePlays.edit.indexOf(playId) === -1 && sharePlays.owned.indexOf(playId) === -1) {
+                    sharePlays.edit.push(playId);
+                } else {
+                    done();
+                    response.status(500).send("This user already has access!");
+                    return;
+                }
                 client.query("UPDATE Users SET plays='" + JSON.stringify(sharePlays) + "' where email='" + emailToShare + "'", function(err3, updateResult) {        
                     done();
                     if (err3) {

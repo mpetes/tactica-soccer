@@ -1,0 +1,36 @@
+<md-dialog aria-label="Add Player">
+  <form ng-cloak>
+    <md-toolbar layout="row" id="display-toolbar">
+      <div class="md-toolbar-tools" style="background-color: #0375B4; max-height: 40px; min-height: 40px">
+        <span id="toolbar-display-transform"><h2 id="display-name">Display Settings</h2></span>
+        <span flex></span>
+        <md-button class="md-icon-button" ng-click="cancel()">
+          <i class="material-icons">close</i>
+        </md-button>
+      </div>
+    </md-toolbar>
+
+    <md-dialog-content layout="column" class="md-dialog-content content-box">
+      <div class="checkbox-row">
+        <md-checkbox ng-model="displaySettings.recording"><b>Start recording?</b> Shift + R shortcut</md-checkbox>
+      </div>
+      <div class="checkbox-row">
+        <md-checkbox ng-model="displaySettings.trail"><b>Trails follow players?</b> Shift + T shortcut</md-checkbox>
+      </div>
+      <div class="checkbox-row">
+        <md-checkbox ng-model="displaySettings.ball"><b>Use ball?</b> Shift + B shortcut</md-checkbox>
+      </div>
+      <div class="checkbox-row">
+        <md-checkbox ng-model="displaySettings.advanced"><b>Trace exact path of movement?</b> Shift + E shortcut</md-checkbox>
+      </div>
+    </md-dialog-content>
+
+    <md-dialog-actions layout="row">
+      <span flex></span>
+      <md-button id="save-button" ng-click="save()">
+        Save
+      </md-button>
+      <span flex></span>
+    </md-dialog-actions>
+  </form>
+</md-dialog>

@@ -1,6 +1,6 @@
 <div class="background-image">
 	<div class="mask">
-		<div ng-if="messageToShow" class="login-response">{{messageReport}}</div>
+		<div id="login-response">{{messageReport || "placeholder"}}</div>
 		<form name="loginForm" class="login">
 			<div class="title"><b>Returning User?</b></div>
 
@@ -12,7 +12,7 @@
 					
 			<div style="text-align:center"><md-button id="login-button" ng-click="attemptLogin()">Login</md-button></div>
 		</form>
-		<form name="registerForm" class="register">
+		<!--<form name="registerForm" class="register">
 			<div class="title"><b>New User?</b></div>
 
 			<div class="heading"><i>Email</i></div>
@@ -28,6 +28,6 @@
 			<div><input class="input-form" type="password" aria-label="registerPassword2" name="registerPassword2" ng-model="newUser.password2" md-minlength="6"/></div>
 
 			<div style="text-align:center"><md-button id="login-button" ng-click="attemptRegister()">Register</md-button></div>
-		</form>
+		</form>-->
 	</div>
 </div>

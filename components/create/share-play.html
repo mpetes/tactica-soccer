@@ -1,0 +1,29 @@
+<md-dialog aria-label="Share Play">
+  <form ng-cloak>
+    <md-toolbar layout="row" id="share-toolbar">
+      <div class="md-toolbar-tools" style="background-color: #0375B4; max-height: 40px; min-height: 40px">
+        <span id="toolbar-share-transform"><h2 id="share-name">Share Play</h2></span>
+        <span flex></span>
+        <md-button class="md-icon-button" ng-click="cancel()">
+          <i class="material-icons">close</i>
+        </md-button>
+      </div>
+    </md-toolbar>
+
+    <md-dialog-content layout="column" class="md-dialog-content content-box">
+      <md-input-container id="email-container">
+        <label>Email to Share With</label>
+        <input type="text" ng-model="sharePlay.email" />
+      </md-input-container>
+      <md-checkbox ng-model="sharePlay.accessLevel"><b>Allow editor privileges?</b></md-checkbox>
+    </md-dialog-content>
+
+    <md-dialog-actions layout="row">
+      <span flex></span>
+      <md-button id="save-button" ng-click="save()">
+        Share
+      </md-button>
+      <span flex></span>
+    </md-dialog-actions>
+  </form>
+</md-dialog>
