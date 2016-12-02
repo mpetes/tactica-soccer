@@ -7,6 +7,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 		var userEmail = document.getElementById('user-email').innerHTML;
 		var userOwned = document.getElementById('user-owned').innerHTML;
 		if (userOwned !== "0" && userOwned !== "1") userOwned = -1;
+		var playName = "";
 
 		/* Constants. */
 		var FRAME_RATE = 60;
@@ -168,7 +169,13 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 					if (userOwned === "1") {
 						setupEditing();
 						setupSharing();
-					} 
+					}
+					var playNamesRes = $resource("/play-names", {}, {query: {method:'GET', isArray: true}});
+					playNamesRes.query({email: userEmail, ids: [playId]}, function(response) {
+						playName = response[0].name
+					}, function errorHandling(err) {
+						console.log("Failed to fetch play names.");
+					});
 				}, function errorHandling(err) {
 					console.log("Failed to fetch play with id " + playId + ".");
 				});
@@ -288,11 +295,15 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 				$mdDialog.show({
 					templateUrl: 'components/create/save-play.html',
 					controller: 'SavePlayController',
-					parent: angular.element(document.body)
+					parent: angular.element(document.body),
+					locals: {
+						name: playName
+					}
 			    })
 			    .then(function(result) {
 			    	var email = document.getElementById('user-email').innerHTML;
 			    	var name = JSON.parse(result).name;
+			    	playName = name;
 					var playerData = [];
 					for (var i = 0; i < players.length; i++) {
 						var player = players[i];

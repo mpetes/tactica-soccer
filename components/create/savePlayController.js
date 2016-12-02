@@ -1,9 +1,9 @@
 soccerDraw.controller('SavePlayController', SavePlayController);
 
-SavePlayController.$inject = ['$scope', '$mdDialog'];
-function SavePlayController($scope,  $mdDialog) {
+SavePlayController.$inject = ['$scope', '$mdDialog', 'name'];
+function SavePlayController($scope,  $mdDialog, name) {
 	$scope.savePlay = {};
-	$scope.savePlay.name = "";
+	$scope.savePlay.name = name;
 
 	$scope.cancel = function() {
 		$mdDialog.cancel();

@@ -110,16 +110,16 @@ md-dialog {
 }
 
 #toolbar-team-transform {
-	margin-left: -2%;
+	margin-left: -3%;
 	transform: skew(-25deg, 0);
 	line-height: 40px;
 	background-color: #262228;
 	z-index: 1;
-	padding-left: 2%;
+	padding-left: 3%;
 	position: relative;
 	overflow: hidden;
 	display: inline-block;
-	width: 15%;
+	width: 17%;
 	height: 100%;
 }
 
@@ -129,7 +129,7 @@ md-dialog {
 	text-transform: uppercase;
 	font-family: Roboto, "Helvetica Neue", sans serif;
 	font-size: 14px;
-	margin-left: 2%;
+	margin-left: 3%;
 	line-height: 40px;
 	transform: skew(25deg, 0);
 	margin-right: 2%;

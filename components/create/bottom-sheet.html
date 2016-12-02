@@ -1,4 +1,4 @@
-<md-bottom-sheet class="player-editor">
+<md-bottom-sheet class="player-editor" md-is-locked-open="bottomSheet.close">
 	<span ng-cloak>
 		<div class="table-row">
 			<span class="column-entry"><b>Player Number</b></span>
@@ -7,27 +7,14 @@
 		</div>
 	    <md-list flex layout="row" layout-align="left center">
 	    	<div class="table-row">
-				<md-list-item style="padding-left:0; background-color:rgba({{player.color.red}}, {{player.color.green}}, {{player.color.blue}}, 0.5)" ng-repeat="player in bottomSheet.players">
-					<span class="column-entry">{{player.currentNumber}}</span>
+				<md-list-item style="padding-left:0" ng-repeat="player in bottomSheet.players">
+					<span style="background-color:rgba({{player.color.red}}, {{player.color.green}}, {{player.color.blue}}, 0.5)" class="column-entry">{{player.currentNumber}}</span>
 					<span class="column-entry" ng-repeat="section in player.history">
 						<md-input-container id="input-holder">
 							<input type="number" min="{{player.history[$index - 1].endTime || 0}}" max="{{section.endTime}}" step="0.1" class="number-input" aria-label="startTime" ng-model="section.startTime" maxlength="4">
 						</md-input-container>
 						<md-input-container id="input-holder">
 							<input type="number" min="{{section.startTime}}" max="{{player.history[$index + 1].startTime || 25}}" step="0.1" class="number-input" aria-label="endTime" ng-model="section.endTime" maxlength="4">
-						</md-input-container>
-					</span>
-				</md-list-item>
-			</div>
-			<div class="table-row" ng-if="bottomSheet.ball.x !== undefined">
-				<md-list-item style="padding-left:0; background-color:rgba(255, 255, 255, 0.5)">
-					<span class="column-entry">Ball</span>
-					<span class="column-entry" ng-repeat="section in bottomSheet.ball.history">
-						<md-input-container id="input-holder">
-							<input type="number" min="{{bottomSheet.ball.history[$index - 1].endTime || 0}}" max="{{section.endTime}}" step="0.1" class="number-input" aria-label="startTime" ng-model="section.startTime" maxlength="4">
-						</md-input-container>
-						<md-input-container id="input-holder">
-							<input type="number" min="{{section.startTime}}" max="{{bottomSheet.ball.history[$index + 1].startTime || 25}}" step="0.1" class="number-input" aria-label="endTime" ng-model="section.endTime" maxlength="4">
 						</md-input-container>
 					</span>
 				</md-list-item>

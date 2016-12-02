@@ -3,21 +3,28 @@ soccerDraw.controller('BottomSheetController', BottomSheetController);
 BottomSheetController.$inject = ['$scope', '$resource', '$mdBottomSheet', 'allPlayers', 'playTime', 'gameBall'];
 function BottomSheetController($scope, $resource, $mdBottomSheet, allPlayers, playTime, gameBall) {
 	$scope.bottomSheet = {};
-	$scope.bottomSheet.players = allPlayers;
+	$scope.bottomSheet.close = true;
+	$scope.bottomSheet.players = allPlayers.slice();
+	gameBall.currentNumber = "Ball"; 
 	$scope.bottomSheet.ball = gameBall;
+	if (gameBall.history.length !== 0) $scope.bottomSheet.players.push(gameBall);
 
 	for (var i = 0; i < allPlayers.length; i++) {
 		var player = allPlayers[i];
 		setStartAndEndTime(player);
 	}
-	setStartAndEndTime($scope.bottomSheet.ball);
 
 	$scope.save = function() {
 		for (var i = 0; i < $scope.bottomSheet.players.length; i++) {
 			var player = $scope.bottomSheet.players[i];
+			for (var j = 0; j < player.history.length; j++) {
+				var section = player.history[j];
+				section.timesPicked = true;
+			}
 			updateHistory(player);
 		}
-		updateHistory($scope.bottomSheet.ball);
+		if (gameBall.history.length !== 0) $scope.bottomSheet.ball = $scope.bottomSheet.players.pop();
+		delete $scope.bottomSheet.ball.currentNumber;
 		$mdBottomSheet.hide({players: $scope.bottomSheet.players, ball: $scope.bottomSheet.ball});
 	}
 
@@ -30,16 +37,12 @@ function BottomSheetController($scope, $resource, $mdBottomSheet, allPlayers, pl
 			if (!section.timesPicked) {
 				if (j > 0 && history[j-1].timesPicked) {
 					section.startPercentage = history[j-1].endPercentage;
+					section.endPercentage = section.startPercentage;
+					section.timesPicked = true;
 				} else {
 					section.startPercentage = j / numSections;
-				}
-
-				if (j + 1 < numSections && history[j+1].timesPicked) {
-					section.endPercentage = history[j+1].startPercentage;
-				} else {
 					section.endPercentage = (j+1) / numSections;
 				}
-				section.timesPicked = true;
 			}
 			section.startTime = section.startPercentage * playTime;
 			section.startTime = parseFloat(section.startTime.toFixed(4));

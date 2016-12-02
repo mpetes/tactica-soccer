@@ -4,6 +4,8 @@
 
 .column-entry {
 	width: 160px;
+	min-width: 160px;
+	max-width: 160px;
 	display: inline-block;
 	text-align: center;
 	white-space: nowrap;
@@ -40,4 +42,8 @@
 	background-color: lightgrey;
 	font-weight: bold;
 	font: 14px Cambria;
+}
+
+md-list-item {
+	width: 100%;
 }

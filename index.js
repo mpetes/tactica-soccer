@@ -102,6 +102,7 @@ app.post('/update-play', function(request, response) {
         var email = request.body.userEmail;
         var players = request.body.userPlayers;
         var ball = request.body.userBall;
+        var name = request.body.playName;
 
          /* Reject attempted logouts with no one logged in. */
         if (request.session.loggedIn !== true) {
@@ -128,7 +129,7 @@ app.post('/update-play', function(request, response) {
                 response.status(404).send(JSON.stringify(err1));
                 return;
             }
-            client.query("UPDATE Plays SET players='" + JSON.stringify(players) + "', ball='" + JSON.stringify(ball) + "' WHERE id='" + id + "'", function (err2, playResult) {
+            client.query("UPDATE Plays SET players='" + JSON.stringify(players) + "', ball='" + JSON.stringify(ball) + "', name='" + name + "' WHERE id='" + id + "'", function (err2, playResult) {
                 done();
                 if (err2) {
                     console.log("Error updating play.");
