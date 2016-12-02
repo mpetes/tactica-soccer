@@ -29,15 +29,14 @@ soccerDraw.controller('PlaybookController', ['$scope', '$http', '$resource', '$l
 					playbookInfo.name = response[i].name;
 					playbookInfo.owner = response[i].owner;
 					playbookInfo.date = response[i].date;
-					console.log(plays);
 					if (plays.owned.indexOf(parseInt(response[i].id)) !== -1) {
-						playbookInfo.edit = "Yes";
+						playbookInfo.edit = 1;
 						$scope.playbook.myPlays.push(playbookInfo);
 					} else if (plays.edit.indexOf(parseInt(response[i].id)) !== -1) {
-						playbookInfo.edit = "Yes";
+						playbookInfo.edit = 1;
 						$scope.playbook.sharedPlays.push(playbookInfo);
 					} else {
-						playbookInfo.edit = "No";
+						playbookInfo.edit = 0;
 						$scope.playbook.sharedPlays.push(playbookInfo);
 					}
 				}
@@ -50,8 +49,6 @@ soccerDraw.controller('PlaybookController', ['$scope', '$http', '$resource', '$l
 	}
 
 	$scope.viewPlay = function(playId, playAccess) {
-		var accessLevel = 0;
-		if (playAccess === "Yes") accessLevel = 1;
-		$location.path('/Playbook/' + playId + "/" + accessLevel);
+		$location.path('/Playbook/' + playId + "/" + playAccess);
 	}
 }]);
