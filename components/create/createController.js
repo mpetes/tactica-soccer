@@ -12,8 +12,13 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 		/* Constants. */
 		var FRAME_RATE = 60;
 		var CANVAS_Y_OFFSET = 60;
+		var CANVAS_OFFSET_FROM_TOP = 40 + CANVAS_Y_OFFSET;
 		var BUTTON_Y_OFFSET = 12;
-		var CURRENT_TIME_DISPLAY_DELAY = 1500;
+		var CURRENT_TIME_DISPLAY_DELAY = 1000;
+
+		/* Globals used for field display. */
+		var whiteBackground = false;
+		var fullField = false;
 
 		/* Globals used for representing players. */
 		var players = [];
@@ -36,7 +41,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 		var mouseCurrentlyPressed = false;
 
 		/* Globals used to check for changing window size. */
-		var currWindowSize = 0;
+		var currWindowSize = {width: 0, height: 0};
 		var canvas;
 		var trashCan = null;
 
@@ -52,22 +57,24 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 			if (e.shiftKey) {
 				if (e.keyCode === 82) {
 			   		recording = !recording;
-				}
-				if (e.keyCode === 84) {
+				} else if (e.keyCode === 84) {
 					trail = !trail;
-				} 
-				if (e.keyCode === 69) {
+				} else if (e.keyCode === 69) {
 					advanced = !advanced;
-				}
-				if (e.keyCode === 66) {
+				} else if (e.keyCode === 66) {
 					ballAdded = !ballAdded;
+				} else if (e.keyCode === 87) {
+					whiteBackground = !whiteBackground;
+				} else if (e.keyCode === 70) {
+					fullField = !fullField;
 				}
 			}
 		});
 
 		/* Called once at loading of page. Sets up the canvas and necessary buttons. */
 		sketch.setup = function () {
-			currWindowSize = $(window).width();
+			currWindowSize.width = $(window).width();
+			currWindowSize.height = $(window).width() - CANVAS_OFFSET_FROM_TOP;
 			canvas = sketch.createCanvas($(window).width(), $(window).height() - CANVAS_Y_OFFSET);
 			canvas.position(0, CANVAS_Y_OFFSET);
 			sketch.frameRate(FRAME_RATE);
@@ -225,7 +232,9 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 						isRecording: recording,
 						isAdvanced: advanced,
 						isTrail: trail,
-						isBall: ballAdded
+						isBall: ballAdded,
+						isWhiteBackground: whiteBackground,
+						isFullField: fullField
 					}
 				})
 				.then(function(answer) {
@@ -234,6 +243,8 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 					advanced = settings.advanced;
 					trail = settings.trail;
 					ballAdded = settings.ball;
+					whiteBackground = settings.whiteBackground;
+					fullField = settings.fullField;
 				}, function() {
 					console.error("Could not parse display settings.");
 				});
@@ -554,46 +565,141 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 
 		/* Sets up the soccer field on the screen. */
 		function drawInitialField() {
-			var currFrameWidth = $(window).width();
-			if (currWindowSize !== currFrameWidth) {
-				canvas.size(currFrameWidth, $(window).height() - CANVAS_Y_OFFSET);
-				canvas.position(0, CANVAS_Y_OFFSET);
-				currWindowSize = currFrameWidth;
-			}
-
-			sketch.background("green");
-			sketch.stroke(255, 255, 255);
 			sketch.noFill();
 
-			//Corner flags
-			sketch.arc(0, 0, 30, 30, 0, 1.57);
-			sketch.arc(currFrameWidth, 0, 30, 30, 1.57, 3.14);
+			if (!fullField) {
+				var currFrameWidth = $(window).width();
+				if (currWindowSize.width !== currFrameWidth) {
+					canvas.size(currFrameWidth, $(window).height() - CANVAS_Y_OFFSET);
+					canvas.position(0, CANVAS_Y_OFFSET);
+					currWindowSize.width = currFrameWidth;
+				}
 
-			//goal
-			sketch.line(currFrameWidth/2 - 0.0534*currFrameWidth, 0, currFrameWidth/2 + 0.0534*currFrameWidth, 0);
+				//goal
+				sketch.stroke(255, 255, 255);
+				sketch.strokeWeight(4);
+				sketch.line(currFrameWidth/2 - 0.0534*currFrameWidth, 0, currFrameWidth/2 + 0.0534*currFrameWidth, 0);
 
-			//Outer box
-			sketch.line(currFrameWidth/2 - 0.2943*currFrameWidth, 0, currFrameWidth/2 - 0.2943*currFrameWidth, 0.2409*currFrameWidth);
-			sketch.line(currFrameWidth/2 + 0.2943*currFrameWidth, 0, currFrameWidth/2 + 0.2943*currFrameWidth, 0.2409*currFrameWidth);
-			sketch.line(currFrameWidth/2 - 0.2943*currFrameWidth, 0.2409*currFrameWidth, currFrameWidth/2 + 0.2943*currFrameWidth, 0.2409*currFrameWidth);
+				if (!whiteBackground) {
+					sketch.background("green");
+				} else {
+					sketch.background("white");
+					sketch.stroke(0, 0, 0);
+				}
 
-			//Inner box
-			sketch.line(currFrameWidth/2 + 0.1337*currFrameWidth, 0, currFrameWidth/2 + 0.1337*currFrameWidth, 0.0803*currFrameWidth);
-			sketch.line(currFrameWidth/2 - 0.1337*currFrameWidth, 0, currFrameWidth/2 - 0.1337*currFrameWidth, 0.0803*currFrameWidth);
-			sketch.line(currFrameWidth/2 - 0.1337*currFrameWidth, 0.0803*currFrameWidth, currFrameWidth/2 + 0.1337*currFrameWidth, 0.0803*currFrameWidth);
+				//Corner flags
+				sketch.arc(0, 0, 30, 30, 0, 1.57);
+				sketch.arc(currFrameWidth, 0, 30, 30, 1.57, 3.14);
 
-			//Penalty spot and arc outside box
-			sketch.ellipse(currFrameWidth/2, 0.1606*currFrameWidth, 5, 5);
-			sketch.arc(currFrameWidth/2, 0.1606*currFrameWidth, 0.2671*currFrameWidth, 0.2671*currFrameWidth, 0.65, 2.48);
+				//Outer box
+				sketch.line(currFrameWidth/2 - 0.2943*currFrameWidth, 0, currFrameWidth/2 - 0.2943*currFrameWidth, 0.2409*currFrameWidth);
+				sketch.line(currFrameWidth/2 + 0.2943*currFrameWidth, 0, currFrameWidth/2 + 0.2943*currFrameWidth, 0.2409*currFrameWidth);
+				sketch.line(currFrameWidth/2 - 0.2943*currFrameWidth, 0.2409*currFrameWidth, currFrameWidth/2 + 0.2943*currFrameWidth, 0.2409*currFrameWidth);
 
-			sketch.stroke(0, 0, 0);
+				//Inner box
+				sketch.line(currFrameWidth/2 + 0.1337*currFrameWidth, 0, currFrameWidth/2 + 0.1337*currFrameWidth, 0.0803*currFrameWidth);
+				sketch.line(currFrameWidth/2 - 0.1337*currFrameWidth, 0, currFrameWidth/2 - 0.1337*currFrameWidth, 0.0803*currFrameWidth);
+				sketch.line(currFrameWidth/2 - 0.1337*currFrameWidth, 0.0803*currFrameWidth, currFrameWidth/2 + 0.1337*currFrameWidth, 0.0803*currFrameWidth);
 
-			//sidelines
-			sketch.strokeWeight(4);
-			sketch.line(0, 0, currFrameWidth/2 - 0.0534*currFrameWidth, 0);
-			sketch.line(currFrameWidth/2 + 0.0534*currFrameWidth, 0, currFrameWidth, 0);
-			sketch.line(0, 0, 0, $(window).height());
-			sketch.line(currFrameWidth, 0, currFrameWidth, $(window).height());
+				//Penalty spot and arc outside box
+				sketch.ellipse(currFrameWidth/2, 0.1606*currFrameWidth, 5, 5);
+				sketch.arc(currFrameWidth/2, 0.1606*currFrameWidth, 0.2671*currFrameWidth, 0.2671*currFrameWidth, 0.65, 2.48);
+
+				sketch.stroke(0, 0, 0);
+
+				//sidelines
+				sketch.strokeWeight(4);
+				sketch.line(0, 0, currFrameWidth/2 - 0.0534*currFrameWidth, 0);
+				sketch.line(currFrameWidth/2 + 0.0534*currFrameWidth, 0, currFrameWidth, 0);
+				sketch.line(0, 0, 0, $(window).height());
+				sketch.line(currFrameWidth, 0, currFrameWidth, $(window).height());
+			} else {
+				var currFrameHeight = $(window).height() - CANVAS_OFFSET_FROM_TOP;
+				var scaledWidth = currFrameHeight * (115/75);
+				if (currWindowSize.height !== currFrameHeight) {
+					canvas.size(scaledWidth, currFrameHeight);
+					canvas.position($(window).width() - scaledWidth - 0.5 * ($(window).width() - scaledWidth), CANVAS_Y_OFFSET);
+					currWindowSize.width = currFrameWidth;
+				}
+
+				//LEFT SIDE
+				//goal
+				sketch.stroke(255, 255, 255);
+				sketch.strokeWeight(3);
+				sketch.line(0, currFrameHeight/2 - 0.0534*currFrameHeight, 0, currFrameHeight/2 + 0.0534*currFrameHeight);
+
+				if (!whiteBackground) {
+					sketch.background("green");
+				} else {
+					sketch.background("white");
+					sketch.stroke(0, 0, 0);
+				}
+
+				//Corner flags
+				sketch.arc(0, 0, 30, 30, 0, 1.57);
+				sketch.arc(0, currFrameHeight, 30, 30, 4.71, 0);
+
+				//midfield
+				sketch.strokeWeight(2);
+				sketch.line(scaledWidth/2, 0, scaledWidth/2, currFrameHeight);
+				sketch.arc(scaledWidth/2, currFrameHeight/2, 0.24 * currFrameHeight, 0.24 * currFrameHeight, 0, 6.28);
+				sketch.strokeWeight(3);
+				sketch.ellipse(scaledWidth/2, currFrameHeight/2, 5, 5);
+
+				//Outer box
+				sketch.line(0, currFrameHeight/2 - 0.2943*currFrameHeight, 0.2409*currFrameHeight, currFrameHeight/2 - 0.2943*currFrameHeight);
+				sketch.line(0, currFrameHeight/2 + 0.2943*currFrameHeight, 0.2409*currFrameHeight, currFrameHeight/2 + 0.2943*currFrameHeight);
+				sketch.line(0.2409*currFrameHeight, currFrameHeight/2 - 0.2943*currFrameHeight, 0.2409*currFrameHeight, currFrameHeight/2 + 0.2943*currFrameHeight);
+			
+				//Inner box
+				sketch.line(0, currFrameHeight/2 + 0.1337*currFrameHeight, 0.0803*currFrameHeight, currFrameHeight/2 + 0.1337*currFrameHeight);
+				sketch.line(0, currFrameHeight/2 - 0.1337*currFrameHeight, 0.0803*currFrameHeight, currFrameHeight/2 - 0.1337*currFrameHeight);
+				sketch.line(0.0803*currFrameHeight, currFrameHeight/2 - 0.1337*currFrameHeight, 0.0803*currFrameHeight, currFrameHeight/2 + 0.1337*currFrameHeight);
+
+				//Penalty spot and arc outside box
+				sketch.ellipse(0.1606*currFrameHeight, currFrameHeight/2, 5, 5);
+				sketch.arc(0.1606*currFrameHeight, currFrameHeight/2, 0.2671*currFrameHeight, 0.2671*currFrameHeight, -0.90, 0.9);
+
+				sketch.stroke(0, 0, 0);
+
+				//sidelines
+				sketch.strokeWeight(3);
+				sketch.line(0, 0, 0, currFrameHeight/2 - 0.0534*currFrameHeight);
+				sketch.line(0, currFrameHeight/2 + 0.0534*currFrameHeight, 0, currFrameHeight);
+				sketch.line(0, 0, scaledWidth, 0);
+				sketch.line(0, currFrameHeight, scaledWidth, currFrameHeight);
+
+				//RIGHT SIDE
+				//goal
+				sketch.stroke(255, 255, 255);
+				sketch.line(scaledWidth, currFrameHeight/2 - 0.0534*currFrameHeight, scaledWidth, currFrameHeight/2 + 0.0534*currFrameHeight);
+
+				if (whiteBackground) sketch.stroke(0, 0, 0);
+
+				//Corner flags
+				sketch.arc(scaledWidth, 0, 30, 30, 1.57, 3.14); 
+				sketch.arc(scaledWidth, currFrameHeight, 30, 30, 3.14, 4.71); 
+
+				//Outer box
+				sketch.line(scaledWidth, currFrameHeight/2 - 0.2943*currFrameHeight, scaledWidth - 0.2409*currFrameHeight, currFrameHeight/2 - 0.2943*currFrameHeight);
+				sketch.line(scaledWidth, currFrameHeight/2 + 0.2943*currFrameHeight, scaledWidth - 0.2409*currFrameHeight, currFrameHeight/2 + 0.2943*currFrameHeight);
+				sketch.line(scaledWidth - 0.2409*currFrameHeight, currFrameHeight/2 - 0.2943*currFrameHeight, scaledWidth - 0.2409*currFrameHeight, currFrameHeight/2 + 0.2943*currFrameHeight);
+			
+				//Inner box
+				sketch.line(scaledWidth, currFrameHeight/2 + 0.1337*currFrameHeight, scaledWidth - 0.0803*currFrameHeight, currFrameHeight/2 + 0.1337*currFrameHeight);
+				sketch.line(scaledWidth, currFrameHeight/2 - 0.1337*currFrameHeight, scaledWidth - 0.0803*currFrameHeight, currFrameHeight/2 - 0.1337*currFrameHeight);
+				sketch.line(scaledWidth - 0.0803*currFrameHeight, currFrameHeight/2 - 0.1337*currFrameHeight, scaledWidth - 0.0803*currFrameHeight, currFrameHeight/2 + 0.1337*currFrameHeight);
+
+				//Penalty spot and arc outside box
+				sketch.ellipse(scaledWidth - 0.1606*currFrameHeight, currFrameHeight/2, 5, 5);
+				sketch.arc(scaledWidth - 0.1606*currFrameHeight, currFrameHeight/2, 0.2671*currFrameHeight, 0.2671*currFrameHeight, 2.2, 4.05);
+
+				sketch.stroke(0, 0, 0);
+
+				//sidelines
+				sketch.line(scaledWidth, 0, scaledWidth, currFrameHeight/2 - 0.0534*currFrameHeight);
+				sketch.line(scaledWidth, currFrameHeight/2 + 0.0534*currFrameHeight, scaledWidth, currFrameHeight);
+			}
 		}
 
 		/* Used to set where the mouse was initially clicked for dragging operations. */

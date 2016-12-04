@@ -45,9 +45,9 @@ function BottomSheetController($scope, $resource, $mdBottomSheet, allPlayers, pl
 				}
 			}
 			section.startTime = section.startPercentage * playTime;
-			section.startTime = parseFloat(section.startTime.toFixed(4));
+			section.startTime = parseFloat(section.startTime.toFixed(2));
 			section.endTime = section.endPercentage * playTime;
-			section.endTime = parseFloat(section.endTime.toFixed(4));
+			section.endTime = parseFloat(section.endTime.toFixed(2));
 		}
 	}
 
