@@ -1,11 +1,11 @@
-<md-bottom-sheet class="player-editor" md-is-locked-open="bottomSheet.close">
+<md-bottom-sheet id="player-editor" md-is-locked-open="bottomSheet.close">
 	<span ng-cloak>
 		<div class="table-row">
 			<span class="column-entry"><b>Player Number</b></span>
 			<span class="column-entry"><b>Section Start & End Times</b></span>
 			<span class="column-entry"><md-button id="save-button" ng-click="save()"><b>Save</b></md-button></span>
 		</div>
-	    <md-list flex layout="row" layout-align="left center">
+	    <md-list flex layout="row" layout-align="left center" id="player-list">
 	    	<div class="table-row">
 				<md-list-item style="padding-left:0" ng-repeat="player in bottomSheet.players">
 					<span style="background-color:rgba({{player.color.red}}, {{player.color.green}}, {{player.color.blue}}, 0.5)" class="column-entry">{{player.currentNumber}}</span>

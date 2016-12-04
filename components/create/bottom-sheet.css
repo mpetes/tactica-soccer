@@ -15,12 +15,13 @@
 	padding-right: 1%;
 }
 
-.player-editor {
+#player-editor {
 	max-height: 300px;
 	overflow: scroll;
 	padding-bottom: 0;
+	height: 100%;
 	position: fixed;
-	bottom: 60px;
+	bottom: 82px;
 }
 
 .number-input {
@@ -46,4 +47,13 @@
 
 md-list-item {
 	width: 100%;
+}
+
+#player-list {
+	padding-top: 0;
+	padding-bottom: 0;
+}
+
+md-errors-spacer {
+	max-height: 0px;
 }
