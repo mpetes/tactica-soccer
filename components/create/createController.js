@@ -19,6 +19,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 		/* Globals used for field display. */
 		var whiteBackground = false;
 		var fullField = false;
+		var addYourPlayerButton, movementButton, displayButton, saveButton;
 
 		/* Globals used for representing players. */
 		var players = [];
@@ -81,28 +82,28 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 
 			/* Add the editor tools. */
 			function setupEditing() {
-				var addYourPlayerButton = sketch.createButton('Players');
+				addYourPlayerButton = sketch.createButton('Players');
 				addYourPlayerButton.addClass("canvas-button");
 				addYourPlayerButton.addClass("md-button");
 				addYourPlayerButton.size(100, 40);
 				addYourPlayerButton.position(20, BUTTON_Y_OFFSET);
 				addYourPlayerButton.mousePressed(addYourPlayer);
 
-				var movementButton = sketch.createButton('Movement');
+				movementButton = sketch.createButton('Movement');
 				movementButton.addClass("canvas-button");
 				movementButton.addClass("md-button");
 				movementButton.size(100, 40);
 				movementButton.position(40 + addYourPlayerButton.width, BUTTON_Y_OFFSET);
 				movementButton.mousePressed(openBottomSheet);
 
-				var displayButton = sketch.createButton('Display');
+				displayButton = sketch.createButton('Display');
 				displayButton.addClass("canvas-button");
 				displayButton.addClass("md-button");
 				displayButton.size(100, 40);
 				displayButton.position(60 + addYourPlayerButton.width + movementButton.width, BUTTON_Y_OFFSET);
 				displayButton.mousePressed(openDisplay);
 
-				var saveButton = sketch.createButton('Save Play');
+				saveButton = sketch.createButton('Save Play');
 				saveButton.addClass("canvas-button");
 				saveButton.addClass("md-button");
 				saveButton.size(100, 40);
@@ -172,6 +173,10 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 				playRes.get({email: userEmail, id: playId, owned: userOwned}, function(response) {
 					var play = response;
 					var oldPlayers = JSON.parse(play.players);
+					fullField = false;
+					if (play.fieldType === "1") {
+						fullField = true;
+					}
 					for (var i = 0; i < oldPlayers.length; i++) {
 						var newPlayer = new Player(sketch, oldPlayers[i].attackTeam, oldPlayers[i].id, oldPlayers[i].currentNumber, oldPlayers[i].color, oldPlayers[i].shape);
 						newPlayer.setHistory(oldPlayers[i].history);
@@ -340,7 +345,11 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 					var ballData = {x: ball.x, y: ball.y, history: ball.history};
 					if (playId === -1) {
 						var newPlayRes = $resource('/create-new-play');
-						newPlayRes.save({userEmail: email, userPlayers: playerData, userBall: ballData, playName: name}, function(response) {
+						var fieldMode = 0;
+						if (fullField) {
+							fieldMode = 1;
+						}
+						newPlayRes.save({userEmail: email, userPlayers: playerData, userBall: ballData, playName: name, fieldType: fieldMode}, function(response) {
 							playId = response.id;
 					  		console.log("New play created with id " + playId + ".");
 					  	}, function errorHandling(err) {
@@ -484,7 +493,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 				}
 			}
 
-			player.move(newPosition.x, newPosition.y, false);
+			player.move(newPosition.x, newPosition.y, false, fullField);
 		}
 
 		/* Draws a trail for given player history array from the start to the point in the history
@@ -544,7 +553,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 
 				//Only one object should be allowed to be dragged at a time
 				if (moved === false) moved = handleDragMovement(player, recording);
-				if (!player.display()) {
+				if (!player.display(fullField)) {
 					players.splice(x, 1);
 					removeTrash();
 					delete player;
@@ -554,7 +563,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 
 			if (ballAdded) {
 				if (moved === false) moved = handleDragMovement(ball, recording);
-				if (!ball.display()) {
+				if (!ball.display(fullField)) {
 					ballAdded = false;
 					removeTrash();
 					delete ball;
@@ -715,7 +724,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 			if (mouseCurrentlyPressed === false && sketch.mouseIsPressed) {
 				setPressStartPoint();
 			}
-			if (sketch.mouseIsPressed && player.isMoving() === false && player.shouldMove(mousePressStartX, mousePressStartY)) {
+			if (sketch.mouseIsPressed && player.isMoving() === false && player.shouldMove(mousePressStartX, mousePressStartY, fullField)) {
 				player.setMovement(true, recording);
 				if (!recording) player.clearHistory();
 			} 

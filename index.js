@@ -152,6 +152,7 @@ app.post('/create-new-play', function (request, response) {
         var players = request.body.userPlayers;
         var ball = request.body.userBall;
         var name = request.body.playName;
+        var fieldType = request.body.fieldType;
 
         /* Reject attempted logouts with no one logged in. */
         if (request.session.loggedIn !== true) {
@@ -192,7 +193,7 @@ app.post('/create-new-play', function (request, response) {
                                 response.status(500).send(JSON.stringify(err3)); 
                                 return;
                             } else {
-                                client.query("INSERT into Plays(id, players, ball, name, owner, date) VALUES('" + newId.toString() +"', '" + JSON.stringify(players) + "', '" + JSON.stringify(ball) + "', '" + name + "', '" + email + "', '" + new Date().toString() + "')", function(err4, insertResult) {
+                                client.query("INSERT into Plays(id, players, ball, name, owner, date, fieldType) VALUES('" + newId.toString() +"', '" + JSON.stringify(players) + "', '" + JSON.stringify(ball) + "', '" + name + "', '" + email + "', '" + new Date().toString() + "', '" + fieldType.toString() + "')", function(err4, insertResult) {
                                     done();
                                     if (err4) {
                                         console.log("Error inserting to plays.");

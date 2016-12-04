@@ -3,11 +3,11 @@ function Player(sketch, attackTeam, id, number, color, shape) {
 
 	/* Set variables that will need to be stored for this player. */
 	if (attackTeam) {
-		this.x = 0.3 + 0.01*(number%17);
-		this.y = 0.2 + 0.01*(number%17);
+		this.x = 0.1 + 0.01*(number%15);
+		this.y = 0.01*(number%15);
 	} else {
-		this.x = 0.7 - 0.01*(number%17);
-		this.y = 0.2 + 0.01*(number%17);
+		this.x = 0.4 - 0.01*(number%15);
+		this.y = 0.01*(number%15);
 	}
 	this.attackTeam = attackTeam;
 	this.id = id;
@@ -65,46 +65,50 @@ function Player(sketch, attackTeam, id, number, color, shape) {
 	}
 
 	/* Moves player to new location defined by newX and newY. If you are recording, please call setMovement prior to moving the player. */
-	this.move = function(newX, newY, recording) {
+	this.move = function(newX, newY, recording, fullField) {
 		this.x = parseFloat(newX) / $(window).width();
 		this.y = parseFloat(newY) / $(window).width();
 		if (recording) {
 			var vec = new p5.Vector(this.x, this.y);
 			if (vec.x >= 0.0 && vec.x <= 1.0 && vec.y >= 0.0 && vec.y <= 1.0) this.history[this.history.length - 1].movement.push(vec);
 		}
-		this.display();
+		this.display(fullField);
 	}
 
 	/* Paints the ellipse that represents the player onto the screen. */
-	this.display = function() {
+	this.display = function(fullField) {
 		sketch.stroke(this.color.red, this.color.green, this.color.blue);
 		sketch.fill(this.color.red, this.color.green, this.color.blue);
 		numberDisplay.elt.innerHTML = this.currentNumber.toString();
+
+		var scaleLength = $(window).width();
+		var offset = 0;
+		if (fullField) offset = 283.2;
 		if (this.shape === "circle") {
 			if (this.currentNumber >= 10) {
-				numberDisplay.position(-7.1 + this.x * $(window).width(), 40.8 + this.y * $(window).width());
+				numberDisplay.position(-7.1 + offset + this.x * scaleLength, 40.8 + this.y * scaleLength);
 			} else {
-				numberDisplay.position(-3.1 + this.x * $(window).width(), 40.8 + this.y * $(window).width());
+				numberDisplay.position(-3.1 + offset +this.x * scaleLength, 40.8 + this.y * scaleLength);
 			}
-			sketch.ellipse(this.x * $(window).width(), this.y * $(window).width(), radius, radius);
+			sketch.ellipse(this.x * scaleLength, this.y * scaleLength, radius, radius);
 		} else if (this.shape === "triangle") {
 			if (this.currentNumber >= 10) {
-				numberDisplay.position(-6.5 + this.x * $(window).width(), 44 + this.y * $(window).width());
+				numberDisplay.position(-6.5 + offset + this.x * scaleLength, 44 + this.y * scaleLength);
 			} else {
-				numberDisplay.position(-3.5 + this.x * $(window).width(), 42 + this.y * $(window).width());
+				numberDisplay.position(-3.5 + offset + this.x * scaleLength, 42 + this.y * scaleLength);
 			}
-			var width = this.x * $(window).width();
-			var height = this.y * $(window).width();
+			var width = this.x * scaleLength;
+			var height = this.y * scaleLength;
 			sketch.triangle(width - radius/1.5, height + radius/1.5, width, height - radius/1.5, width + radius/1.5, height + radius/1.5);
 		} else {
 			if (this.currentNumber >= 10) {
-				numberDisplay.position(this.x * $(window).width(), 47 + this.y * $(window).width());
+				numberDisplay.position(this.x * scaleLength + offset, 47 + this.y * scaleLength);
 			} else {
-				numberDisplay.position(this.x * $(window).width() + 3.5, 47 + this.y * $(window).width());
+				numberDisplay.position(this.x * scaleLength + offset + 3.5, 47 + this.y * scaleLength);
 			}
-			sketch.rect(this.x * $(window).width(), this.y * $(window).width(), radius, radius);
+			sketch.rect(this.x * scaleLength, this.y * scaleLength, radius, radius);
 		}
-		if (this.y <= -0.014 && this.x >= 0.4 && this.x <= 0.6) {
+		if (this.y <= -0.014 && this.x >= 0.2 && this.x <= 0.8) {
 			numberDisplay.elt.innerHTML = "";
 			delete numberDisplay;
 			return false;
@@ -114,8 +118,13 @@ function Player(sketch, attackTeam, id, number, color, shape) {
 	}
 
 	/* Returns whether or not the player should be dragged across the screen based on the start point of the mouse press. */
-	this.shouldMove = function(mousePressStartX, mousePressStartY) {
-		return (Math.abs(mousePressStartX - this.x * $(window).width()) <= (radius-3) && Math.abs(mousePressStartY - this.y * $(window).width()) <= (radius-5))
+	this.shouldMove = function(mousePressStartX, mousePressStartY, fullField) {
+		var scaleLength = $(window).width();
+		if (this.shape === "circle" || this.shape === "triangle") {
+			return (Math.abs(mousePressStartX - this.x * scaleLength) <= (radius-3) && Math.abs(mousePressStartY - this.y * scaleLength) <= (radius-5))
+		} else {
+			return (mousePressStartX - this.x * scaleLength >= 0 && mousePressStartX - this.x * scaleLength <= radius && mousePressStartY - this.y * scaleLength >= 0 && mousePressStartY - this.y * scaleLength <= radius);
+		}
 	}
 
 	/* Erases the history of movement. */
