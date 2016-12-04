@@ -104,11 +104,18 @@ function Player(sketch, attackTeam, id, number, color, shape) {
 			}
 			sketch.rect(this.x * $(window).width(), this.y * $(window).width(), radius, radius);
 		}
+		if (this.y <= -0.014 && this.x >= 0.4 && this.x <= 0.6) {
+			numberDisplay.elt.innerHTML = "";
+			delete numberDisplay;
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 	/* Returns whether or not the player should be dragged across the screen based on the start point of the mouse press. */
 	this.shouldMove = function(mousePressStartX, mousePressStartY) {
-		return (Math.abs(mousePressStartX - this.x * $(window).width()) <= radius && Math.abs(mousePressStartY - this.y * $(window).width()) <= radius)
+		return (Math.abs(mousePressStartX - this.x * $(window).width()) <= (radius-3) && Math.abs(mousePressStartY - this.y * $(window).width()) <= (radius-5))
 	}
 
 	/* Erases the history of movement. */

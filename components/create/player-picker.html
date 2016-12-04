@@ -13,7 +13,9 @@
     <md-dialog-content layout="row" class="md-dialog-content content-box">
       <span class="team-selection left">
         <div class="inline">
-          <h3 class="inline">Attack</h3><md-button class="md-icon-button add" ng-click="addAttackingPlayer()"><i class="material-icons md-18">add_circle</i></md-button>
+          <h3 class="inline">Attack</h3>
+          <md-button class="md-icon-button player-picker" ng-click="addAttackingPlayer()"><i class="material-icons md-18">add_circle</i></md-button>
+          <md-button ng-if="playerPicker.attackPlayers.length > 0" class="md-icon-button player-picker" ng-click="deleteAttackingPlayer()"><i class="material-icons md-18 md-dark">remove_circle</i></md-button>
         </div>
         <div>
           <input type="color" ng-model="attackColor"/>
@@ -31,7 +33,9 @@
       <span flex></span>
       <span class="team-selection right">
         <div class="inline">
-          <md-button class="md-icon-button add" ng-click="addDefensivePlayer()"><i class="material-icons md-18">add_circle</i></md-button><h3 class="inline">Defense</h3>
+          <md-button ng-if="playerPicker.defensePlayers.length > 0" class="md-icon-button player-picker" ng-click="deleteDefensivePlayer()"><i class="material-icons md-18 md-dark">remove_circle</i></md-button>
+          <md-button class="md-icon-button player-picker" ng-click="addDefensivePlayer()"><i class="material-icons md-18">add_circle</i></md-button>
+          <h3 class="inline">Defense</h3>
         </div>
         <div>
           <div id="triangle" class="triangle defense" ng-click="selectShape('triangle', 'defense')"></div>

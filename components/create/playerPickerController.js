@@ -122,7 +122,7 @@ function PlayerPickerController($scope, $resource, $mdDialog, allPlayers) {
     };
 
     $scope.addAttackingPlayer = function() {
-    	if ($scope.playerPicker.currAttackNumber <= 11) {
+    	if ($scope.playerPicker.attackPlayers.length <= 11) {
     		var newPlayer = {team: true, startingNumber: parseInt($scope.playerPicker.currAttackNumber), currentNumber: parseInt($scope.playerPicker.currAttackNumber), new: true};
 	    	$scope.playerPicker.attackPlayers.push(newPlayer);
 	    	$scope.playerPicker.currAttackNumber++;
@@ -130,11 +130,23 @@ function PlayerPickerController($scope, $resource, $mdDialog, allPlayers) {
     };
 
     $scope.addDefensivePlayer = function() {
-    	if ($scope.playerPicker.currDefenseNumber <= 11) {
+    	if ($scope.playerPicker.defensePlayers.length <= 11) {
     		var newPlayer = {team: false, startingNumber: parseInt($scope.playerPicker.currDefenseNumber), currentNumber: parseInt($scope.playerPicker.currDefenseNumber), new: true};
 	    	$scope.playerPicker.defensePlayers.push(newPlayer);
 	    	$scope.playerPicker.currDefenseNumber++;
 	    }
+    }
+
+    $scope.deleteAttackingPlayer = function() {
+    	if ($scope.playerPicker.attackPlayers.length > 0) {
+    		$scope.playerPicker.attackPlayers.pop();
+    	}
+    }
+
+    $scope.deleteDefensivePlayer = function() {
+    	if ($scope.playerPicker.defensePlayers.length > 0) {
+    		$scope.playerPicker.defensePlayers.pop();
+    	}
     }
 
 	function hexToR(h) {return parseInt((cutHex(h)).substring(0,2),16)}

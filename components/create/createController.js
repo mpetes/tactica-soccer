@@ -27,6 +27,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 		var framesToShow = 3 * FRAME_RATE;
 		var trail = true;
 		var advanced = false;
+		var playbackTimeSelect;
 
 		/* Globals used for player tracking. */
 		var mousePressStartX = -100;
@@ -36,6 +37,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 		/* Globals used to check for changing window size. */
 		var currWindowSize = 0;
 		var canvas;
+		var trashCan = null;
 
 		/* Defines where a player is in his movement during a play. */
 		var SECTION_TYPES = {
@@ -71,38 +73,44 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 
 			/* Add the editor tools. */
 			function setupEditing() {
-				addYourPlayerButton = sketch.createButton('Players');
+				var addYourPlayerButton = sketch.createButton('Players');
 				addYourPlayerButton.addClass("canvas-button");
 				addYourPlayerButton.addClass("md-button");
 				addYourPlayerButton.size(100, 40);
 				addYourPlayerButton.position(20, BUTTON_Y_OFFSET);
 				addYourPlayerButton.mousePressed(addYourPlayer);
 
-				movementButton = sketch.createButton('Movement');
+				var movementButton = sketch.createButton('Movement');
 				movementButton.addClass("canvas-button");
 				movementButton.addClass("md-button");
 				movementButton.size(100, 40);
 				movementButton.position(40 + addYourPlayerButton.width, BUTTON_Y_OFFSET);
 				movementButton.mousePressed(openBottomSheet);
 
-				displayButton = sketch.createButton('Display');
+				var displayButton = sketch.createButton('Display');
 				displayButton.addClass("canvas-button");
 				displayButton.addClass("md-button");
 				displayButton.size(100, 40);
 				displayButton.position(60 + addYourPlayerButton.width + movementButton.width, BUTTON_Y_OFFSET);
 				displayButton.mousePressed(openDisplay);
 
-				saveButton = sketch.createButton('Save Play');
+				var saveButton = sketch.createButton('Save Play');
 				saveButton.addClass("canvas-button");
 				saveButton.addClass("md-button");
 				saveButton.size(100, 40);
 				saveButton.position(80 + addYourPlayerButton.width + movementButton.width + displayButton.width, BUTTON_Y_OFFSET);
 				saveButton.mousePressed(savePlay);
+
+				trashCan = sketch.createElement('i', 'delete');
+				trashCan.addClass("material-icons");
+				trashCan.addClass("md-36");
+				trashCan.position($(window).width()/2 - 17, BUTTON_Y_OFFSET);
+				trashCan.elt.style.visibility = "hidden";
 			}
 
 			/* Add owner sharing tools. */
 			function setupSharing() {
-				shareButton = sketch.createButton('Share Play');
+				var shareButton = sketch.createButton('Share Play');
 				shareButton.addClass("canvas-button");
 				shareButton.addClass("md-button");
 				shareButton.size(100, 40);
@@ -119,7 +127,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 
 			/* Add playback tools. */
 			function setupPlaying() {
-				playButton = sketch.createButton('Play');
+				var playButton = sketch.createButton('Play');
 				playButton.addClass("canvas-button");
 				playButton.addClass("md-button");
 				playButton.size(100, 40);
@@ -136,7 +144,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 				playbackTimeSelect.size(45, 30);
 				playbackTimeSelect.position($(window).width() - 40 - playButton.width - playbackTimeSelect.width, BUTTON_Y_OFFSET + 3);
 
-				playbackTimeLabel = sketch.createP('PLAYBACK TIME: ');
+				var playbackTimeLabel = sketch.createP('PLAYBACK TIME: ');
 				playbackTimeLabel.addClass('playback-time-label');
 				playbackTimeLabel.size(100, 40);
 				playbackTimeLabel.position($(window).width() - 44 - playButton.width - playbackTimeSelect.width - playbackTimeLabel.width, BUTTON_Y_OFFSET + 1.5);
@@ -513,12 +521,22 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 
 				//Only one object should be allowed to be dragged at a time
 				if (moved === false) moved = handleDragMovement(player, recording);
-				player.display();
+				if (!player.display()) {
+					players.splice(x, 1);
+					removeTrash();
+					delete player;
+					x--;
+				}
 			}
 
 			if (ballAdded) {
 				if (moved === false) moved = handleDragMovement(ball, recording);
-				ball.display();
+				if (!ball.display()) {
+					ballAdded = false;
+					removeTrash();
+					delete ball;
+					ball = new Ball(sketch);
+				}
 			}
 		}
 
@@ -586,14 +604,24 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 			if (player.isMoving()) {
 				player.move(sketch.mouseX, sketch.mouseY, recording);
 				moved = true;
+				drawTrash();
 			} 
 			if (sketch.mouseIsPressed === false) {
 				mouseCurrentlyPressed = false;
 				if (player.isMoving()) {
 					player.setMovement(false, recording);
+					removeTrash();
 				}
 			} 
 			return moved;
+		}
+
+		function drawTrash() {
+			if (trashCan) trashCan.elt.style.visibility = "visible";
+		}		
+
+		function removeTrash() {
+			if (trashCan) trashCan.elt.style.visibility = "hidden";
 		}
 	};
 

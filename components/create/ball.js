@@ -29,6 +29,11 @@ function Ball(sketch) {
 		sketch.stroke(this.color.red, this.color.green, this.color.blue);
 		sketch.fill(0, 0, 0);
 		sketch.ellipse(this.x * $(window).width(), this.y * $(window).width(), radius, radius);
+		if (this.y <= -0.014 && this.x >= 0.4 && this.x <= 0.6) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 	this.move = function(newX, newY, recording) {

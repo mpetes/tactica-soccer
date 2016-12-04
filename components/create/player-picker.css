@@ -24,12 +24,16 @@ md-dialog {
 
 .inline {
 	display: inline-block;
+	margin-right: 2px;
+	margin-left: 2px;
 }
 
-.md-button.md-icon-button.add{
+.md-button.md-icon-button.player-picker {
 	vertical-align: center;
 	padding: 0;
 	width: 20px;
+	margin-left: 2px;
+	margin-right: 2px;
 }
 
 .md-dialog-content.content-box {
@@ -110,16 +114,16 @@ md-dialog {
 }
 
 #toolbar-team-transform {
-	margin-left: -3%;
+	margin-left: -5%;
 	transform: skew(-25deg, 0);
 	line-height: 40px;
 	background-color: #262228;
 	z-index: 1;
-	padding-left: 3%;
+	padding-left: 5%;
 	position: relative;
 	overflow: hidden;
 	display: inline-block;
-	width: 17%;
+	width: 18%;
 	height: 100%;
 }
 
@@ -141,4 +145,8 @@ md-dialog {
 #team-toolbar {
 	max-height: 40px;
 	min-height: 40px;
+}
+
+.material-icons.md-dark {
+	color: red;
 }

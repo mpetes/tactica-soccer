@@ -1,10 +1,10 @@
 #toolbar-save-transform {
-	margin-left: -3%;
+	margin-left: -5%;
 	transform: skew(-25deg, 0);
 	line-height: 40px;
 	background-color: #262228;
 	z-index: 1;
-	padding-left: 3%;
+	padding-left: 5%;
 	position: relative;
 	overflow: hidden;
 	display: inline-block;
