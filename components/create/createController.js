@@ -13,6 +13,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 		var FRAME_RATE = 60;
 		var CANVAS_Y_OFFSET = 60;
 		var BUTTON_Y_OFFSET = 12;
+		var CURRENT_TIME_DISPLAY_DELAY = 1500;
 
 		/* Globals used for representing players. */
 		var players = [];
@@ -27,7 +28,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 		var framesToShow = 3 * FRAME_RATE;
 		var trail = true;
 		var advanced = false;
-		var playbackTimeSelect;
+		var playbackTimeSelect, currentTimeLabel;
 
 		/* Globals used for player tracking. */
 		var mousePressStartX = -100;
@@ -148,6 +149,12 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 				playbackTimeLabel.addClass('playback-time-label');
 				playbackTimeLabel.size(100, 40);
 				playbackTimeLabel.position($(window).width() - 44 - playButton.width - playbackTimeSelect.width - playbackTimeLabel.width, BUTTON_Y_OFFSET + 1.5);
+			
+				currentTimeLabel = sketch.createDiv('');
+				currentTimeLabel.addClass('current-time');
+				currentTimeLabel.size(40, 40);
+				currentTimeLabel.position($(window).width() - 60 - playButton.width - playbackTimeSelect.width - playbackTimeLabel.width - currentTimeLabel.width, BUTTON_Y_OFFSET + 5);
+				currentTimeLabel.elt.style.visibility = "hidden";
 			}
 
 			setupPlaying();
@@ -275,6 +282,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 			}
 
 			function play() {
+				currentTimeLabel.elt.style.visibility = "visible";
 				playing = true;
 				currFrame = 0;
 			}
@@ -357,6 +365,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 		where each player should be at the current frame. */
 		function animatePlay() {
 			var playTime = parseFloat(playbackTimeSelect.value());
+			currentTimeLabel.elt.textContent = (currFrame / 60.0).toFixed(1);
 			for (var i = 0; i < players.length; i++) {
 				var player = players[i];
 				animateObject(player, playTime);
@@ -367,6 +376,9 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 			currFrame++;
 			if (currFrame > framesToShow) {
 				playing = false;
+				setTimeout(function() {
+					currentTimeLabel.elt.style.visibility = "hidden";
+				}, CURRENT_TIME_DISPLAY_DELAY)
 				currFrame = -1;
 			}
 		}
