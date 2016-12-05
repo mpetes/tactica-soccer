@@ -273,9 +273,8 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 			    			numPlayers++;
 							players.push(player);
 			    		} else {
-
 			    			for (var j = 0; j < players.length; j++) {
-			    				if (players[j].startingNumber === currPlayer.startingNumber) {
+			    				if (players[j].startingNumber === currPlayer.startingNumber && players[j].attackTeam === currPlayer.attackTeam) {
 			    					players[j].currentNumber = currPlayer.currentNumber;
 			    					players[j].color = currPlayer.color;
 			    					players[j].shape = currPlayer.shape;
