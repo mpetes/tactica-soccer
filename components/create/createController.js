@@ -14,12 +14,12 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 		var CANVAS_Y_OFFSET = 60;
 		var CANVAS_OFFSET_FROM_TOP = 40 + CANVAS_Y_OFFSET;
 		var BUTTON_Y_OFFSET = 12;
-		var CURRENT_TIME_DISPLAY_DELAY = 1000;
+		var CURRENT_TIME_DISPLAY_DELAY = 500;
 
 		/* Globals used for field display. */
 		var whiteBackground = false;
 		var fullField = false;
-		var addYourPlayerButton, movementButton, displayButton, saveButton, pauseButton;
+		var addYourPlayerButton, movementButton, displayButton, saveButton;
 
 		/* Globals used for representing players. */
 		var players = [];
@@ -137,11 +137,12 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 
 			/* Add playback tools. */
 			function setupPlaying() {
-				var playButton = sketch.createButton('Play');
-				playButton.addClass("canvas-button");
-				playButton.addClass("md-button");
-				playButton.size(100, 40);
-				playButton.position($(window).width() - 20 - playButton.width, BUTTON_Y_OFFSET);
+				playButton = sketch.createElement('i', 'play_arrow');
+				playButton.size(20, 30);
+				playButton.addClass("material-icons");
+				playButton.addClass("md-36");
+				playButton.addClass("purple");
+				playButton.position($(window).width() - 10 - playButton.width, BUTTON_Y_OFFSET + 2);
 				playButton.mousePressed(play);
 
 				playbackTimeSelect = sketch.createInput(3.0);
@@ -152,27 +153,18 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 				playbackTimeSelect.addClass('playback-time');
 				playbackTimeSelect.changed(setPlaybackTime);
 				playbackTimeSelect.size(45, 30);
-				playbackTimeSelect.position($(window).width() - 40 - playButton.width - playbackTimeSelect.width, BUTTON_Y_OFFSET + 3);
+				playbackTimeSelect.position($(window).width() - 30 - playButton.width - playbackTimeSelect.width, BUTTON_Y_OFFSET + 3);
 
 				var playbackTimeLabel = sketch.createP('PLAYBACK TIME: ');
 				playbackTimeLabel.addClass('playback-time-label');
 				playbackTimeLabel.size(100, 40);
-				playbackTimeLabel.position($(window).width() - 44 - playButton.width - playbackTimeSelect.width - playbackTimeLabel.width, BUTTON_Y_OFFSET + 1.5);
+				playbackTimeLabel.position($(window).width() - 34 - playButton.width - playbackTimeSelect.width - playbackTimeLabel.width, BUTTON_Y_OFFSET + 1.5);
 			
 				currentTimeLabel = sketch.createDiv('');
 				currentTimeLabel.addClass('current-time');
 				currentTimeLabel.size(40, 40);
-				currentTimeLabel.position($(window).width() - 60 - playButton.width - playbackTimeSelect.width - playbackTimeLabel.width - currentTimeLabel.width, BUTTON_Y_OFFSET + 5);
+				currentTimeLabel.position($(window).width() - 50 - playButton.width - playbackTimeSelect.width - playbackTimeLabel.width - currentTimeLabel.width, BUTTON_Y_OFFSET + 5);
 				currentTimeLabel.elt.style.visibility = "hidden";
-
-				pauseButton = sketch.createElement('i', 'pause');
-				pauseButton.size(20, 30);
-				pauseButton.addClass("material-icons");
-				pauseButton.addClass("md-36");
-				pauseButton.addClass("purple")
-				pauseButton.position($(window).width() - 80 - playButton.width - playbackTimeSelect.width - playbackTimeLabel.width - currentTimeLabel.width - pauseButton.width, BUTTON_Y_OFFSET + 2);
-				pauseButton.elt.style.visibility = "hidden";
-				pauseButton.mousePressed(pause);
 			}
 
 			setupPlaying();
@@ -307,20 +299,18 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 			}
 
 			function play() {
-				currentTimeLabel.elt.style.visibility = "visible";
-				pauseButton.elt.style.visibility = "visible";
-				playing = true;
-				currFrame = 0;
-			}
-
-			function pause() {
 				if (playing) {
 					paused = !paused;
 					if (paused) {
-						pauseButton.elt.innerHTML = "play_arrow";
+						playButton.elt.innerHTML = "play_arrow";
 					} else {
-						pauseButton.elt.innerHTML = "pause";
+						playButton.elt.innerHTML = "pause";
 					}
+				} else {
+					playButton.elt.innerHTML = "pause";
+					currentTimeLabel.elt.style.visibility = "visible";
+					playing = true;
+					currFrame = 0;
 				}
 			}
 
@@ -417,7 +407,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 			if (!paused) currFrame++;
 			if (currFrame > framesToShow) {
 				playing = false;
-				pauseButton.elt.style.visibility = "hidden";
+				playButton.elt.innerHTML = "play_arrow";
 				setTimeout(function() {
 					currentTimeLabel.elt.style.visibility = "hidden";
 				}, CURRENT_TIME_DISPLAY_DELAY);
