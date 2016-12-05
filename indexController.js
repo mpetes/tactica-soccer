@@ -26,7 +26,7 @@ soccerDraw.config(['$routeProvider',
             });
     }]);
 
-soccerDraw.controller('MainController', ['$scope', '$rootScope', '$location', '$resource', '$mdSidenav', 
+soccerDraw.controller('IndexController', ['$scope', '$rootScope', '$location', '$resource', '$mdSidenav', 
     function ($scope, $rootScope, $location, $resource, $mdSidenav) {
 
         /* Variables used throughout the photo app. */
