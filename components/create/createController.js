@@ -214,7 +214,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 			// CALLBACK FUNCTIONS FOR CREATIVE TOOLS
 			function openBottomSheet() {
 				$mdBottomSheet.show({
-					templateUrl: 'components/create/bottom-sheet.html',
+					templateUrl: 'components/dialog-boxes/bottom-sheet.html',
 					controller: 'BottomSheetController',
 					parent: angular.element(document.body),
 					locals: {
@@ -233,7 +233,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 
 			function openDisplay() {
 				$mdDialog.show({
-					templateUrl: 'components/create/display-settings.html',
+					templateUrl: 'components/dialog-boxes/display-settings.html',
 					controller: 'DisplaySettingsController',
 					parent: angular.element(document.body),
 					locals: {
@@ -254,13 +254,13 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 					whiteBackground = settings.whiteBackground;
 					fullField = settings.fullField;
 				}, function() {
-					console.error("Could not parse display settings.");
+					console.log("Chose not to save display settings.");
 				});
 			}
 
 			function addYourPlayer() {
 				$mdDialog.show({
-					templateUrl: 'components/create/player-picker.html',
+					templateUrl: 'components/dialog-boxes/player-picker.html',
 					controller: 'PlayerPickerController',
 					parent: angular.element(document.body),
 					locals: {
@@ -317,7 +317,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 
 			function sharePlay() {
 				$mdDialog.show({
-					templateUrl: 'components/create/share-play.html',
+					templateUrl: 'components/dialog-boxes/share-play.html',
 					controller: 'SharePlayController',
 					parent: angular.element(document.body)
 			    })
@@ -337,7 +337,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 
 			function savePlay() {
 				$mdDialog.show({
-					templateUrl: 'components/create/save-play.html',
+					templateUrl: 'components/dialog-boxes/save-play.html',
 					controller: 'SavePlayController',
 					parent: angular.element(document.body),
 					locals: {
