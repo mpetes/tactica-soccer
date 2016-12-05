@@ -19,7 +19,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 		/* Globals used for field display. */
 		var whiteBackground = false;
 		var fullField = false;
-		var addYourPlayerButton, movementButton, displayButton, saveButton;
+		var addYourPlayerButton, movementButton, displayButton, saveButton, pauseButton;
 
 		/* Globals used for representing players. */
 		var players = [];
@@ -30,6 +30,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 		/* Globals used for movement, recording, and playback. */
 		var recording = false;
 		var playing = false;
+		var paused = false;
 		var currFrame = -1;
 		var framesToShow = 3 * FRAME_RATE;
 		var trail = true;
@@ -163,6 +164,15 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 				currentTimeLabel.size(40, 40);
 				currentTimeLabel.position($(window).width() - 60 - playButton.width - playbackTimeSelect.width - playbackTimeLabel.width - currentTimeLabel.width, BUTTON_Y_OFFSET + 5);
 				currentTimeLabel.elt.style.visibility = "hidden";
+
+				pauseButton = sketch.createElement('i', 'pause');
+				pauseButton.size(20, 30);
+				pauseButton.addClass("material-icons");
+				pauseButton.addClass("md-36");
+				pauseButton.addClass("purple")
+				pauseButton.position($(window).width() - 80 - playButton.width - playbackTimeSelect.width - playbackTimeLabel.width - currentTimeLabel.width - pauseButton.width, BUTTON_Y_OFFSET + 2);
+				pauseButton.elt.style.visibility = "hidden";
+				pauseButton.mousePressed(pause);
 			}
 
 			setupPlaying();
@@ -274,7 +284,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 							players.push(player);
 			    		} else {
 			    			for (var j = 0; j < players.length; j++) {
-			    				if (players[j].startingNumber === currPlayer.startingNumber && players[j].attackTeam === currPlayer.attackTeam) {
+			    				if (players[j].startingNumber === currPlayer.startingNumber && players[j].attackTeam === currPlayer.team) {
 			    					players[j].currentNumber = currPlayer.currentNumber;
 			    					players[j].color = currPlayer.color;
 			    					players[j].shape = currPlayer.shape;
@@ -298,8 +308,20 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 
 			function play() {
 				currentTimeLabel.elt.style.visibility = "visible";
+				pauseButton.elt.style.visibility = "visible";
 				playing = true;
 				currFrame = 0;
+			}
+
+			function pause() {
+				if (playing) {
+					paused = !paused;
+					if (paused) {
+						pauseButton.elt.innerHTML = "play_arrow";
+					} else {
+						pauseButton.elt.innerHTML = "pause";
+					}
+				}
 			}
 
 			function sharePlay() {
@@ -392,12 +414,13 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 
 			if (ballAdded) animateObject(ball, playTime);
 
-			currFrame++;
+			if (!paused) currFrame++;
 			if (currFrame > framesToShow) {
 				playing = false;
+				pauseButton.elt.style.visibility = "hidden";
 				setTimeout(function() {
 					currentTimeLabel.elt.style.visibility = "hidden";
-				}, CURRENT_TIME_DISPLAY_DELAY)
+				}, CURRENT_TIME_DISPLAY_DELAY);
 				currFrame = -1;
 			}
 		}

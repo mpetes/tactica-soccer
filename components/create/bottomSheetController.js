@@ -32,16 +32,18 @@ function BottomSheetController($scope, $resource, $mdBottomSheet, allPlayers, pl
 		var history = player.getHistory();
 		var numSections = history.length;
 		var interval = playTime / numSections;
+		var prevUsed = false;
 		for (var j = 0; j < numSections; j++) {
 			var section = history[j];
 			if (!section.timesPicked) {
-				if (j > 0 && history[j-1].timesPicked) {
+				if (j > 0 && (history[j-1].timesPicked || prevUsed)) {
 					section.startPercentage = history[j-1].endPercentage;
 					section.endPercentage = section.startPercentage;
-					section.timesPicked = true;
+					prevUsed = true;
 				} else {
 					section.startPercentage = j / numSections;
 					section.endPercentage = (j+1) / numSections;
+					prevUsed = false;
 				}
 			}
 			section.startTime = section.startPercentage * playTime;
