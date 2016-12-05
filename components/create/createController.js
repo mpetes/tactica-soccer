@@ -19,6 +19,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 		/* Globals used for field display. */
 		var whiteBackground = false;
 		var fullField = false;
+		var atHistoryStart = false;
 		var addYourPlayerButton, movementButton, displayButton, saveButton;
 
 		/* Globals used for representing players. */
@@ -83,7 +84,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 
 			/* Add the editor tools. */
 			function setupEditing() {
-				addYourPlayerButton = sketch.createButton('Players');
+				addYourPlayerButton = sketch.createButton('Teams');
 				addYourPlayerButton.addClass("canvas-button");
 				addYourPlayerButton.addClass("md-button");
 				addYourPlayerButton.size(100, 40);
@@ -565,7 +566,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 
 				//Only one object should be allowed to be dragged at a time
 				if (moved === false) moved = handleDragMovement(player, recording);
-				if (!player.display(fullField)) {
+				if (!player.display(fullField, false)) {
 					players.splice(x, 1);
 					removeTrash();
 					delete player;
@@ -575,7 +576,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 
 			if (ballAdded) {
 				if (moved === false) moved = handleDragMovement(ball, recording);
-				if (!ball.display(fullField)) {
+				if (!ball.display(fullField, false)) {
 					ballAdded = false;
 					removeTrash();
 					delete ball;

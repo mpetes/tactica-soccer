@@ -9,8 +9,9 @@ function BottomSheetController($scope, $resource, $mdBottomSheet, allPlayers, pl
 	$scope.bottomSheet.ball = gameBall;
 	if (gameBall.history.length !== 0) $scope.bottomSheet.players.push(gameBall);
 
-	for (var i = 0; i < allPlayers.length; i++) {
-		var player = allPlayers[i];
+
+	for (var i = 0; i < $scope.bottomSheet.players.length; i++) {
+		var player = $scope.bottomSheet.players[i];
 		setStartAndEndTime(player);
 	}
 

@@ -72,41 +72,49 @@ function Player(sketch, attackTeam, id, number, color, shape) {
 			var vec = new p5.Vector(this.x, this.y);
 			if (vec.x >= 0.0 && vec.x <= 1.0 && vec.y >= 0.0 && vec.y <= 1.0) this.history[this.history.length - 1].movement.push(vec);
 		}
-		this.display(fullField);
+		this.display(fullField, false);
 	}
 
 	/* Paints the ellipse that represents the player onto the screen. */
-	this.display = function(fullField) {
+	this.display = function(fullField, atHistoryStart) {
 		sketch.stroke(this.color.red, this.color.green, this.color.blue);
 		sketch.fill(this.color.red, this.color.green, this.color.blue);
 		numberDisplay.elt.innerHTML = this.currentNumber.toString();
+
+		var xPercentage = this.x;
+		var yPercentage = this.y;
+		if (atHistoryStart && this.history.length > 0) {
+			sketch.ellipse(this.x * scaleLength, this.y * scaleLength, radius, radius);
+			xPercentage = this.history[0].movement[0].x;
+			yPercentage = this.history[0].movement[0].y;
+		}
 
 		var scaleLength = $(window).width();
 		var offset = 0;
 		if (fullField) offset = 283.2;
 		if (this.shape === "circle") {
 			if (this.currentNumber >= 10) {
-				numberDisplay.position(-7.1 + offset + this.x * scaleLength, 40.8 + this.y * scaleLength);
+				numberDisplay.position(-7.1 + offset + xPercentage * scaleLength, 40.8 + yPercentage * scaleLength);
 			} else {
-				numberDisplay.position(-3.1 + offset +this.x * scaleLength, 40.8 + this.y * scaleLength);
+				numberDisplay.position(-3.1 + offset + xPercentage * scaleLength, 40.8 + yPercentage * scaleLength);
 			}
-			sketch.ellipse(this.x * scaleLength, this.y * scaleLength, radius, radius);
+			sketch.ellipse(xPercentage * scaleLength, yPercentage * scaleLength, radius, radius);
 		} else if (this.shape === "triangle") {
 			if (this.currentNumber >= 10) {
-				numberDisplay.position(-6.5 + offset + this.x * scaleLength, 44 + this.y * scaleLength);
+				numberDisplay.position(-6.5 + offset + xPercentage * scaleLength, 44 + yPercentage * scaleLength);
 			} else {
-				numberDisplay.position(-3.5 + offset + this.x * scaleLength, 42 + this.y * scaleLength);
+				numberDisplay.position(-3.5 + offset + xPercentage * scaleLength, 42 + yPercentage * scaleLength);
 			}
-			var width = this.x * scaleLength;
-			var height = this.y * scaleLength;
+			var width = xPercentage * scaleLength;
+			var height = yPercentage * scaleLength;
 			sketch.triangle(width - radius/1.5, height + radius/1.5, width, height - radius/1.5, width + radius/1.5, height + radius/1.5);
 		} else {
 			if (this.currentNumber >= 10) {
-				numberDisplay.position(this.x * scaleLength + offset, 47 + this.y * scaleLength);
+				numberDisplay.position(xPercentage * scaleLength + offset, 47 + yPercentage * scaleLength);
 			} else {
-				numberDisplay.position(this.x * scaleLength + offset + 3.5, 47 + this.y * scaleLength);
+				numberDisplay.position(xPercentage * scaleLength + offset + 3.5, 47 + yPercentage * scaleLength);
 			}
-			sketch.rect(this.x * scaleLength, this.y * scaleLength, radius, radius);
+			sketch.rect(xPercentage * scaleLength, yPercentage * scaleLength, radius, radius);
 		}
 		if (this.y <= -0.014 && this.x >= 0.2 && this.x <= 0.8) {
 			numberDisplay.elt.innerHTML = "";
