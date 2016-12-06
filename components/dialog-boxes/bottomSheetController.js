@@ -65,4 +65,31 @@ function BottomSheetController($scope, $resource, $mdBottomSheet, allPlayers, pl
 		}
 		player.setHistory(history);
 	}
+
+	/* Updates all movement sections if they are out of sync, only if the new update is within bounds. */
+	/*$scope.boundsCheck = function(player, index) {
+		var currSection = player.history[index];
+		if (currSection.startTime >= 0) {
+			var left = index;
+			var leftSection = player.history[left-1];
+			while (left > 0 && currSection.startTime < leftSection.endTime) {
+				leftSection = player.history[left-1];
+				leftSection.endTime = currSection.startTime;
+				if (leftSection.startTime > leftSection.endTime) leftSection.startTime = leftSection.endTime;
+				left--;
+				currSection = player.history[left];
+			}
+		}
+
+		currSection = player.history[index];
+		var right = index;
+		var rightSection = player.history[right+1];
+		while (right < player.history.length - 1 && currSection.endTime > rightSection.startTime) {
+			rightSection = playerhistory[right+1];
+			rightSection.startTime = currSection.endTime;
+			if (rightSection.endTime < rightSection.startTime) rightSection.endTime = rightSection.startTime;
+			right++;
+			currSection = player.history[right];
+		}
+	}*/
 }
