@@ -9,6 +9,10 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 		if (userOwned !== "0" && userOwned !== "1") userOwned = -1;
 		var playName = "";
 
+		/* Canvas frame rate slows down when in full field mode due to p5js bugs. This variables will track the number of actual frames
+		displayed in this mode so that we can scale our display frame value to account for this bug. */
+		var actualFrames = 0;
+
 		/* Constants. */
 		var FRAME_RATE = 60;
 		var CANVAS_Y_OFFSET = 60;
@@ -19,6 +23,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 		/* Globals used for field display. */
 		var whiteBackground = false;
 		var fullField = false;
+		var FIELD_DIMENIONS_RATIO = 115 / 75;
 		var atHistoryStart = false;
 		var addYourPlayerButton, movementButton, displayButton, saveButton;
 
@@ -413,7 +418,15 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 
 			if (ballAdded) animateObject(ball, playTime);
 
-			if (!paused) currFrame++;
+			// Using actual frames to scale currFrame to account for p5js slowdown bug in full field mode
+			if (!paused) {
+				if (fullField && actualFrames % 5 === 0) {
+					currFrame += 2;
+				} else {
+					currFrame++;
+				}
+				actualFrames++;
+			}
 			if (currFrame > framesToShow) {
 				playing = false;
 				playButton.elt.innerHTML = "play_arrow";
@@ -421,6 +434,15 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 					currentTimeLabel.elt.style.visibility = "hidden";
 				}, CURRENT_TIME_DISPLAY_DELAY);
 				currFrame = -1;
+				actualFrames = 0;
+			}
+		}
+
+		function getScale() {
+			if (fullField) {
+				return ($(window).height() - CANVAS_OFFSET_FROM_TOP) * FIELD_DIMENIONS_RATIO;
+			} else {
+				return $(window).width();
 			}
 		}
 
@@ -441,8 +463,9 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 				var index = Math.round((currFrame/framesToShow) * allHistory.length);
 				if (index >= allHistory.length) index = allHistory.length - 1;
 				var currPosition = allHistory[index];
-				newPosition.x = currPosition.x * $(window).width();
-				newPosition.y = currPosition.y * $(window).width();
+	
+				newPosition.x = currPosition.x * getScale();
+				newPosition.y = currPosition.y * getScale();
 				if (trail) {
 					if (atHistoryStart && allHistory.length > 1) {
 						showHistory(allHistory, allHistory.length - 1, true, player);
@@ -482,8 +505,8 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 
 				// If we are before the start of a section, position should be at the start of that section
 				if (sectionType === SECTION_TYPES.BEFORE_START) {
-					newPosition.x = history[sectionNumber].movement[0].x * $(window).width();
-					newPosition.y = history[sectionNumber].movement[0].y * $(window).width();
+					newPosition.x = history[sectionNumber].movement[0].x * getScale();
+					newPosition.y = history[sectionNumber].movement[0].y * getScale();
 
 				// If we are in the middle of a section, position should be at a scaled point along the direct line between
 				// the start and end of the section.
@@ -494,13 +517,13 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 
 					var start = section.movement[0];
 					var newStart = {};
-					newStart.x = start.x * $(window).width();
-					newStart.y = start.y * $(window).width();
+					newStart.x = start.x * getScale();
+					newStart.y = start.y * getScale();
 
 					var end = section.movement[section.movement.length - 1];
 					var newEnd = {};
-					newEnd.x = end.x * $(window).width();
-					newEnd.y = end.y * $(window).width();
+					newEnd.x = end.x * getScale();
+					newEnd.y = end.y * getScale();
 
 					var deltaX = newEnd.x - newStart.x;
 					var deltaY = newEnd.y - newStart.y;
@@ -520,8 +543,8 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 				// If we are at the end of a section, position should be that section's end.
 				} else {
 					var section = history[history.length - 1];
-					newPosition.x = section.movement[section.movement.length - 1].x * $(window).width();
-					newPosition.y = section.movement[section.movement.length - 1].y * $(window).width();
+					newPosition.x = section.movement[section.movement.length - 1].x * getScale();
+					newPosition.y = section.movement[section.movement.length - 1].y * getScale();
 				}
 			}
 
@@ -535,16 +558,16 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 			sketch.stroke(player.color.red, player.color.green, player.color.blue);
 			sketch.fill(player.color.red, player.color.green, player.color.blue);
 			sketch.strokeWeight(3);
-			var currWidth = $(window).width();
+			var scaleLength = getScale();
 			if (advanced) {
 				for (var i = 0; i <= lengthToShow; i++) {
-					if (i !== 0 && i < history.length) sketch.line(history[i-1].x * currWidth, history[i-1].y * currWidth, history[i].x * currWidth, history[i].y * currWidth);
+					if (i !== 0 && i < history.length) sketch.line(history[i-1].x * scaleLength, history[i-1].y * scaleLength, history[i].x * scaleLength, history[i].y * ScaleLength);
 				}
 			} else {
 				if (history.length >= 2) {
 					var start = history[0];
 					var end = history[lengthToShow];
-					sketch.line(start.x * currWidth, start.y * currWidth, end.x * currWidth, end.y * currWidth);
+					sketch.line(start.x * scaleLength, start.y * scaleLength, end.x * scaleLength, end.y * scaleLength);
 				}
 			}
 		}
@@ -659,7 +682,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 				var scaledWidth = currFrameHeight * (115/75);
 				if (currWindowSize.height !== currFrameHeight) {
 					canvas.size(scaledWidth, currFrameHeight);
-					canvas.position($(window).width() - scaledWidth - 0.5 * ($(window).width() - scaledWidth), CANVAS_Y_OFFSET);
+					canvas.position(0, CANVAS_Y_OFFSET);
 					currWindowSize.width = currFrameWidth;
 				}
 
@@ -761,7 +784,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 				if (!recording) player.clearHistory();
 			} 
 			if (player.isMoving()) {
-				player.move(sketch.mouseX, sketch.mouseY, recording);
+				player.move(sketch.mouseX, sketch.mouseY, recording, fullField);
 				moved = true;
 				drawTrash();
 			} 

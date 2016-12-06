@@ -66,8 +66,15 @@ function Player(sketch, attackTeam, id, number, color, shape) {
 
 	/* Moves player to new location defined by newX and newY. If you are recording, please call setMovement prior to moving the player. */
 	this.move = function(newX, newY, recording, fullField) {
-		this.x = parseFloat(newX) / $(window).width();
-		this.y = parseFloat(newY) / $(window).width();
+		if (fullField) {
+			var currFrameHeight = $(window).height() - 100;
+			var scaledWidth = currFrameHeight * (115/75);
+			this.x = parseFloat(newX) / scaledWidth;
+			this.y = parseFloat(newY) / scaledWidth;
+		} else {
+			this.x = parseFloat(newX) / $(window).width();
+			this.y = parseFloat(newY) / $(window).width();
+		}
 		if (recording) {
 			var vec = new p5.Vector(this.x, this.y);
 			if (vec.x >= 0.0 && vec.x <= 1.0 && vec.y >= 0.0 && vec.y <= 1.0) this.history[this.history.length - 1].movement.push(vec);
@@ -88,32 +95,35 @@ function Player(sketch, attackTeam, id, number, color, shape) {
 			yPercentage = this.history[0].movement[0].y;
 		}
 
-		var scaleLength = $(window).width();
-		var offset = 0;
-		if (fullField) offset = 283.2;
+		var scaleLength;
+		if (fullField) {
+			scaleLength = ($(window).height() - 100) * (115/75);
+		} else {
+			scaleLength = $(window).width();
+		}
 		if (this.shape === "circle") {
 			if (this.currentNumber >= 10) {
-				numberDisplay.position(-7.1 + offset + xPercentage * scaleLength, 40.8 + yPercentage * scaleLength);
+				numberDisplay.position(-7.1 + xPercentage * scaleLength, 40.8 + yPercentage * scaleLength);
 			} else {
-				numberDisplay.position(-3.1 + offset + xPercentage * scaleLength, 40.8 + yPercentage * scaleLength);
+				numberDisplay.position(-3.1 + xPercentage * scaleLength, 40.8 + yPercentage * scaleLength);
 			}
 			sketch.ellipse(xPercentage * scaleLength, yPercentage * scaleLength, radius, radius);
 		} else if (this.shape === "triangle") {
 			if (this.currentNumber >= 10) {
-				numberDisplay.position(-6.5 + offset + xPercentage * scaleLength, 44 + yPercentage * scaleLength);
+				numberDisplay.position(-6.5 + xPercentage * scaleLength, 44 + yPercentage * scaleLength);
 			} else {
-				numberDisplay.position(-3.5 + offset + xPercentage * scaleLength, 42 + yPercentage * scaleLength);
+				numberDisplay.position(-3.5 + xPercentage * scaleLength, 42 + yPercentage * scaleLength);
 			}
 			var width = xPercentage * scaleLength;
 			var height = yPercentage * scaleLength;
 			sketch.triangle(width - radius/1.5, height + radius/1.5, width, height - radius/1.5, width + radius/1.5, height + radius/1.5);
 		} else {
 			if (this.currentNumber >= 10) {
-				numberDisplay.position(xPercentage * scaleLength + offset, 47 + yPercentage * scaleLength);
+				numberDisplay.position(xPercentage * scaleLength, 47 + yPercentage * scaleLength);
 			} else {
-				numberDisplay.position(xPercentage * scaleLength + offset + 3.5, 47 + yPercentage * scaleLength);
+				numberDisplay.position(xPercentage * scaleLength + 3.5, 47 + yPercentage * scaleLength);
 			}
-			sketch.rect(xPercentage * scaleLength, yPercentage * scaleLength, radius, radius);
+			sketch.rect(xPercentage * scaleLength, yPercentage * scRaleLength, radius, radius);
 		}
 		if (atHistoryStart === true) return this.display(fullField, false); // Show end + beginning of history
 		if (this.y <= -0.014 && this.x >= 0.2 && this.x <= 0.8) {
@@ -127,7 +137,12 @@ function Player(sketch, attackTeam, id, number, color, shape) {
 
 	/* Returns whether or not the player should be dragged across the screen based on the start point of the mouse press. */
 	this.shouldMove = function(mousePressStartX, mousePressStartY, fullField) {
-		var scaleLength = $(window).width();
+		var scaleLength;
+		if (fullField) {
+			scaleLength = ($(window).height() - 100) * (115/75);
+		} else {
+			scaleLength = $(window).width();
+		}
 		if (this.shape === "circle" || this.shape === "triangle") {
 			return (Math.abs(mousePressStartX - this.x * scaleLength) <= (radius-3) && Math.abs(mousePressStartY - this.y * scaleLength) <= (radius-5))
 		} else {
