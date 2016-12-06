@@ -80,7 +80,6 @@ function Player(sketch, attackTeam, id, number, color, shape) {
 		sketch.stroke(this.color.red, this.color.green, this.color.blue);
 		sketch.fill(this.color.red, this.color.green, this.color.blue);
 		numberDisplay.elt.innerHTML = this.currentNumber.toString();
-
 		var xPercentage = this.x;
 		var yPercentage = this.y;
 		if (atHistoryStart && this.history.length > 0) {
@@ -116,6 +115,7 @@ function Player(sketch, attackTeam, id, number, color, shape) {
 			}
 			sketch.rect(xPercentage * scaleLength, yPercentage * scaleLength, radius, radius);
 		}
+		if (atHistoryStart === true) return this.display(fullField, false); // Show end + beginning of history
 		if (this.y <= -0.014 && this.x >= 0.2 && this.x <= 0.8) {
 			numberDisplay.elt.innerHTML = "";
 			delete numberDisplay;

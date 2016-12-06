@@ -70,6 +70,12 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 					whiteBackground = !whiteBackground;
 				} else if (e.keyCode === 70) {
 					fullField = !fullField;
+				} else if (e.keyCode === 80) {
+					if (trail) {
+						atHistoryStart = !atHistoryStart;
+					} else {
+						atHistoryStart = false;
+					}
 				}
 			}
 		});
@@ -242,7 +248,8 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 						isTrail: trail,
 						isBall: ballAdded,
 						isWhiteBackground: whiteBackground,
-						isFullField: fullField
+						isFullField: fullField,
+						isAtHistoryStart: atHistoryStart
 					}
 				})
 				.then(function(answer) {
@@ -253,6 +260,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 					ballAdded = settings.ball;
 					whiteBackground = settings.whiteBackground;
 					fullField = settings.fullField;
+					atHistoryStart = settings.atHistoryStart;
 				}, function() {
 					console.log("Chose not to save display settings.");
 				});
@@ -435,7 +443,13 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 				var currPosition = allHistory[index];
 				newPosition.x = currPosition.x * $(window).width();
 				newPosition.y = currPosition.y * $(window).width();
-				if (trail) showHistory(allHistory, index, true, player);
+				if (trail) {
+					if (atHistoryStart && allHistory.length > 1) {
+						showHistory(allHistory, allHistory.length - 1, true, player);
+					} else {
+						showHistory(allHistory, index, true, player);
+					}
+				}
 
 			/* Otherwise, follow direct line from start to end for each section. */
 			} else {
@@ -458,6 +472,11 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 					} else {
 						if (trail) showHistory(section.movement, section.movement.length - 1, false, player);
 						if (j === history.length - 1) sectionType = SECTION_TYPES.AFTER_END;
+					}
+				}
+				if (trail && atHistoryStart && history.length > 0) {
+					for (var j = 0; j < history.length; j++) {
+						showHistory(history[j].movement, history[j].movement.length - 1, false, player);
 					}
 				}
 
@@ -566,7 +585,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 
 				//Only one object should be allowed to be dragged at a time
 				if (moved === false) moved = handleDragMovement(player, recording);
-				if (!player.display(fullField, false)) {
+				if (!player.display(fullField, atHistoryStart)) {
 					players.splice(x, 1);
 					removeTrash();
 					delete player;
@@ -576,7 +595,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 
 			if (ballAdded) {
 				if (moved === false) moved = handleDragMovement(ball, recording);
-				if (!ball.display(fullField, false)) {
+				if (!ball.display(fullField, atHistoryStart)) {
 					ballAdded = false;
 					removeTrash();
 					delete ball;

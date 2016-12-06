@@ -6,6 +6,14 @@
 	padding-left: 5px;
 }
 
+.checkbox-sub-row {
+	display: inline-block;
+	text-align: left;
+	padding-top: 2px;
+	padding-left: 25px;
+	font-size: 12px;
+}
+
 #toolbar-display-transform {
 	margin-left: -5%;
 	transform: skew(-25deg, 0);

@@ -12,22 +12,25 @@
 
     <md-dialog-content layout="column" class="md-dialog-content content-box">
       <div class="checkbox-row">
-        <md-checkbox ng-model="displaySettings.recording"><b>Start recording?</b> Shift + R shortcut</md-checkbox>
+        <md-checkbox ng-model="displaySettings.recording"><b>Recording?</b> Shift + R</md-checkbox>
       </div>
       <div class="checkbox-row">
-        <md-checkbox ng-model="displaySettings.trail"><b>Trails follow players?</b> Shift + T shortcut</md-checkbox>
+        <md-checkbox ng-model="displaySettings.trail"><b>Players leave trails?</b> Shift + T</md-checkbox>
+      </div>
+      <div class="checkbox-sub-row" ng-if="displaySettings.trail">
+        <md-checkbox ng-model="displaySettings.atHistoryStart"><i>Show entire player paths?</i> Shift + P</md-checkbox>
       </div>
       <div class="checkbox-row">
-        <md-checkbox ng-model="displaySettings.ball"><b>Use ball?</b> Shift + B shortcut</md-checkbox>
+        <md-checkbox ng-model="displaySettings.ball"><b>Use ball?</b> Shift + B</md-checkbox>
       </div>
       <div class="checkbox-row">
-        <md-checkbox ng-model="displaySettings.advanced"><b>Trace exact path of movement?</b> Shift + E shortcut</md-checkbox>
+        <md-checkbox ng-model="displaySettings.advanced"><b>Exact mouse paths?</b> Shift + E</md-checkbox>
       </div>
       <div class="checkbox-row">
-        <md-checkbox ng-model="displaySettings.whiteBackground"><b>White background?</b> Shift + W shortcut</md-checkbox>
+        <md-checkbox ng-model="displaySettings.whiteBackground"><b>Black & white background?</b> Shift + W</md-checkbox>
       </div>
       <div class="checkbox-row">
-        <md-checkbox ng-model="displaySettings.fullField"><b>Full field?</b> Shift + F shortcut</md-checkbox>
+        <md-checkbox ng-model="displaySettings.fullField"><b>Full field?</b> Shift + F</md-checkbox>
       </div>
     </md-dialog-content>
 
