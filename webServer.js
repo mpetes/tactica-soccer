@@ -303,7 +303,8 @@ app.get('/play-names', function(request, response) {
             }
             var plays = JSON.parse(userResult.rows[0].plays);
             var idsString = "(";
-            for (var id in ids) {
+            for (var i = 0; i < ids.length; i++) {
+                var id = ids[i];
                 if (plays.owned.indexOf(parseInt(id)) === -1 && plays.access.indexOf(parseInt(id)) === -1 && plays.edit.indexOf(parseInt(id)) === -1) {
                     done();
                     response.status(500).send("You do not have permission to access this.");

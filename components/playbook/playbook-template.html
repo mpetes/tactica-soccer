@@ -6,6 +6,7 @@
     <div class="md-list-item-text">
       <h2 style="margin-bottom: 2px; margin-left: 1%; margin-top: 0">{{play.name}}</h2>
       <h3 style="margin-left: 3%">{{play.date}}</h3>
+      <div class="spacer"></div>
     </div>
     <md-button id="playbook-button" ng-click="viewPlay(play.id, 1)">View</md-button>
     <md-divider ng-if="!$last"></md-divider>
@@ -19,7 +20,8 @@
       <h2 style="margin-bottom: 2px; margin-left: 1%; margin-top: 20px">{{play.name}}</h2>
       <h3 style="margin-left: 3%">{{play.date}}</h3>
       <h3 style="margin-left: 3%">{{play.owner}}</h3>
-      <h3 style="margin-left: 3%">Can Edit: {{play.edit}}</h3>
+      <h3 style="margin-left: 3%">Can Edit: {{play.canEdit}}</h3>
+      <div class="spacer"></div>
     </div>
     <md-button id="playbook-button" ng-click="viewPlay(play.id, play.edit)">View</md-button>
     <md-divider ng-if="!$last"></md-divider>

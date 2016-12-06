@@ -12,13 +12,16 @@ soccerDraw.controller('PlaybookController', ['$scope', '$http', '$resource', '$l
 		userPlaysRes.get({email: $scope.main.email}, function(response) {
 			var plays = JSON.parse(response.plays);
 			var playIds = [];
-			for (var id in plays.owned) {
+			for (var i = 0; i < plays.owned.length; i++) {
+				var id = plays.owned[i];
 				playIds.push(id);
 			}
-			for (var id in plays.access) {
+			for (var i = 0; i < plays.access.length; i++) {
+				var id = plays.access[i];
 				playIds.push(id);
 			}
-			for (var id in plays.edit) {
+			for (var i = 0; i < plays.edit.length; i++) {
+				var id = plays.edit[i];
 				playIds.push(id);
 			}
 			var playNamesRes = $resource("/play-names", {}, {query: {method:'GET', isArray: true}});
@@ -31,12 +34,15 @@ soccerDraw.controller('PlaybookController', ['$scope', '$http', '$resource', '$l
 					playbookInfo.date = response[i].date;
 					if (plays.owned.indexOf(parseInt(response[i].id)) !== -1) {
 						playbookInfo.edit = 1;
+						playbookInfo.canEdit = "Yes";
 						$scope.playbook.myPlays.push(playbookInfo);
 					} else if (plays.edit.indexOf(parseInt(response[i].id)) !== -1) {
 						playbookInfo.edit = 1;
+						playbookInfo.canEdit = "Yes";
 						$scope.playbook.sharedPlays.push(playbookInfo);
 					} else {
 						playbookInfo.edit = 0;
+						playbookInfo.canEdit = "No";
 						$scope.playbook.sharedPlays.push(playbookInfo);
 					}
 				}
