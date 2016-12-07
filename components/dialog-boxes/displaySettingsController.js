@@ -1,10 +1,9 @@
 soccerDraw.controller('DisplaySettingsController', DisplaySettingsController);
 
-DisplaySettingsController.$inject = ['$scope', '$mdDialog', 'isRecording', 'isAdvanced', 'isTrail', 'isBall', 'isWhiteBackground', 'isFullField', 'isAtHistoryStart'];
-function DisplaySettingsController($scope,  $mdDialog, isRecording, isAdvanced, isTrail, isBall, isWhiteBackground, isFullField, isAtHistoryStart) {
+DisplaySettingsController.$inject = ['$scope', '$mdDialog', 'isAdvanced', 'isTrail', 'isBall', 'isWhiteBackground', 'isFullField', 'isAtHistoryStart'];
+function DisplaySettingsController($scope,  $mdDialog, isAdvanced, isTrail, isBall, isWhiteBackground, isFullField, isAtHistoryStart) {
 	$scope.displaySettings = {};
 	$scope.displaySettings.trail = isTrail;
-	$scope.displaySettings.recording = isRecording;
 	$scope.displaySettings.ball = isBall;
 	$scope.displaySettings.advanced = isAdvanced;
 	$scope.displaySettings.whiteBackground = isWhiteBackground;

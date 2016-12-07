@@ -18,14 +18,15 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 		var CANVAS_Y_OFFSET = 60;
 		var CANVAS_OFFSET_FROM_TOP = 40 + CANVAS_Y_OFFSET;
 		var BUTTON_Y_OFFSET = 12;
-		var CURRENT_TIME_DISPLAY_DELAY = 500;
+		var CURRENT_TIME_DISPLAY_DELAY = 500
+		var GOOGLE_BUTTON_WIDTH = 36;
 
 		/* Globals used for field display. */
 		var whiteBackground = false;
 		var fullField = false;
 		var FIELD_DIMENIONS_RATIO = 115 / 75;
 		var atHistoryStart = false;
-		var addYourPlayerButton, movementButton, displayButton, saveButton;
+		var addYourPlayerButton, movementButton, displayButton, saveButton, recordButton;
 
 		/* Globals used for representing players. */
 		var players = [];
@@ -64,7 +65,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 		document.body.addEventListener('keydown', function(e) {
 			if (e.shiftKey) {
 				if (e.keyCode === 82) {
-			   		recording = !recording;
+			   		record();
 				} else if (e.keyCode === 84) {
 					trail = !trail;
 				} else if (e.keyCode === 69) {
@@ -98,34 +99,43 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 				addYourPlayerButton = sketch.createButton('Teams');
 				addYourPlayerButton.addClass("canvas-button");
 				addYourPlayerButton.addClass("md-button");
-				addYourPlayerButton.size(100, 40);
+				addYourPlayerButton.size(90, 40);
 				addYourPlayerButton.position(20, BUTTON_Y_OFFSET);
 				addYourPlayerButton.mousePressed(addYourPlayer);
 
 				movementButton = sketch.createButton('Movement');
 				movementButton.addClass("canvas-button");
 				movementButton.addClass("md-button");
-				movementButton.size(100, 40);
+				movementButton.size(90, 40);
 				movementButton.position(40 + addYourPlayerButton.width, BUTTON_Y_OFFSET);
 				movementButton.mousePressed(openBottomSheet);
 
 				displayButton = sketch.createButton('Display');
 				displayButton.addClass("canvas-button");
 				displayButton.addClass("md-button");
-				displayButton.size(100, 40);
+				displayButton.size(90, 40);
 				displayButton.position(60 + addYourPlayerButton.width + movementButton.width, BUTTON_Y_OFFSET);
 				displayButton.mousePressed(openDisplay);
 
 				saveButton = sketch.createButton('Save Play');
 				saveButton.addClass("canvas-button");
 				saveButton.addClass("md-button");
-				saveButton.size(100, 40);
+				saveButton.size(90, 40);
 				saveButton.position(80 + addYourPlayerButton.width + movementButton.width + displayButton.width, BUTTON_Y_OFFSET);
 				saveButton.mousePressed(savePlay);
+
+				recordButton = sketch.createElement('i', 'fiber_manual_record');
+				recordButton.addClass("material-icons");
+				recordButton.addClass("md-36");
+				recordButton.addClass("record-button");
+				recordButton.size(GOOGLE_BUTTON_WIDTH, 30);
+				recordButton.position($(window).width() - recordButton.width - 10, BUTTON_Y_OFFSET + 3);
+				recordButton.mousePressed(record);
 
 				trashCan = sketch.createElement('i', 'delete');
 				trashCan.addClass("material-icons");
 				trashCan.addClass("md-36");
+				trashCan.addClass("red");
 				trashCan.position($(window).width()/2 - 17, BUTTON_Y_OFFSET);
 				trashCan.elt.style.visibility = "hidden";
 			}
@@ -150,11 +160,11 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 			/* Add playback tools. */
 			function setupPlaying() {
 				playButton = sketch.createElement('i', 'play_arrow');
-				playButton.size(20, 30);
 				playButton.addClass("material-icons");
 				playButton.addClass("md-36");
 				playButton.addClass("purple");
-				playButton.position($(window).width() - 10 - playButton.width, BUTTON_Y_OFFSET + 2);
+				playButton.size(GOOGLE_BUTTON_WIDTH, 30);
+				playButton.position($(window).width() - playButton.width - GOOGLE_BUTTON_WIDTH - 20, BUTTON_Y_OFFSET + 2);
 				playButton.mousePressed(play);
 
 				playbackTimeSelect = sketch.createInput(3.0);
@@ -165,17 +175,17 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 				playbackTimeSelect.addClass('playback-time');
 				playbackTimeSelect.changed(setPlaybackTime);
 				playbackTimeSelect.size(45, 30);
-				playbackTimeSelect.position($(window).width() - 30 - playButton.width - playbackTimeSelect.width, BUTTON_Y_OFFSET + 3);
+				playbackTimeSelect.position($(window).width() - 30 - GOOGLE_BUTTON_WIDTH - playButton.width - playbackTimeSelect.width, BUTTON_Y_OFFSET + 3);
 
 				var playbackTimeLabel = sketch.createP('PLAYBACK TIME: ');
 				playbackTimeLabel.addClass('playback-time-label');
 				playbackTimeLabel.size(100, 40);
-				playbackTimeLabel.position($(window).width() - 34 - playButton.width - playbackTimeSelect.width - playbackTimeLabel.width, BUTTON_Y_OFFSET + 1.5);
+				playbackTimeLabel.position($(window).width() - 34 - GOOGLE_BUTTON_WIDTH - playButton.width - playbackTimeSelect.width - playbackTimeLabel.width, BUTTON_Y_OFFSET + 1.5);
 			
 				currentTimeLabel = sketch.createDiv('');
 				currentTimeLabel.addClass('current-time');
 				currentTimeLabel.size(40, 40);
-				currentTimeLabel.position($(window).width() - 50 - playButton.width - playbackTimeSelect.width - playbackTimeLabel.width - currentTimeLabel.width, BUTTON_Y_OFFSET + 5);
+				currentTimeLabel.position($(window).width() - 50 - GOOGLE_BUTTON_WIDTH - playButton.width - playbackTimeSelect.width - playbackTimeLabel.width - currentTimeLabel.width, BUTTON_Y_OFFSET + 5);
 				currentTimeLabel.elt.style.visibility = "hidden";
 			}
 
@@ -248,7 +258,6 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 					controller: 'DisplaySettingsController',
 					parent: angular.element(document.body),
 					locals: {
-						isRecording: recording,
 						isAdvanced: advanced,
 						isTrail: trail,
 						isBall: ballAdded,
@@ -392,8 +401,17 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 			    	console.log("Chose not to save.");
 			    });
 			}
-			// END CALLBACK FUNCTIONS FOR CREATIVE TOOLS
 		}
+
+		function record() {
+			recording = !recording;
+			if (recording) {
+				recordButton.addClass("red");
+			} else {
+				recordButton.removeClass("red");
+			}
+		}
+		// END CALLBACK FUNCTIONS FOR CREATIVE TOOLS
 
 		/* Called on every frame. Handles drawing on screen. */
 		sketch.draw = function () {

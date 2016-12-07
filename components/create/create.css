@@ -21,6 +21,12 @@
 	font-weight: bold;
 }
 
-.material-icons.md-36 { font-size: 36px; color: red; }
+.material-icons.md-36 { font-size: 36px; }
+
+.material-icons.md-36.record-button { color: rgba(0, 0, 0, 0.3); cursor: pointer; }
+
+.material-icons.md-36.record-button.red { color: #cc0000; }
+
+.material-icons.md-36.red { color: red; }
 
 .material-icons.md-36.purple { font-size: 36px; color: purple; cursor: pointer;}
