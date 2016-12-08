@@ -1,0 +1,67 @@
+<div class="about-guide">
+	<h2>About</h2>
+	<p>Tactica Soccer is a web application designed for soccer teams, coaches, and players with the goal of providing a simple, effective creation tool for diagramming various parts of the game of soccer – specifically set pieces – and allowing those diagrams to mimic real-life movement through animation.</p>
+	<p>With Tactica Soccer, users have the ability to layout plays on a virtual soccer field and animate the execution of the play. Once finished tweaking the play using the play creation interface – the heart of the application – users can save the play by providing a name. This play will be stored in the user’s playbook and can be accessed, viewed, and edited at a later time. Additionally, saved plays can be shared with other users of the site, with either viewing or editing privileges.</p>
+</div>
+
+<div class="help-short-guide">
+	<h2>Brief guide to creating a play</h2>
+	<ol type="1">
+		<li>Go to the creation screen.</li>
+		<li>Open the “Teams” menu.</li>
+		<li>Add as many attacking players as desired by clicking the green button next to the attack label. As they appear on the screen below, you can edit each player’s number.</li>
+		<li>Click on the small rectangle below to edit the color for this team.</li>
+		<li>Click on the circle, square, or triangle to pick the shape that will represent the team’s players on the field.</li>
+		<li>Repeat the process for the defensive team and then click save.</li>
+		<li>Drag and drop the players around the field to their starting positions.</li>
+		<li>Now, press shift-R or click the circle in the top-right corner of the screen to start the recording.</li>
+		<li>Drag and drop players from their initial states to the next point they should move too. Repeat for each player. You can also drag and drop players from those new points, creating additional lines and movement for that player on the screen.</li>
+		<li>Open the display and movement menus for advanced options.</li>
+		<ol type="a">
+			<li>You can add a ball to the screen. It behaves exactly like a player.</li>
+			<li>You can change the field to be black and white.</li>
+			<li>You can have players’ entire paths be laid out on the field during the animation process.</li>
+			<li>You can trace exact mouse movement paths rather than simply moving from a start point to an end point.</li>
+			<li>You can switch field types to show the entire pitch.</li>
+			<li>You can edit the start and end times for a player’s movement.</li>
+			<li>You can specifically edit the start and end times for each section – each separate drag-and-drop – of any player’s movement.</li>
+		</ol>
+		<li>Once you are satisfied with the players’ movements, edit the playback time in the upper-right corner and click play to see the animation.</li>
+		<li>Select the save play button and enter a name for the play to save it to your playbook.</li>
+	</ol>
+</div>
+
+<div class="help-long-guide">
+	<h2>In-depth guide to the creation interface</h2>
+	<p>Creating plays is the heart of Tactica Soccer and where the major effectiveness and power of the site can be found. Immediately after login, users are redirected to the creation page, where they can begin design of a new play. The creation interface can be seen below.</p>
+	<img src="images/help1.png" class="help-image"/>
+	<p>There are three main buttons that provide access to the creation tool menus – the “Teams” button, the “Movement” button, and the “Display” button, which allow for editing the teams and players on the field, these players’ movement, and various display and animation tools, respectively.</p>
+	<p>Clicking on the teams button will open a new dialog menu that gives users the ability to add up to 11 players for each of the two teams, an attacking team and a defensive team. Users can pick the color of each team and the shape of the object that represents that team’s players – either a circle, square, or triangle. These options can be later changed at any time. The initial teams dialog menu can be seen below.</p>
+	<img src="images/help2.png" class="help-image"/>
+	<p>Clicking on the green plus button for a team will add a small square representing a player below the shape and color selection and give users the ability to enter this player’s number. Once users have selected each team’s color and shape, added the desired number of players to each team, and set each player’s number, they can click the save button, and the players will be populated onto the field, as seen in an example below.</p>
+	<img src="images/help3.png" class="help-image" />
+	<p>At this stage, users can drag and drop each player to any point on the field where that player should be at the start of the play. To delete a player, users can simply drag the player to the top of the screen, where a small trash can will appear once a player is being dragged.</p>
+	<p>After players are placed in their desired starting position, the animation process can begin. To record animation, users click the circle in the top-right corner – the record button – or press shift and ‘r’ together. The record button will turn red. Now, to diagram movement for a player, users can again drag and drop a player from their position. By default, a line in the player’s color will appear connecting the player’s starting spot with their new ending spot. The player has now been recorded as moving from the starting spot to the new position. This process can be repeated to add more movement for a player by again dragging and dropping the same player to a new location. A second line will now appear connecting the new starting and ending points. An example of a play recording animation for several players can be seen below.</p>
+	<img src="images/help4.png" class="help-image" />
+	<p>Now, the effects of the options in the display menu can be seen. The display button opens up a new menu which gives users options to include or exclude trails of the players movement, add a ball to the play, display the exact movement of the mouse for a player’s path rather than an approximate line, or display the field as black and white rather than in color. The final option, the option to use a full field, should only be changed before players are added to the screen. Each option is also listed with a shortcut command so that it can be changed directly from the creation screen without having to open the display menu in the future. These options are shown below.</p>
+	<img src="images/help5.png" class="help-image" />
+	<p>While most of these options are self-explanatory and can be played around with to determine their effects, the most complex option is the ability to track the mouse’s exact movement rather than simply drawing a line between the start and end of a drag and drop. When a player is being moved across the screen by the mouse, 60 times a second the player’s x-y coordinate pair will be stored in its “history”. The default option is to use this history just to note the start and end point for simplicity. However, for more powerful animation, users can elect to use these exact paths and run the play according to the exact x-y coordinate movement of the mouse. This is a more difficult option, as it requires a steady hand moving the mouse, but can reflect more natural player movements. If chosen, when animation occurs, the play will carry out in the specified playback time by moving through all these x-y coordinate pairs, rather than just moving directly on a path from the start point to the end point.</p>
+	<p>Finally, once players’ movements are complete, users can open up the movement menu by clicking the movement button. This menu is only relevant if users are not tracking the exact mouse movements of each player. At the opening of the movement menu, the playback time entered in the upper-right corner is parsed and used as the ending time for the play.</p>
+	<p>In this menu, users can manually set the starting and ending times for each player’s movement. Additionally, if the player was dragged and dropped several times across the screen in the process of recording, creating several different lines, then users can set the start and end times for each one of these sections of the player’s movement. An example of this screen can be seen below.</p>
+	<img src="images/help6.png" class="help-image" />
+	<p>If these times had not been previously set, each player’s movement will be constant throughout according to the length of the play. By entering valid new times – users will be restricted to entering valid times and informed if an entered time is not valid – and selecting save, the players’ movements will be updated.</p>
+	<p>In the display options, if users elected to add a ball to the screen, it will behave exactly like a player.</p>
+	<p>Finally, users can enter the length of the play in seconds in the upper-right corner.  Once this has been selected, click the play button in the upper-right corner and watch the animation occur. Players will move from the start of their path to the end of their path at a constant speed for each section (individual drag-and-drop) of their movement, unless altered in the display or movement settings.</p>
+	<p>Once users are finished, they can click the save play button and enter the name of the play to store this play in their playbook.</p>
+</div>
+
+<div class="help-long-guide">
+	<h2>In-depth guide to the playbook</h2>
+	<p>The Playbook enables several key features of Tactica Soccer – the ability to view and edit saved plays at a later time and the ability to share plays with other users.</p>
+	<p>Entering the playbook menu will show users both their own created plays and the plays that have been shared with them by others. An example of the playbook menu is shown below.</p>
+	<img src="images/help7.png" class="help-image" />
+	<p>After choosing to view a play from the playbook, users will be redirected to the creation screen where the play will be shown. Based on a user’s access level for a given play – editor or viewer – the screen will have options to edit the play with the same creation interface editor tools or simply view and animate the play.</p>
+	<p>Additionally, for those users with editor privileges, there will be an option to share the play with another user by entering the email to share with. Once sharing is complete, other users can see the shared play in their playbook’s “Shared With Me” section.</p>
+	<p>Using this strategy, coaches can create plays and share with other coaches, allowing them to edit those plays also. Coaches can then share these plays with their players, but only giving them viewing capabilities. In a similar fashion, players can create plays and send them to their coaches. This allows an entire team to be able to access the same plays, with only some of the team having the ability to edit.</p>
+</div>
+

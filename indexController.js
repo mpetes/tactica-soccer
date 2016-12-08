@@ -21,6 +21,10 @@ soccerDraw.config(['$routeProvider',
                 templateUrl: 'components/create/create-template.html',
                 controller: 'CreateController'
             }).
+            when('/Help', {
+                templateUrl: 'components/help/help-template.html',
+                controller: 'HelpController'
+            }).
             otherwise({
                 redirectTo: '/Create'
             });

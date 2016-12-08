@@ -4,7 +4,7 @@ function Player(sketch, attackTeam, id, number, color, shape) {
 	/* Set variables that will need to be stored for this player. */
 	if (attackTeam) {
 		this.x = 0.1 + 0.01*(number%15);
-		this.y = 0.02 + 0.02*(number%15);
+		this.y = 0.022 + 0.02*(number%15);
 	} else {
 		this.x = 0.4 - 0.01*(number%15);
 		this.y = 0.02 + 0.02*(number%15);

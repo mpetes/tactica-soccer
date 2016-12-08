@@ -1,0 +1,28 @@
+.help-short-guide {
+	font: 17px Cambria;
+	padding-left: 10px;
+	padding-right: 10px;
+	padding-top: 25px;
+}
+
+.about-guide {
+	font: 17px Cambria;
+	padding-left: 10px;
+	padding-right: 10px;
+	padding-top: 5px;
+}
+
+.help-long-guide {
+	font: 17px Cambria;
+	padding-left: 10px;
+	padding-right: 10px;
+	padding-top: 25px;
+}
+
+.help-image {
+	padding-left: 20%;
+	padding-right: 20%;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	width: 60%;
+}
