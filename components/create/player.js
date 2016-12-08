@@ -4,10 +4,10 @@ function Player(sketch, attackTeam, id, number, color, shape) {
 	/* Set variables that will need to be stored for this player. */
 	if (attackTeam) {
 		this.x = 0.1 + 0.01*(number%15);
-		this.y = 0.01*(number%15);
+		this.y = 0.02 + 0.02*(number%15);
 	} else {
 		this.x = 0.4 - 0.01*(number%15);
-		this.y = 0.01*(number%15);
+		this.y = 0.02 + 0.02*(number%15);
 	}
 	this.attackTeam = attackTeam;
 	this.id = id;
@@ -119,11 +119,11 @@ function Player(sketch, attackTeam, id, number, color, shape) {
 			sketch.triangle(width - radius/1.5, height + radius/1.5, width, height - radius/1.5, width + radius/1.5, height + radius/1.5);
 		} else {
 			if (this.currentNumber >= 10) {
-				numberDisplay.position(xPercentage * scaleLength, 47 + yPercentage * scaleLength);
+				numberDisplay.position(xPercentage * scaleLength - 6.5, 41 + yPercentage * scaleLength);
 			} else {
-				numberDisplay.position(xPercentage * scaleLength + 3.5, 47 + yPercentage * scaleLength);
+				numberDisplay.position(xPercentage * scaleLength - 3, 41 + yPercentage * scaleLength);
 			}
-			sketch.rect(xPercentage * scaleLength, yPercentage * scRaleLength, radius, radius);
+			sketch.rect(xPercentage * scaleLength - 0.5*radius, yPercentage * scaleLength - 0.5*radius, radius, radius);
 		}
 		if (atHistoryStart === true) return this.display(fullField, false); // Show end + beginning of history
 		if (this.y <= -0.014 && this.x >= 0.2 && this.x <= 0.8) {
@@ -144,9 +144,9 @@ function Player(sketch, attackTeam, id, number, color, shape) {
 			scaleLength = $(window).width();
 		}
 		if (this.shape === "circle" || this.shape === "triangle") {
-			return (Math.abs(mousePressStartX - this.x * scaleLength) <= (radius-3) && Math.abs(mousePressStartY - this.y * scaleLength) <= (radius-5))
+			return (Math.abs(mousePressStartX - this.x * scaleLength) <= (radius-3) && Math.abs(mousePressStartY - this.y * scaleLength) <= (radius-3))
 		} else {
-			return (mousePressStartX - this.x * scaleLength >= 0 && mousePressStartX - this.x * scaleLength <= radius && mousePressStartY - this.y * scaleLength >= 0 && mousePressStartY - this.y * scaleLength <= radius);
+			return (Math.abs(mousePressStartX - this.x * scaleLength) <= radius/2 && Math.abs(mousePressStartY - this.y * scaleLength) <= radius/2);
 		}
 	}
 

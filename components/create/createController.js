@@ -579,7 +579,7 @@ soccerDraw.factory('play-creation', ['p5', '$resource', '$mdDialog', '$mdBottomS
 			var scaleLength = getScale();
 			if (advanced) {
 				for (var i = 0; i <= lengthToShow; i++) {
-					if (i !== 0 && i < history.length) sketch.line(history[i-1].x * scaleLength, history[i-1].y * scaleLength, history[i].x * scaleLength, history[i].y * ScaleLength);
+					if (i !== 0 && i < history.length) sketch.line(history[i-1].x * scaleLength, history[i-1].y * scaleLength, history[i].x * scaleLength, history[i].y * scaleLength);
 				}
 			} else {
 				if (history.length >= 2) {

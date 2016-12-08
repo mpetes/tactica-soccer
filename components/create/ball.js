@@ -25,10 +25,25 @@ function Ball(sketch) {
 		}
 	}
 
-	this.display = function() {
+	this.display = function(fullField, atHistoryStart) {
 		sketch.stroke(this.color.red, this.color.green, this.color.blue);
 		sketch.fill(0, 0, 0);
-		sketch.ellipse(this.x * $(window).width(), this.y * $(window).width(), radius, radius);
+		var xPercentage = this.x;
+		var yPercentage = this.y;
+		if (atHistoryStart && this.history.length > 0) {
+			sketch.ellipse(this.x * scaleLength, this.y * scaleLength, radius, radius);
+			xPercentage = this.history[0].movement[0].x;
+			yPercentage = this.history[0].movement[0].y;
+		}
+
+		var scaleLength;
+		if (fullField) {
+			scaleLength = ($(window).height() - 100) * (115/75);
+		} else {
+			scaleLength = $(window).width();
+		}
+
+		sketch.ellipse(this.x * scaleLength, this.y * scaleLength, radius, radius);
 		if (this.y <= -0.014 && this.x >= 0.4 && this.x <= 0.6) {
 			return false;
 		} else {
@@ -36,14 +51,21 @@ function Ball(sketch) {
 		}
 	}
 
-	this.move = function(newX, newY, recording) {
-		this.x = parseFloat(newX) / $(window).width();
-		this.y = parseFloat(newY) / $(window).width();
+	this.move = function(newX, newY, recording, fullField) {
+		if (fullField) {
+			var currFrameHeight = $(window).height() - 100;
+			var scaledWidth = currFrameHeight * (115/75);
+			this.x = parseFloat(newX) / scaledWidth;
+			this.y = parseFloat(newY) / scaledWidth;
+		} else {
+			this.x = parseFloat(newX) / $(window).width();
+			this.y = parseFloat(newY) / $(window).width();
+		}
 		if (recording) {
 			var vec = new p5.Vector(this.x, this.y);
 			if (vec.x >= 0.0 && vec.x <= 1.0 && vec.y >= 0.0 && vec.y <= 1.0) this.history[this.history.length - 1].movement.push(vec);
 		}
-		this.display();
+		this.display(fullField, false);
 	}
 
 	this.setHistory = function(newHistory) {
@@ -68,8 +90,14 @@ function Ball(sketch) {
 		return this.history;
 	}
 
-	this.shouldMove = function(mousePressStartX, mousePressStartY) {
-		return (Math.abs(mousePressStartX - this.x * $(window).width()) <= radius && Math.abs(mousePressStartY - this.y * $(window).width()) <= radius)
+	this.shouldMove = function(mousePressStartX, mousePressStartY, fullField) {
+		var scaleLength;
+		if (fullField) {
+			scaleLength = ($(window).height() - 100) * (115/75);
+		} else {
+			scaleLength = $(window).width();
+		}
+		return (Math.abs(mousePressStartX - this.x * scaleLength) <= radius && Math.abs(mousePressStartY - this.y * scaleLength) <= radius)
 	}
 
 	this.setMovement = function(movement, recording) {
