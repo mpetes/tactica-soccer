@@ -19,15 +19,14 @@ function PlayerPickerController($scope, $resource, $mdDialog, allPlayers) {
 			$scope.selectedAttackShape = info.shape;
 			parseRGB($scope, "attackColor", info);
 			if (info.currentNumber >= $scope.playerPicker.currAttackNumber) {
-				$scope.playerPicker.currAttackNumber = info.currentNumber + 1;
+				$scope.playerPicker.currAttackNumber = parseInt(info.currentNumber) + 1;
 			}
 		} else {
 			$scope.playerPicker.defensePlayers.push(info);
 			$scope.selectedDefenseShape = info.shape;
 			parseRGB($scope, "defenseColor", info);
-			$scope.defenseColor = "#" + info.color.red.toString(16) + info.color.green.toString(16) + info.color.blue.toString(16);
 			if (info.currentNumber >= $scope.playerPicker.currDefenseNumber) {
-				$scope.playerPicker.currDefenseNumber = info.currentNumber + 1;
+				$scope.playerPicker.currDefenseNumber = parseInt(info.currentNumber) + 1;
 			}
 		}
 	}

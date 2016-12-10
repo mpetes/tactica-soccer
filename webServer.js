@@ -122,8 +122,8 @@ app.post('/update-play', function(request, response) {
                 return;
             }
             var user = userResult.rows[0];
-            var ownedPlays = JSON.parse(user.plays).owned;
-            if (ownedPlays.indexOf(id) === -1) {
+            var plays = JSON.parse(user.plays);
+            if (plays.owned.indexOf(id) === -1 && plays.edit.indexOf(id) === -1) {
                 done();
                 console.log("User is not owner of this play.");
                 response.status(404).send(JSON.stringify(err1));
